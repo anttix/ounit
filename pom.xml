@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.googlecode.ounit</groupId>
+  <artifactId>ounit-parent</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <url>http://ounit.googlecode.com</url>
+
+  <!-- Maintenance notes.
+       Do not update project versions manually, use:
+         mvn versions:set -DnewVersion=1.0.0-SNAPSHOT
+
+       If you did manually fiddle with the version tag, You must
+       update child modules with:
+         mvn -N versions:update-child-modules
+
+       All upgradable dependencies must use version properties.
+       These can be automatically updated with:
+         mvn versions:display-property-updates
+         mvn versions:update-properties
+         mvn versions:commit
+
+       The changes made in step 2 can be reverted with
+         mvn versions:revert
+
+       See http://mojo.codehaus.org/versions-maven-plugin
+  -->
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <prerequisites>
+    <maven>2.2</maven>
+  </prerequisites>
+
+  <build>
+    <defaultGoal>verify</defaultGoal>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <systemPropertyVariables>
+              <moodle19.url>${moodle19.url}</moodle19.url>
+              <moodle19.user>${moodle19.user}</moodle19.user>
+              <moodle19.pass>${moodle19.pass}</moodle19.pass>
+            </systemPropertyVariables>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+  </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>[4.0,)</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-all</artifactId>
+        <version>[1.1,)</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <modules>
+    <module>wicket-extension-offline</module>
+    <module>opaque-api</module>
+    <module>ounit-common</module>
+    <module>maven-ounit-plugin</module>
+    <module>ounit-test-executor</module>
+    <module>ounit-service</module>
+  </modules>
+</project>
