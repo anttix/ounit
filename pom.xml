@@ -62,6 +62,14 @@
     </developer>
   </developers>
 
+  <distributionManagement>
+    <snapshotRepository>
+      <id>anttix.org</id>
+      <name>anttix.org snapshots</name>
+      <url>${anttix.org.deploy.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <!-- Maintenance notes.
        Do not update project versions manually, use:
          mvn versions:set -DnewVersion=1.0.0-SNAPSHOT
@@ -115,6 +123,14 @@
       </plugins>
     </pluginManagement>
 
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ssh-external</artifactId>
+         <version>1.0-beta-7</version>
+      </extension>
+    </extensions>
+
   </build>
 
   <dependencyManagement>
@@ -133,6 +149,22 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>skip-tests</id>
+      <activation>
+        <property>
+          <name>skipTests</name>
+        </property>
+      </activation>
+      <properties>
+        <invoker.skip>true</invoker.skip>
+        <skipITs>true</skipITs>
+        <skipTests>true</skipTests>
+      </properties>
+    </profile>
+  </profiles>
 
   <modules>
     <module>opaque-api</module>
