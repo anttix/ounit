@@ -1,0 +1,57 @@
+/*
+ * OUnit - an OPAQUE compliant framework for Computer Aided Testing
+ *
+ * Copyright (C) 2010, 2011  Antti Andreimann
+ *
+ * This file is part of OUnit.
+ *
+ * OUnit is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OUnit is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OUnit.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@CHARSET "UTF-8";
+
+.CodeMirror {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    height: 99.5%;
+}
+.activeline {background: #f0fcff !important;}
+.codeeditor {width: 100%; height: 100%;}
+.filetree   {width: 5em; }
+.ou-tabpanel { font-size: small; }
+.ou-tabpanel .ui-tabs-nav li a { padding: 0.2em 1em; }
+.ou-tabpanel .ui-tabs-nav li a.close { padding: 0.2em 2px 0.2em 1em; }
+.ou-tabpanel li .ui-icon-close { float: left; margin: 0; padding: 0; cursor: pointer; }
+.ou-tabpanel .ui-tabs-panel { height: 26em; overflow: auto; }
+.ou-explorer-tree ul { padding-left: 2em; }
+.ou-explorer-tree a { color: blue; } 
+/* .ou-buttons input { font-size: large; } */
+div.ou-buttons { margin-top: 3px; }
+
+/* Closed questions go grey */
+.ou-closed-question .ou-tabpanel { background-color: #FAFAFA; }
+.ou-closed-question .ui-tabs-panel { background-color: #FAFAFA; }
+
+.ou-confirm .ou-results {
+	margin: 2em;
+	min-height: 5em;
+	max-height: 26em;
+	overflow: auto;
+	border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.ou-confirm {
+	margin-bottom: 1em;
+}

@@ -1,0 +1,7 @@
+This software uses parts from
+
+  OpenMark online assessment system
+  Copyright (C) 2007 The Open University
+  Licensed under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.

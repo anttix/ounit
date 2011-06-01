@@ -1,0 +1,200 @@
+<!--
+
+ Define custom lifecycles for Ounit questions.
+
+ Based on Rich Sellers answer to a question in stack overflow:
+ http://stackoverflow.com/questions/1427740/how-do-i-execute-a-set-of-goals-before-my-maven-plugin-runs
+ http://www.sonatype.com/books/maven-book/reference/writing-plugins-sect-custom-lifecycle.html
+
+/*
+ * ounit - an OPAQUE compliant framework for Computer Aided Testing
+ *
+ * Copyright (C) 2010  Antti Andreimann
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+-->
+
+<lifecycles>
+  <lifecycle>
+    <id>prepare-question</id>
+    <phases>
+      <phase>
+        <id>generate-sources</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>shared</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>student</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-dependency-plugin:go-offline
+              </goal>
+            </goals>
+          </execution>
+        </executions>
+      </phase>
+      <phase>
+        <id>test-compile</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-compiler-plugin:testCompile
+              </goal>
+            </goals>
+          </execution>
+        </executions>
+      </phase>      
+    </phases>
+  </lifecycle>
+  
+  <lifecycle>
+    <id>teacher-tests</id>
+    <phases>
+      <phase>
+        <id>initialize</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-surefire-plugin:test
+              </goal>
+            </goals>
+            <configuration>
+              <testFailureIgnore>true</testFailureIgnore>
+              <testClassesDirectory>
+                ${basedir}/bin/teacher-test-classes
+              </testClassesDirectory>
+              <reportsDirectory>
+               ${project.build.directory}/teacher-reports
+             </reportsDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </phase>
+    </phases>
+  </lifecycle>
+  
+</lifecycles>
+
+<!--
+      <phase>
+        <id>process-sources</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-invoker-plugin:integration-test
+              </goal>
+            </goals>
+            <configuration>
+              <pom>${project.build.directory}/student/pom.xml</pom>
+            </configuration>
+          </execution>
+        </executions>
+      </phase>
+    </phases>
+  </lifecycle>
+
+  <lifecycle>
+    <id>download-dependencies</id>
+    <phases>
+      <phase>
+        <id>process-resources</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-dependency-plugin:copy-dependencies
+              </goal>
+            </goals>
+            <configuration>
+              <includeScope>compile</includeScope>
+              <includeTypes>war</includeTypes>
+              <overWrite>true</overWrite>
+              <outputDirectory>
+                ${project.build.outputDirectory}/wars
+              </outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-dependency-plugin:copy-dependencies
+              </goal>
+            </goals>
+            <configuration>
+              <includeScope>compile</includeScope>
+              <includeTypes>jar</includeTypes>
+              <overWrite>true</overWrite>
+              <outputDirectory>
+                ${project.build.outputDirectory}/jars
+              </outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </phase>
+    </phases>
+  </lifecycle>
+
+  <lifecycle>
+    <id>zipcycle</id>
+    <phases>
+      <phase>
+        <id>package</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>zip</goal>
+            </goals>
+          </execution>
+        </executions>
+      </phase>
+    </phases>
+  </lifecycle>
+-->
