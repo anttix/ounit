@@ -27,7 +27,7 @@ import javax.xml.ws.Endpoint;
 
 import com.googlecode.ounit.OunitService;
 
-public class OunitRun {
+public class OunitMain {
 	public static void main(String [] args) {
 		
 		try {
@@ -37,7 +37,7 @@ public class OunitRun {
 			e.printStackTrace();
 		}
 		
-		final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OunitRun.class);
+		final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OunitMain.class);
 		log.info("Starting Server");
 		OunitService implementor = new OunitService();
 		String address = "http://localhost:8080/ounit-server/OunitService";
