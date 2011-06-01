@@ -49,6 +49,9 @@ public class QuizStateAttributeModifier extends Behavior {
 	public void onComponentTag(Component component, ComponentTag tag) {
 		if (!isEnabled(component)) return;
 		
+		// FIXME: This shouldn't happen ....
+		if(model == null || model.getObject() == null) return;
+		
 		String value = (model.getObject().isClosed()) ? closedValue : openValue;
 		
 		if(value == null)
