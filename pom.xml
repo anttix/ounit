@@ -34,6 +34,34 @@
   <url>http://ounit.googlecode.com</url>
   <name>OUnit</name>
 
+  <licenses>
+    <license>
+      <name>GNU General Public License, Version 3</name>
+      <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>
+      http://code.google.com/p/ounit/source/browse/${project.artifactId}
+    </url>
+    <connection>
+      scm:hg:http://ounit.googlecode.com/hg/
+    </connection>
+    <developerConnection>
+      scm:hg:https://ounit.googlecode.com/hg/
+    </developerConnection>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>anttix</id>
+      <name>Antti Andreimann</name>
+      <email>anttix@users.sourceforge.net</email>
+    </developer>
+  </developers>
+
   <!-- Maintenance notes.
        Do not update project versions manually, use:
          mvn versions:set -DnewVersion=1.0.0-SNAPSHOT
