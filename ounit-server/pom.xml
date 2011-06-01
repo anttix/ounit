@@ -108,7 +108,8 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <!-- FIXME: Remove WicketTester so we can use test scope -->
+      <scope>compile</scope>
     </dependency>
     
     <dependency>
