@@ -25,6 +25,8 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
@@ -123,7 +125,11 @@ public class GenerateStudentMojo
         model.setPrerequisites( project.getPrerequisites() );
         model.setDependencies( project.getDependencies() );
         model.setDependencyManagement( project.getDependencyManagement() );
+        
         Build build = new Build();
+        /* TODO: Add groupId */
+        List<String> blacklist = Arrays.asList(
+        		new String [] { "maven-clean-plugin", "maven-site-plugin" });
         for(Plugin p: project.getBuild().getPlugins()) {
         	if(p.getArtifactId().equals("maven-ounit-plugin")) {
         		Plugin n = new Plugin();
@@ -136,6 +142,8 @@ public class GenerateStudentMojo
         		e.addGoal("generate-results");
         		n.addExecution(e);
         		build.addPlugin(n);
+        	} else if(!blacklist.contains(p.getArtifactId())) {
+        		build.addPlugin(p);
         	}
         }
         if(ouparent == null)
