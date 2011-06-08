@@ -33,7 +33,7 @@ import com.googlecode.ounit.opaque.Results;
 import com.googlecode.ounit.opaque.Score;
 
 public class OunitSession extends OpaqueSession {
-	public static final String DESCRIPTION_FILE = "description.html";
+	public static final String DESCRIPTION_FILE = "description/index.html";
 	public static final String RESULTS_FILE     = "target/ounit-reports/results.html";
 	public static final String MARKS_FILE       = "target/ounit-reports/marks.properties";
 	public static final String DEFAULT_PROPERTY = "default";

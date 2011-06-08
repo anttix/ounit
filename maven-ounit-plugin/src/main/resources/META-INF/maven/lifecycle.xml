@@ -43,6 +43,40 @@
             </goals>
             <configuration>
               <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>root</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/description</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>description</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>
+          </execution>          
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
               <outputDirectory>${project.build.directory}/src</outputDirectory>
               <resources>          
                 <resource>

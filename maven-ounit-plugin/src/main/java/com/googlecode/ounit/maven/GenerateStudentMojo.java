@@ -22,7 +22,6 @@ package com.googlecode.ounit.maven;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -180,12 +179,7 @@ public class GenerateStudentMojo
 			out.write("grant codeBase \"" +
 					  session.getLocalRepository().getUrl() +
 					  "-\" { permission java.security.AllPermission; };\n");
-			out.close();
-			
-			/* Copy description */
-			String DESCFILE = "description.html";
-			copyTextFile(new File(baseDirectory, DESCFILE),
-						 new File(outputDirectory, DESCFILE));
+			out.close();			
 		} catch (IOException e) {
 			throw new MojoExecutionException("Failed to generate student pom.xml", e);
 		}
@@ -229,17 +223,5 @@ public class GenerateStudentMojo
 			}
 		}
 		return (path.delete());
-	}
-	
-	public void copyTextFile(File inputFile, File outputFile) throws IOException {
-		FileReader in = new FileReader(inputFile);
-		FileWriter out = new FileWriter(outputFile);
-		int c;
-
-		while ((c = in.read()) != -1)
-			out.write(c);
-
-		in.close();
-		out.close();
 	}
 }
