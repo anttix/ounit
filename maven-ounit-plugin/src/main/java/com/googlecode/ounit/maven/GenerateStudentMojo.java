@@ -26,6 +26,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
@@ -67,6 +68,15 @@ public class GenerateStudentMojo
 	 * @required @readonly
 	 */
 	protected MavenProject project;
+	
+	/**
+	 * The Maven Session Object
+	 * 
+	 * @parameter expression="${session}"
+	 * @required
+	 * @readonly
+	 */
+	protected MavenSession session;
 	
 	/**
 	 * The Maven ModelWriter
@@ -151,8 +161,21 @@ public class GenerateStudentMojo
 		model.getProperties().put("ounit.editfiles", listFiles(ssDir, ssDir));
 
     	try {
-    		String DESCFILE = "description.html";
 			modelWriter.write(new File(outputDirectory, "pom.xml"), null, model);
+			
+			/* Create policy file */
+			/* TODO: Load student policies from a resource file */
+			FileWriter out = new FileWriter(new File(outputDirectory, "tests.policy"));
+			out.write("grant codeBase \"" +
+					  new File(outputDirectory, "bin").toURI() +
+					  "-\" { permission java.security.AllPermission; };\n");	
+			out.write("grant codeBase \"" +
+					  session.getLocalRepository().getUrl() +
+					  "-\" { permission java.security.AllPermission; };\n");
+			out.close();
+			
+			/* Copy description */
+			String DESCFILE = "description.html";
 			copyTextFile(new File(baseDirectory, DESCFILE),
 						 new File(outputDirectory, DESCFILE));
 		} catch (IOException e) {

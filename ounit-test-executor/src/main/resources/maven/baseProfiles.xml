@@ -63,6 +63,10 @@
               <configuration>
                 <redirectTestOutputToFile>true</redirectTestOutputToFile>
                 <forkMode>once</forkMode>
+                <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+                <argLine>
+                  -Djava.security.manager -Djava.security.policy=${basedir}/tests.policy
+                </argLine>
               </configuration>
             </plugin>
             <plugin>
@@ -70,6 +74,10 @@
               <configuration>
                 <redirectTestOutputToFile>true</redirectTestOutputToFile>
                 <forkMode>once</forkMode>
+                <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+                <argLine>
+                  -Djava.security.manager -Djava.security.policy=${basedir}/tests.policy
+                </argLine>
               </configuration>
             </plugin>
           </plugins>
