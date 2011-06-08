@@ -138,13 +138,13 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>[4.0,)</version>
+        <version>4.8.2</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-all</artifactId>
-        <version>[1.1,)</version>
+        <version>1.1</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -173,5 +173,6 @@
     <module>ounit-test-executor</module>
     <module>wicket-extension-opaque</module>
     <module>ounit-server</module>
+    <module>questions</module>
   </modules>
 </project>
