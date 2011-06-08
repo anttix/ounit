@@ -58,6 +58,8 @@ public class TestResults {
 	}
 	
 	public double getTotalPercentage() {
+                if(getTotalTests() == 0)
+                    return 0;
 		return (double)getTotalSucceeded() / getTotalTests() * 100;
 	}
 	
