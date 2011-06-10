@@ -173,6 +173,7 @@
     <module>ounit-test-executor</module>
     <module>wicket-extension-opaque</module>
     <module>ounit-server</module>
+    <module>ounit-selenium</module>
     <module>questions</module>
   </modules>
 </project>
