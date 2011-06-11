@@ -125,10 +125,14 @@ public class PageRunner {
 			String pageUrl = rq.getWicketPage();
 			if(pageUrl != null) {
 				log.debug("Processing wicket pageUrl: {}", pageUrl);
+				
+				// FIXME: This is a seriously ugly temporary hack!
+				if(!pageUrl.startsWith("?") && !pageUrl.startsWith("wicket/"))
+					pageUrl = "wicket/bookmarkable/" + pageUrl;
+				
 				renderer.getRequest().setURL(pageUrl);
 
 				for(NamedPair i : rq.getPostParameters().getAllNamed()) {
-					//renderer.getRequest().getPostParameters().reset();
 					renderer.getRequest().getPostParameters()
 						.addParameterValue(i.getKey(), i.getValue());
 				}
