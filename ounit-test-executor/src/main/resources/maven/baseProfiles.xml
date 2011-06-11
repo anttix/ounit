@@ -62,6 +62,7 @@
               <artifactId>maven-surefire-plugin</artifactId>
               <configuration>
                 <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                <printSummary>false</printSummary>
                 <forkMode>once</forkMode>
                 <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
                 <argLine>
@@ -73,6 +74,7 @@
               <artifactId>maven-failsafe-plugin</artifactId>
               <configuration>
                 <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                <printSummary>false</printSummary>
                 <forkMode>once</forkMode>
                 <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
                 <argLine>
