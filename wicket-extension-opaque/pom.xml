@@ -27,73 +27,95 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>com.googlecode.ounit</groupId>
+  
+  <parent>
+    <groupId>com.googlecode.ounit</groupId>
+    <artifactId>ounit-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  
   <artifactId>wicket-extension-opaque</artifactId>
-  <version>1.5-RC4.2</version>
+  <version>${wicket.version}</version>
   <name>OPAQUE rendering extension for Apache Wicket</name>
   <url>http://ounit.googlecode.com</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <wicket.version>${project.version}</wicket.version>
-    <slf4j.version>1.6.1</slf4j.version>
-    <junit.version>4.8.2</junit.version>
   </properties>
-
+  
   <dependencies>
     <dependency>
-      <groupId>com.googlecode.ounit</groupId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>opaque-api</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.parent.version}</version>
     </dependency>
     
     <dependency>
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket-core</artifactId>
-      <version>${wicket.version}</version>
     </dependency>
     
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
+      <groupId>com.googlecode.ounit</groupId>
+      <artifactId>opaque-api</artifactId>
+      <version>${project.parent.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    
+    <!-- We prefer to run tests with 
+         Apache CXF instead of Sun JAX-WS RI (Metro) -->
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http</artifactId>
+      <scope>test</scope>
+    </dependency>    
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-firefox-driver</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-support</artifactId>
     </dependency>
 
     <!-- Logger settings, only used for tests
          the runtime environment should provide it's own logging
          configuration -->
-    <!--
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${slf4j.version}</version>
+      <artifactId>slf4j-jdk14</artifactId>
       <scope>test</scope>
     </dependency>
-    -->
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
     <resources>
       <resource>
         <filtering>false</filtering>

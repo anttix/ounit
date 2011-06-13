@@ -92,6 +92,13 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <cxf.version>2.4.0</cxf.version>
+    <hamcrest.version>1.1</hamcrest.version>
+    <junit.version>4.8.2</junit.version>
+    <selenium.version>2.0rc2</selenium.version>
+    <slf4j.version>1.6.1</slf4j.version>
+    <wicket.version>1.5-RC4.2</wicket.version>
   </properties>
 
   <prerequisites>
@@ -135,18 +142,102 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Servlet API -->
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- Apache CXF http://cxf.apache.org/docs/using-cxf-with-maven.html -->
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+      <!-- Jetty is needed for tests because these do not use CXFServlet -->
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http-jetty</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+
+      <!-- SLF4J -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      
+      <!-- Apache Wicket -->
+      <dependency>
+        <groupId>org.apache.wicket</groupId>
+        <artifactId>wicket-core</artifactId>
+        <version>${wicket.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>wicket-extension-opaque</artifactId>
+        <version>${wicket.version}</version>
+      </dependency>
+
+      <!-- JUnit -->    
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.8.2</version>
+        <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-all</artifactId>
-        <version>1.1</version>
+        <version>${hamcrest.version}</version>
         <scope>test</scope>
       </dependency>
+      
+      <!-- Selenium -->
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-firefox-driver</artifactId>
+        <version>${selenium.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-chrome-driver</artifactId>
+        <version>${selenium.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-ie-driver</artifactId>
+        <version>${selenium.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-htmlunit-driver</artifactId>
+        <version>${selenium.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <artifactId>selenium-support</artifactId>
+        <version>${selenium.version}</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 

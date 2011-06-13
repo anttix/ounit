@@ -39,70 +39,43 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <selenium.version>2.0b3</selenium.version>
-    <slf4j.version>1.6.1</slf4j.version>
-    <cxf.version>2.4.0</cxf.version>
   </properties>
 
   <dependencies>
-
     <!-- We prefer to run tests with 
-         Apache CXF instead Sun JAX-WS RI (Metro) -->
+         Apache CXF instead of Sun JAX-WS RI (Metro) -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxws</artifactId>
-      <version>${cxf.version}</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http</artifactId>
-      <version>${cxf.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- Jetty is needed if you're are not using the CXFServlet -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-transports-http-jetty</artifactId>
-      <version>${cxf.version}</version>
       <scope>test</scope>
     </dependency>
-
-<!-- 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>test</scope>
-    </dependency>
--->
-
+    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
-      <scope>test</scope>
     </dependency>
     
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-firefox-driver</artifactId>
-      <version>${selenium.version}</version>
-      <scope>test</scope>
     </dependency>
-    
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-support</artifactId>
-      <version>${selenium.version}</version>
-      <scope>test</scope>
     </dependency>
     
   </dependencies>
