@@ -123,7 +123,12 @@ public class GenerateStudentMojo
         model.setProperties( project.getProperties() );
         model.setPrerequisites( project.getPrerequisites() );
         model.setDependencies( project.getDependencies() );
-        model.setDependencyManagement( project.getDependencyManagement() );
+        /* There is no point to copy DependencyManagement section because
+         * all management directives are already applied when we call
+         * project.getDependencies() and we do not expect students to
+         * subclass the generated POM. 
+         */
+        //model.setDependencyManagement( project.getDependencyManagement() );
         
         Build build = new Build();
         /* TODO: Add groupId */
