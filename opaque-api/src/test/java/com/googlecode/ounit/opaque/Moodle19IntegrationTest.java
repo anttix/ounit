@@ -199,7 +199,4 @@ public class Moodle19IntegrationTest extends TestBase {
 	
 	//@Test
 	// TODO: shouldDisplayAnswerSummaryInReport (this requires another "student" user)
-	public static void main(String [] args) {
-    	startServer();
-	}
 }

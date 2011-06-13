@@ -33,7 +33,7 @@ public class TestBase {
 	public final static String serviceAddress = "http://localhost:9099/opaque";
 	
 	protected static WebDriver driver;
-	private static Endpoint ep = null;
+	protected static Endpoint ep = null;
 	
 	@Rule
 	public ScreenShotOnFailureRule ssf = new ScreenShotOnFailureRule(driver);
@@ -64,4 +64,7 @@ public class TestBase {
 			driver.close();
 	}
 
+	public static void main(String [] args) {
+    	startServer();
+	}
 }
