@@ -48,11 +48,6 @@ public class PageRunner {
 	WicketTester renderer;
 	WebApplication application;
 	
-	public PageRunner() {
-		application = new OpaqueApplication();
-		renderer = new WicketTester(application);
-	}
-	
 	public PageRunner(WebApplication application) {
 		this.application = application;
 		renderer = new WicketTester(application);
