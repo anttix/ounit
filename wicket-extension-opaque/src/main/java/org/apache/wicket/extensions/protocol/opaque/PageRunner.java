@@ -127,8 +127,12 @@ public class PageRunner {
 				log.debug("Processing wicket pageUrl: {}", pageUrl);
 				
 				// FIXME: This is a seriously ugly temporary hack!
-				if(!pageUrl.startsWith("?") && !pageUrl.startsWith("wicket/"))
-					pageUrl = "wicket/bookmarkable/" + pageUrl;
+				if(!pageUrl.startsWith("?") && !pageUrl.startsWith("wicket/")) {
+					if(pageUrl.startsWith("page?"))
+						pageUrl = "wicket/" + pageUrl;
+					else
+						pageUrl = "wicket/bookmarkable/" + pageUrl;
+				}
 				
 				renderer.getRequest().setURL(pageUrl);
 
