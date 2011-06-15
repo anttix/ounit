@@ -35,6 +35,7 @@ import com.googlecode.ounit.opaque.Results;
 public class OpaqueSession {
 	public final static String SESSION_PARAMETER_NAME = "opaque:wicket:" + Session.SESSION_ATTRIBUTE_NAME;
 	public final static String PAGE_PARAMETER_NAME = "wicketpage";
+	public final static String MOODLE_EVENT_PARAMETER_NAME = "event";
 	public final static int DEFAULT_MARKS = 10;
 	
 	String wicketPage;
@@ -128,6 +129,7 @@ public class OpaqueSession {
 		setWicketSessionId(postParameters.get(SESSION_PARAMETER_NAME).toString());
 		postParameters.remove(PAGE_PARAMETER_NAME);
 		postParameters.remove(SESSION_PARAMETER_NAME);
+		postParameters.remove(MOODLE_EVENT_PARAMETER_NAME);
 		
 		// TODO: This has a potential to consume up a lot of memory so it's not enabled
 		// until the real need surfaces.
