@@ -35,7 +35,7 @@
   </parent>
   
   <artifactId>wicket-extension-opaque</artifactId>
-  <version>${wicket.version}</version>
+  <version>1.5-RC4.2</version>
   <name>OPAQUE rendering extension for Apache Wicket</name>
   <url>http://ounit.googlecode.com</url>
 
