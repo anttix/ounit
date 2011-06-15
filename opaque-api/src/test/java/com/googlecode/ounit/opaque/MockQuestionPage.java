@@ -21,7 +21,6 @@
 
 package com.googlecode.ounit.opaque;
 
-import org.openqa.selenium.RenderedWebElement;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -43,15 +42,15 @@ public class MockQuestionPage {
 	 * one page so it's not much of an issue (yet)!
 	 */
 	@FindBy(css = ".quizdiv")
-	private RenderedWebElement quizDiv;
+	private WebElement quizDiv;
 	@FindBy(css = ".headdiv")
-	private RenderedWebElement headDiv;
+	private WebElement headDiv;
 	@FindBy(css = ".cssdiv")
-	private RenderedWebElement cssDiv;
+	private WebElement cssDiv;
 	@FindBy(css = ".jsdiv")
-	private RenderedWebElement jsDiv;
+	private WebElement jsDiv;
 	@FindBy(css = ".picdiv")
-	private RenderedWebElement picDiv;
+	private WebElement picDiv;
 	@FindBy(css = ".lastreply")
 	private WebElement lastReplyText;
 	
