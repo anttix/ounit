@@ -131,6 +131,7 @@ public class GenerateStudentMojo
         //model.setDependencyManagement( project.getDependencyManagement() );
         
         Build build = new Build();
+        build.setPluginManagement(project.getBuild().getPluginManagement());
         /* TODO: Add groupId */
         List<String> blacklist = Arrays.asList(
         		new String [] { "maven-clean-plugin", "maven-site-plugin" });
