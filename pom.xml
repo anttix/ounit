@@ -116,17 +116,6 @@
             <target>1.6</target>
           </configuration>
         </plugin>
-
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <configuration>
-            <systemPropertyVariables>
-              <moodle19.url>${moodle19.url}</moodle19.url>
-              <moodle19.user>${moodle19.user}</moodle19.user>
-              <moodle19.pass>${moodle19.pass}</moodle19.pass>
-            </systemPropertyVariables>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -254,6 +243,30 @@
         <skipITs>true</skipITs>
         <skipTests>true</skipTests>
       </properties>
+    </profile>
+    <profile>
+      <id>moodle</id>
+      <activation>
+        <property>
+          <name>moodle19.url</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <systemPropertyVariables>
+                  <moodle19.url>${moodle19.url}</moodle19.url>
+                  <moodle19.user>${moodle19.user}</moodle19.user>
+                  <moodle19.pass>${moodle19.pass}</moodle19.pass>
+                </systemPropertyVariables>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
     </profile>
   </profiles>
 
