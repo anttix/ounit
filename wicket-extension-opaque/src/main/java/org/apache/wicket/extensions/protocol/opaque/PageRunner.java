@@ -137,15 +137,9 @@ public class PageRunner {
 				}
 				renderer.processRequest();
 			} else {
-//				try {
 				log.debug("Starting new HomePage");
-				//application.mountPage("/", page);
-				//renderer.startPage(application.getHomePage());
-				renderer.getRequest().setURL("");
+				renderer.startPage(application.getHomePage());
 				renderer.processRequest();
-//			} catch(StalePageException e) {
-//				throw e;
-//			}
 			}
 			
 			// TODO: Why does this throw NullPointers 
