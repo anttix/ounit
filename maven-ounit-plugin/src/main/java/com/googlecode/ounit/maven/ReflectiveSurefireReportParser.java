@@ -60,7 +60,7 @@ public class ReflectiveSurefireReportParser implements ReportParser {
 		*/
 
 		String sfGrId = "org.apache.maven.plugins";
-		String sfVer = "2.7.2";
+		String sfVer = "2.8.1";
 
 		Plugin plugin = new Plugin();
 		plugin.setGroupId(sfGrId);
