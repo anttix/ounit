@@ -138,7 +138,8 @@ public class PageRunner {
 				renderer.processRequest();
 			} else {
 				log.debug("Starting new HomePage");
-				renderer.startPage(application.getHomePage());
+				//renderer.startPage(application.getHomePage());
+				renderer.getRequest().setURL("");
 				renderer.processRequest();
 			}
 			
