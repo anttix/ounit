@@ -36,6 +36,7 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.response.StringResponse;
 import org.apache.wicket.response.filter.IResponseFilter;
 import org.apache.wicket.util.string.AppendingStringBuffer;
+import org.apache.wicket.util.string.Strings;
 
 /*
  * In the "normal" world we would just capture all headers with DecoratingHeaderResponse
@@ -74,35 +75,37 @@ public class OpaqueHeaderResponse extends HeaderResponse {
 			IRequestHandler handler = new ResourceReferenceRequestHandler(
 					reference, pageParameters);
 			CharSequence url = RequestCycle.get().urlFor(handler);
-
-			if (condition != null) {
-				renderCSSReference(url.toString(), media, condition);
-			} else {
-				List<String> token = Arrays
-						.asList("css", url.toString(), media);
-				real.write("<script type=\"text/javascript\">");
-				real.write("var elem=document.createElement(\"link\");");
-				real.write("elem.setAttribute(\"rel\",\"stylesheet\");");
-				real.write("elem.setAttribute(\"type\",\"text/css\");");
-				real.write("elem.setAttribute(\"href\", \"" + url + "\".replace(/&amp;/g, '&'));");
-				if (media != null) {
-					real.write("elem.setAttribute(\"media\",\"" + media
-							+ "\");");
-				}
-				real
-						.write("document.getElementsByTagName(\"head\")[0].appendChild(elem);");
-				real.write("</script>");
-				real.write("\n");
-				markRendered(token);
-			}
+			renderCSSReference(url.toString(), media, condition);
 		}
 	}
 
 	@Override
 	public void renderCSSReference(String url, String media, String condition) {
-		active = real;
-		super.renderCSSReference(url, media, condition);
-		active = buf;
+		if (Strings.isEmpty(condition) == false)
+		{
+			real.write("<!--[if ");
+			real.write(condition);
+			real.write("]>");
+		}
+		
+		List<String> token = Arrays.asList("css", url.toString(), media);
+		real.write("<script type=\"text/javascript\">");
+		real.write("var elem=document.createElement(\"link\");");
+		real.write("elem.setAttribute(\"rel\",\"stylesheet\");");
+		real.write("elem.setAttribute(\"type\",\"text/css\");");
+		real.write("elem.setAttribute(\"href\", \"" + url + "\".replace(/&amp;/g, '&'));");
+		if (media != null) {
+			real.write("elem.setAttribute(\"media\",\"" + media + "\");");
+		}
+		real.write("document.getElementsByTagName(\"head\")[0].appendChild(elem);");
+		real.write("</script>");
+		real.write("\n");
+		markRendered(token);
+
+		if (Strings.isEmpty(condition) == false)
+		{
+			real.write("<![endif]-->");
+		}
 	}
 
 	@Override
