@@ -123,7 +123,7 @@ public class MainPage extends BasePage {
 			}
 		});
 		
-		mainForm.add(new Button("submit") {
+		mainForm.add(new Button("compile") {
 			private static final long serialVersionUID = 1L;
 			@Override
 			protected void onConfigure() {
