@@ -34,8 +34,8 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>ounit-service</artifactId>
-  <name>OUnit web service</name>
+  <artifactId>ounit-server-standalone</artifactId>
+  <name>OUnit server (standalone version)</name>
   <packaging>jar</packaging>
 
   <properties>
@@ -45,98 +45,36 @@
   <dependencies>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
-      <artifactId>opaque-api</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>${project.parent.groupId}</groupId>
-      <artifactId>wicket-extension-opaque</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>${project.parent.groupId}</groupId>
-      <artifactId>ounit-test-executor</artifactId>
+      <artifactId>ounit-service</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
     
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-frontend-jaxws</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-http</artifactId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
-<!-- <artifactId>slf4j-simple</artifactId> -->
       <artifactId>slf4j-jdk14</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.apache.wicket</groupId>
-      <artifactId>wicket-core</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>${project.parent.groupId}</groupId>
-      <artifactId>opaque-api</artifactId>
-      <version>${project.parent.version}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <!-- FIXME: Remove WicketTester so we can use test scope -->
-      <scope>compile</scope>
+      <scope>test</scope>
     </dependency>
     
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
-  
-  <build>
-    <!-- Pick up wicket templates -->
-    <resources>
-      <resource>
-        <filtering>false</filtering>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <filtering>false</filtering>
-        <directory>src/main/java</directory>
-        <includes>
-          <include>**</include>
-        </includes>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </resource>
-    </resources>
 
-    <testResources>
-      <testResource>
-        <filtering>false</filtering>
-        <directory>src/test/java</directory>
-        <includes>
-          <include>**</include>
-        </includes>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
-      </testResource>
-    </testResources>
-  </build>
 </project>

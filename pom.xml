@@ -276,7 +276,9 @@
     <module>maven-ounit-plugin</module>
     <module>ounit-test-executor</module>
     <module>wicket-extension-opaque</module>
+    <module>ounit-service</module>
     <module>ounit-server</module>
+    <module>ounit-server-standalone</module>
     <module>ounit-selenium</module>
     <module>questions</module>
   </modules>
