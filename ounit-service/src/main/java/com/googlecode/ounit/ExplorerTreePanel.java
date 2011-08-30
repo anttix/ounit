@@ -77,7 +77,6 @@ public class ExplorerTreePanel extends Panel {
 		 * If there is no Read Only nodes to display and the number of read-write nodes is
 		 * reasonable, there is no need to waste space on the project treeview.
 		 */
-		setVisible(false);
 		setVisible(tree.getRoNodes().size() > 0
 				|| tree.getRwNodes().size() >= 6);
 	}
