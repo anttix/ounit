@@ -175,17 +175,29 @@ public class GenerateStudentMojo
 
     	try {
 			modelWriter.write(new File(outputDirectory, "pom.xml"), null, model);
-			
+
 			/* Create policy file */
 			/* TODO: Load student policies from a resource file */
-			FileWriter out = new FileWriter(new File(outputDirectory, "tests.policy"));
-			out.write("grant codeBase \"" +
-					  new File(outputDirectory, "bin").toURI() +
-					  "-\" { permission java.security.AllPermission; };\n");	
+			FileWriter out = new FileWriter(new File(outputDirectory, "tests.policy"), true);
+			
+			//out.write("grant codeBase \"" +
+			//		  new File(outputDirectory, "bin").toURI() +
+			//		  "-\" { permission java.security.AllPermission; };\n");
+			
+			// FIXME: We should be using properties from the current build, but
+			//        unfortunately they can not be properly passed to java command line
+			//        so the only viable solution would be to create a new mojo
+			//        that generates this file and attach it to a pre-test phase.
+			
 			out.write("grant codeBase \"" +
 					  session.getLocalRepository().getUrl() +
 					  "-\" { permission java.security.AllPermission; };\n");
-			out.close();			
+			out.write("grant codeBase \"file:${user.home}/.m2/repository/-\"" +
+			  " { permission java.security.AllPermission; };\n");
+			out.write("grant codeBase \"file:${user.dir}/bin/-\"" +
+					  " { permission java.security.AllPermission; };\n");
+			
+			out.close();		
 		} catch (IOException e) {
 			throw new MojoExecutionException("Failed to generate student pom.xml", e);
 		}

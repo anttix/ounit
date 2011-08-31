@@ -165,7 +165,7 @@
              <printSummary>false</printSummary>
              <skip>false</skip>
              <argLine>
-               -Djava.security.manager -Djava.security.policy=${basedir}/tests.policy
+               -Djava.security.manager -Djava.security.policy=tests.policy
              </argLine>
             </configuration>
           </execution>
