@@ -65,8 +65,13 @@
                 <printSummary>false</printSummary>
                 <forkMode>once</forkMode>
                 <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+                <!--
+                     Note the backslash in front of basedir. This file is filtered
+                     by the build so any property that needs to point to the runtime
+                     environment MUST be escaped.
+                -->
                 <argLine>
-                  -Djava.security.manager -Djava.security.policy=${basedir}/tests.policy
+                  -Djava.security.manager -Djava.security.policy=\${basedir}/tests.policy
                 </argLine>
               </configuration>
             </plugin>
@@ -78,7 +83,7 @@
                 <forkMode>once</forkMode>
                 <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
                 <argLine>
-                  -Djava.security.manager -Djava.security.policy=${basedir}/tests.policy
+                  -Djava.security.manager -Djava.security.policy=\${basedir}/tests.policy
                 </argLine>
               </configuration>
             </plugin>
