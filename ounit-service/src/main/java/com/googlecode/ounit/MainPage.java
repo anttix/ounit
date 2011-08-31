@@ -172,9 +172,23 @@ public class MainPage extends BasePage {
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
-		
+
+		response.renderJavaScriptReference(new PackageResourceReference(
+				MainPage.class, "jquery/jquery.min.js")); // 1.5
+		response.renderJavaScriptReference(new PackageResourceReference(
+				MainPage.class, "jquery/jquery-ui.min.js")); // 1.8
 		response.renderJavaScriptReference(new PackageResourceReference(
 				MainPage.class, "codemirror/codemirror-compressed.js"));
+		
+		/*
+		 * FIXME: Add images and refecence them somehow so we can use these files directly
+		 *        not from google API-s
+		 * 
+		response.renderCSSReference(new PackageResourceReference(
+				MainPage.class, "jquery/jquery-ui.css")); // 1.8
+				*/
+		response.renderCSSReference("//ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
+
 		response.renderCSSReference(new PackageResourceReference(
 				MainPage.class, "codemirror/codemirror.css"));
 		response.renderCSSReference(new PackageResourceReference(
