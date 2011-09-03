@@ -148,7 +148,7 @@ public class OunitService implements OpaqueService {
 
 		/* Start new engine session */
 		OunitSession context = newSession(questionID, questionVersion,
-				questionBaseURL, "kala", initialParamNames, initialParamValues,
+				questionBaseURL, initialParamNames, initialParamValues,
 				cachedResources);
 		
 		/* Do not allow more than one thread to mess with a single session */
@@ -209,9 +209,8 @@ public class OunitService implements OpaqueService {
 	 */
 	protected OunitSession newSession(String questionID,
 			String questionVersion, String questionBaseURL,
-			String questionRevision, String[] initialParamNames,
-			String[] initialParamValues, String[] cachedResources)
-			throws OpaqueException {
+			String[] initialParamNames, String[] initialParamValues,
+			String[] cachedResources) throws OpaqueException {
 
 		OunitQuestion question = new OunitQuestion(questionID, questionVersion, questionBaseURL);
 		EngineSession session = new EngineSession();
