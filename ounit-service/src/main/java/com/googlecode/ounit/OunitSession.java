@@ -24,10 +24,15 @@ package com.googlecode.ounit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import org.apache.wicket.extensions.protocol.opaque.OpaqueSession;
+
+import com.googlecode.ounit.executor.OunitExecutionRequest;
+import com.googlecode.ounit.executor.OunitResult;
+import com.googlecode.ounit.executor.OunitTask;
 import com.googlecode.ounit.opaque.OpaqueException;
 import com.googlecode.ounit.opaque.Results;
 import com.googlecode.ounit.opaque.Score;
@@ -47,25 +52,36 @@ public class OunitSession extends OpaqueSession {
 	// TODO: Make this configurable
 	public static final String WORKDIR = "/tmp/ounit-work";
 	
-	private transient org.slf4j.Logger log;
+	private transient org.slf4j.Logger _log;
 	private org.slf4j.Logger getLog() {
-		if(log == null)
-			log = org.slf4j.LoggerFactory.getLogger(this.getClass());
+		if(_log == null)
+			_log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 		
-		return log;
+		return _log;
 	}
 
-	private File projDir;	
+	private File qDir;
+	private File projDir;
 	private List<String> editFiles;
+	private boolean prepared;
 	
-	public OunitSession(File projDir, String[] initialParamNames,
+	public OunitSession(File qDir, File projDir, String[] initialParamNames,
 			String[] initialParamValues) throws OpaqueException {
 		super(initialParamNames, initialParamValues);
+		this.qDir = qDir;
 		this.projDir = projDir;
 	}
 	
 	public static OunitSession get() {
 		return (OunitSession)OpaqueSession.get();
+	}
+	
+	public File getQDir() {
+		return qDir;
+	}
+	
+	public void setqDir(File qDir) {
+		this.qDir = qDir;
 	}
 	
 	public File getProjDir() {
@@ -92,6 +108,11 @@ public class OunitSession extends OpaqueSession {
 
 	public ProjectTree getTree() {
 		final File srcDir = new File(projDir, SRCDIR);
+		if(!srcDir.isDirectory()) {
+			getLog().warn("Project directory {} does not exist. Stale session?", projDir);
+			throw new RuntimeException("Project directory does not exist. Stale session?");
+		}
+		
 		if(tree == null) {
 			getLog().debug("Loading tree model from {}", srcDir);
 		
@@ -137,7 +158,7 @@ public class OunitSession extends OpaqueSession {
 	public double getScore() {
 		try {
 			double s = Double.parseDouble((String) getMarksProps().get(DEFAULT_PROPERTY));
-			log.debug("setScore({})", s);
+			getLog().debug("setScore({})", s);
 			setScore(s);
 		} catch (Exception e) {
 			setScore(0);
@@ -159,7 +180,7 @@ public class OunitSession extends OpaqueSession {
 			}
 			
 			for(Score s: rv.getScores()) {
-				log.debug("Score axis '{}' = {}",
+				getLog().debug("Score axis '{}' = {}",
 						new Object[] { s.getAxis(), s.getMarks() } );
 			}
 
@@ -171,10 +192,133 @@ public class OunitSession extends OpaqueSession {
 
 	private Properties getMarksProps() throws Exception {
 		File f = new File(projDir, MARKS_FILE);
-		log.debug("Loading marks from {}", f);
+		getLog().debug("Loading marks from {}", f);
 		Properties p = new Properties();
 		p.load(new FileInputStream(f));
 		return p;
 	}
 
+	/**
+	 * Load and decode properties from student POM.
+	 * 
+	 * @throws OpaqueException
+	 */
+	public void loadModelProps() throws OpaqueException {
+		Properties modelProps = OunitService.getModelProperties(projDir);
+	
+		Object marks = modelProps.get(MARKS_PROPERTY);
+		if (marks != null) {
+			getLog().debug("Found " + MARKS_PROPERTY + " = {} in POM", marks);
+			setMaxMarks(Integer.parseInt((String) marks));
+		}
+		String tmp = (String) modelProps.get(RWFILES_PROPERTY);
+		if (tmp == null)
+			throw new OpaqueException(
+					RWFILES_PROPERTY + " missing from student pom.xml");
+		List<String> editFiles = new ArrayList<String>();
+		for (String f : tmp.split("\n"))
+			editFiles.add(f);
+	
+		getLog().debug("Editable files loaded from POM: {}", editFiles);		
+		setEditFiles(editFiles);
+	}
+
+	public boolean isPrepared() {
+		return prepared;
+	}
+
+	/**
+	 * Prepare question (generate student sources and POM)
+	 * 
+	 * @return
+	 */
+	public void prepare() {
+		if(prepared)
+			throw new RuntimeException("Session already prepared");
+
+		OunitTask task = startPrepare();
+		OunitResult r = OunitService.waitForTask(task);
+		
+		String errstr = "Failed to prepare question";
+		try {
+			if(r.hasErrors()) {
+				getLog().warn(errstr, r.getErrors());
+				throw new Exception(errstr + ": " + r.getErrors());
+			} else {
+				loadModelProps();
+			}
+		} catch(Exception e) {
+			deleteDirectory(getProjDir());
+			throw new RuntimeException(e);
+		}
+		
+		prepared = true;
+	}
+	
+	/**
+	 * Request a Maven build to prepare the question.
+	 * 
+	 * @return
+	 */
+	private OunitTask startPrepare() {
+		getLog().debug("Preparation phase of session {} started", getEngineSessionId());
+		
+		if(projDir.isDirectory())
+			throw new RuntimeException("Directory " + projDir + " already exists");
+		projDir.mkdirs();
+		
+		getLog().debug("Preparing question from {} to {}",
+					new Object[] { qDir, projDir });
+			
+		OunitTask task = OunitService.scheduleTask(new OunitExecutionRequest()
+			.setBaseDirectory(qDir)
+			.setOutputDirectory(projDir.getAbsolutePath())
+			.setLogFile(new File(projDir, PREPARE_LOG)));
+			
+		return task;
+	}
+
+	/**
+	 * Execute a build in project directory.
+	 * 
+	 */
+	public void build() {
+		// TODO
+	}
+	
+	/**
+	 * Request a maven build
+	 * @return
+	 */
+	public OunitTask startBuild() {
+		getLog().debug("Build of session {} started", getEngineSessionId());
+		
+		if(!projDir.isDirectory()) throw new RuntimeException("Attempted to compile a stale session");
+		
+		OunitTask task = OunitService.scheduleTask(new OunitExecutionRequest()
+			.setBaseDirectory(projDir)
+			.setLogFile(new File(projDir, BUILD_LOG)));
+		
+		return task;
+	}
+	
+	/**
+	 * Helper function to recursively delete a directory.
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static boolean deleteDirectory(File path) {
+		if (path.exists()) {
+			File[] files = path.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].isDirectory()) {
+					deleteDirectory(files[i]);
+				} else {
+					files[i].delete();
+				}
+			}
+		}
+		return (path.delete());
+	}
 }

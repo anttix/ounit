@@ -59,6 +59,10 @@ public class BasePage extends OpaquePage {
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
 		
+		response.renderJavaScriptReference(new PackageResourceReference(
+				MainPage.class, "jquery/jquery.min.js")); // 1.5
+		response.renderJavaScript("jQuery.noConflict();", "jQnoConflict");
+		
 		response.renderCSSReference(new PackageResourceReference(
 				MainPage.class, "ounit.css"));
 	}

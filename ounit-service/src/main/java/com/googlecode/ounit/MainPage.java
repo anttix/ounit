@@ -26,7 +26,6 @@ import java.io.FileWriter;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
-import org.apache.wicket.extensions.protocol.opaque.OpaqueReturn;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
@@ -132,12 +131,12 @@ public class MainPage extends BasePage {
 			}
 
 			@Override
-			public void onSubmit() {
-				OunitTask task = OunitService.requestBuild(
-						OpaqueReturn.get().getEngineSessionId());
-				OunitResult r = OunitService.waitForTask(task);
-				
+			public void onSubmit() { 
 				OunitSession sess = getOunitSession();
+				OunitTask task = sess.startBuild();
+				OunitResult r = OunitService.waitForTask(task);
+
+				// FIXME: Refactor this logic to OunitSession
 				if(r.hasErrors()) {
 					// TODO: This logic should be somewhere else
 					File rf = getOunitSession().getResultsFile();
@@ -173,8 +172,6 @@ public class MainPage extends BasePage {
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
 
-		response.renderJavaScriptReference(new PackageResourceReference(
-				MainPage.class, "jquery/jquery.min.js")); // 1.5
 		response.renderJavaScriptReference(new PackageResourceReference(
 				MainPage.class, "jquery/jquery-ui.min.js")); // 1.8
 		response.renderJavaScriptReference(new PackageResourceReference(

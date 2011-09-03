@@ -25,11 +25,9 @@ import static com.googlecode.ounit.opaque.OpaqueUtils.*;
 import static com.googlecode.ounit.OunitSession.*;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -147,48 +145,31 @@ public class OunitService implements OpaqueService {
 		log.debug("start({}, {}, {}, {}, {}, {})", new Object[] { questionID,
 				questionVersion, questionBaseURL, initialParamNames,
 				initialParamValues, cachedResources });
-
-		/* New request. Execute question preparation phase. */
-		String errstr = "Failed to prepare question " + questionID + "-" + questionVersion;
-		EngineSession session = new EngineSession();
-		File outDir = new File(sessDir, session.getId());
-		outDir.mkdirs();
-
-		OunitSession context = new OunitSession(outDir, initialParamNames, initialParamValues);
-		context.setEngineSessionId(session.getId());		
-		OunitResult r;
+		
+		/* Try to fetch the question to make sure it exists */
+		String errstr = "Failed to fetch question " + questionID + "-" + questionVersion;
+		File qDir;
 		try {
-			File srcDir = fetchQuestion(questionID, questionVersion, questionBaseURL);
-			log.debug("Preparing question from {} to {}",
-					new Object[] { srcDir, outDir });
-			
-			OunitTask task = scheduleTask(new OunitExecutionRequest()
-				.setBaseDirectory(srcDir)
-				.setOutputDirectory(outDir.getAbsolutePath())
-				.setLogFile(new File(outDir, PREPARE_LOG)));
-			r = waitForTask(task);
+			qDir = fetchQuestion(questionID, questionVersion, questionBaseURL);
+			log.debug("Found question in {}", qDir);
 		} catch (Exception e) {
-			deleteDirectory(outDir);
 			log.warn(errstr, e);
 			throw new OpaqueException(errstr, e.getCause());
 		}
 		
-		if(r.hasErrors()) {
-			deleteDirectory(outDir);
-			throw new OpaqueException(errstr + ": " + r.getErrors());
+		/* Start new engine session */
+		OunitSession context = newSession(qDir, initialParamNames,
+				initialParamValues, cachedResources);
+		
+		/* Do not allow more than one thread to mess with a single session */
+		EngineSession session = sessions.get(context.getEngineSessionId());
+		assert session != null : "Engine session was not set up properly";
+		
+		synchronized(session) {
+			StartReturn rv = new StartReturn(context.getEngineSessionId());
+			renderer.doPage(context, rv);
+			return rv;
 		}
-		
-		handleModelProps(context, outDir);
-
-		log.debug("Successfully set up new engine session: {}", session.getId());
-		sessions.put(session.getId(), session);
-		
-		session.ounitSession = context;
-		context.setCachedResources(Arrays.asList(cachedResources));
-		StartReturn rv = new StartReturn(session.getId());
-		renderer.doPage(context, rv);
-		
-		return rv;
 	}
 
 	public ProcessReturn process(String questionSession, String[] names,
@@ -204,81 +185,61 @@ public class OunitService implements OpaqueService {
 			/* LMS should now request a new question session and replay all user responses */
 		}
 		
-		OunitSession context = session.ounitSession;
-		context.newPostParameters(names, values);
-		ProcessReturn rv = new ProcessReturn();
-		renderer.doPage(context, rv);
-		if (context.isClosed())
-			rv.setResults(context.getResults());
+		synchronized(session) {
+			OunitSession context = session.ounitSession;
+			context.newPostParameters(names, values);
+			ProcessReturn rv = new ProcessReturn();
+			renderer.doPage(context, rv);
+			if (context.isClosed())
+				rv.setResults(context.getResults());
 
-		return rv;
+			return rv;
+		}
 	}
 
 	public void stop(String questionSession) throws OpaqueException {
 		log.debug("stop({})", questionSession);
-		deleteDirectory(new File(sessDir, questionSession));
-		sessions.remove(questionSession);
+		EngineSession session = sessions.get(questionSession);
+		if(session == null) {
+			log.warn("Detected an attempt to stop a stale session {}", questionSession);
+			return;
+		}
+
+		synchronized(session) {
+			deleteDirectory(new File(sessDir, questionSession));
+			sessions.remove(questionSession);
+		}
 	}
-	
 	
 	/* End web service methods */
 	
+
+	/**
+	 * Set up a new engine session.
+	 */
+	protected OunitSession newSession(File qDir, String[] initialParamNames,
+			String[] initialParamValues, String[] cachedResources)
+			throws OpaqueException {
+
+		EngineSession session = new EngineSession();
+		File outDir = new File(sessDir, session.getId());
+		OunitSession context = new OunitSession(qDir, outDir, initialParamNames, initialParamValues);
+		context.setEngineSessionId(session.getId());
+		log.debug("Successfully set up new engine session: {}", session.getId());
+		sessions.put(session.getId(), session);
+		session.ounitSession = context;
+		context.setCachedResources(Arrays.asList(cachedResources));
+		
+		return context;
+	}
+
 	/**
 	 * Fetch question from Question Database.
 	 */
-	private File fetchQuestion(String questionID, String questionVersion, String questionBaseURL) {
+	protected File fetchQuestion(String questionID, String questionVersion, String questionBaseURL) {
 		// TODO: Make it configurable etc.
 		//return new File("/srv/ounit/questions/" + questionID);
 		return new File("/home/anttix/products/ounit/questions/" + questionID);
-	}
-	
-	private static boolean deleteDirectory(File path) {
-		if (path.exists()) {
-			File[] files = path.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].isDirectory()) {
-					deleteDirectory(files[i]);
-				} else {
-					files[i].delete();
-				}
-			}
-		}
-		return (path.delete());
-	}
-	
-	private void handleModelProps(OunitSession context, File outDir)
-			throws OpaqueException {
-		Properties modelProps = getModelProperties(outDir);
-		
-		Object marks = modelProps.get(MARKS_PROPERTY);
-		if (marks != null) {
-			log.debug("Found " + MARKS_PROPERTY + " = {} in POM", marks);
-			context.setMaxMarks(Integer.parseInt((String) marks));
-		}
-		String tmp = (String) modelProps.get(RWFILES_PROPERTY);
-		if (tmp == null)
-			throw new OpaqueException(
-					RWFILES_PROPERTY + " missing from student pom.xml");
-		List<String> editFiles = new ArrayList<String>();
-		for (String f : tmp.split("\n"))
-			editFiles.add(f);
-		
-		log.debug("Editable files loaded from POM: {}", editFiles);		
-		context.setEditFiles(editFiles);
-	}
-
-	public static OunitTask requestBuild(String questionSession) {
-		final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OunitService.class);
-		log.debug("Build of session {} started", questionSession);
-		
-		File dir = new File(sessDir, questionSession);
-		if(!dir.isDirectory()) throw new RuntimeException("Attempted to compile a stale session");
-		
-		OunitTask task = scheduleTask(new OunitExecutionRequest()
-			.setBaseDirectory(dir)
-			.setLogFile(new File(dir, BUILD_LOG)));
-		
-		return task;
 	}
 	
 	public static OunitResult waitForTask(OunitTask task)
@@ -297,11 +258,11 @@ public class OunitService implements OpaqueService {
 	/* Executor access must be synchronized */
 	static OunitExecutor oe = null;
 	
-	private static synchronized OunitTask scheduleTask(OunitExecutionRequest r) {
+	public static synchronized OunitTask scheduleTask(OunitExecutionRequest r) {
 		return getExecutor().submit(r);
 	}
 	
-	private static synchronized Properties getModelProperties(File outDir)
+	public static synchronized Properties getModelProperties(File outDir)
 			throws OpaqueException {
 		
 		try {

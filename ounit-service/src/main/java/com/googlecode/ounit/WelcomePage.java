@@ -21,19 +21,30 @@
 
 package com.googlecode.ounit;
 
-import org.apache.wicket.Page;
-import org.apache.wicket.RuntimeConfigurationType;
-import org.apache.wicket.extensions.protocol.opaque.OpaqueApplication;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
-public class OunitApplication extends OpaqueApplication {
-	@Override
-	public Class<? extends Page> getHomePage() {
-		return WelcomePage.class;
-	}
-	
-	@Override
-	public RuntimeConfigurationType getConfigurationType() {
-		return RuntimeConfigurationType.DEPLOYMENT;
-	}
+public class WelcomePage extends BasePage {
+	private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
+	private static final long serialVersionUID = 1L;
 
+	public WelcomePage(PageParameters parameters) {
+		super(parameters);
+		
+		log.debug("WelcomePage()");
+		
+		//mainForm.add(new Label("marks"));
+		//mainForm.add(new Label("maxMarks"));
+
+		mainForm.add(new Button("start") {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void onSubmit() {
+				OunitSession sess = getOunitSession();
+				sess.prepare();
+		        setResponsePage(MainPage.class); 
+			}
+		});
+	}	
 }
