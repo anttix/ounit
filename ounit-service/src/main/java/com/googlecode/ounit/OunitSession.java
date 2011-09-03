@@ -65,9 +65,9 @@ public class OunitSession extends OpaqueSession {
 	private OunitQuestion question;
 	private boolean prepared;
 
-public OunitSession(File projDir, OunitQuestion question,
-			String[] initialParamNames,
-			String[] initialParamValues) throws OpaqueException {
+	public OunitSession(File projDir, OunitQuestion question,
+			String[] initialParamNames, String[] initialParamValues)
+			throws OpaqueException {
 		super(initialParamNames, initialParamValues);
 		this.projDir = projDir;
 		this.question = question;
@@ -77,8 +77,8 @@ public OunitSession(File projDir, OunitQuestion question,
 		return (OunitSession)OpaqueSession.get();
 	}
 	
-	public File getQDir() {
-		return question.getSrcDir();
+	public OunitQuestion getQuestion() {
+		return question;
 	}
 	
 	public File getProjDir() {
@@ -97,6 +97,8 @@ public OunitSession(File projDir, OunitQuestion question,
 		this.editFiles = editFiles;
 	}
 	
+	/* Sent to LMS by WelcomePage so question revision will be 
+	 * included in replays */ 
 	public String getRevision() {
 		return question.getRevision();
 	}
@@ -268,7 +270,7 @@ public OunitSession(File projDir, OunitQuestion question,
 	private OunitTask startPrepare() {
 		getLog().debug("Preparation phase of session {} started", getEngineSessionId());
 		
-		File qDir = getQDir();
+		File qDir = question.getSrcDir();
 		getLog().debug("Found question in {}", qDir);
 		
 		if(projDir.isDirectory())
