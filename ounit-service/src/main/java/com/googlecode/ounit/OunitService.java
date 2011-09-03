@@ -27,6 +27,7 @@ import static com.googlecode.ounit.OunitSession.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,8 @@ public class OunitService implements OpaqueService {
 	private static final org.slf4j.Logger slog = org.slf4j.LoggerFactory
 			.getLogger(OunitService.class);
 	
-	Map<String, EngineSession> sessions = new HashMap<String, EngineSession>();
+	Map<String, EngineSession> sessions = 
+		Collections.synchronizedMap(new HashMap<String, EngineSession>());
 	PageRunner renderer;
 	
 	/* Temporary directory to hold user files (aka sessions) */

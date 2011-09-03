@@ -22,6 +22,7 @@
 package com.googlecode.ounit.opaque;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class MockOpaqueService implements OpaqueService {
 		super();
 		debug("MockOpaqueService()");
 		
-		sessions = new HashMap<String, MockSession>(1024);
+		sessions = Collections.synchronizedMap(new HashMap<String, MockSession>(1024));
 		engineResources = new ArrayList<Resource>(5);
 		
 		/* 1x1 GIF image with black foreground - 35bytes of data */
