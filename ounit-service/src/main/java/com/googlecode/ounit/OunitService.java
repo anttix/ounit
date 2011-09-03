@@ -110,8 +110,8 @@ public class OunitService implements OpaqueService {
 		if(questionID == null || questionVersion == null)
 			throw new OpaqueException("questionID and questionVersion must be present");
 		
-		File srcDir = fetchQuestion(questionID, questionVersion, questionBaseURL);
-		Properties qprops = getModelProperties(srcDir);
+		OunitQuestion question = new OunitQuestion(questionID, questionVersion, questionBaseURL);
+		Properties qprops = getModelProperties(question.getSrcDir());
 		
 		int maxScore;
 		try {
@@ -145,21 +145,11 @@ public class OunitService implements OpaqueService {
 		log.debug("start({}, {}, {}, {}, {}, {})", new Object[] { questionID,
 				questionVersion, questionBaseURL, initialParamNames,
 				initialParamValues, cachedResources });
-		
-		/* Try to fetch the question to make sure it exists */
-		String errstr = "Failed to fetch question " + questionID + "-" + questionVersion;
-		File qDir;
-		try {
-			qDir = fetchQuestion(questionID, questionVersion, questionBaseURL);
-			log.debug("Found question in {}", qDir);
-		} catch (Exception e) {
-			log.warn(errstr, e);
-			throw new OpaqueException(errstr, e.getCause());
-		}
-		
+
 		/* Start new engine session */
-		OunitSession context = newSession(qDir, initialParamNames,
-				initialParamValues, cachedResources);
+		OunitSession context = newSession(questionID, questionVersion,
+				questionBaseURL, "kala", initialParamNames, initialParamValues,
+				cachedResources);
 		
 		/* Do not allow more than one thread to mess with a single session */
 		EngineSession session = sessions.get(context.getEngineSessionId());
@@ -217,13 +207,17 @@ public class OunitService implements OpaqueService {
 	/**
 	 * Set up a new engine session.
 	 */
-	protected OunitSession newSession(File qDir, String[] initialParamNames,
+	protected OunitSession newSession(String questionID,
+			String questionVersion, String questionBaseURL,
+			String questionRevision, String[] initialParamNames,
 			String[] initialParamValues, String[] cachedResources)
 			throws OpaqueException {
 
+		OunitQuestion question = new OunitQuestion(questionID, questionVersion, questionBaseURL);
 		EngineSession session = new EngineSession();
 		File outDir = new File(sessDir, session.getId());
-		OunitSession context = new OunitSession(qDir, outDir, initialParamNames, initialParamValues);
+		OunitSession context = new OunitSession(outDir, question,
+				initialParamNames, initialParamValues);
 		context.setEngineSessionId(session.getId());
 		log.debug("Successfully set up new engine session: {}", session.getId());
 		sessions.put(session.getId(), session);
@@ -231,15 +225,6 @@ public class OunitService implements OpaqueService {
 		context.setCachedResources(Arrays.asList(cachedResources));
 		
 		return context;
-	}
-
-	/**
-	 * Fetch question from Question Database.
-	 */
-	protected File fetchQuestion(String questionID, String questionVersion, String questionBaseURL) {
-		// TODO: Make it configurable etc.
-		//return new File("/srv/ounit/questions/" + questionID);
-		return new File("/home/anttix/products/ounit/questions/" + questionID);
 	}
 	
 	public static OunitResult waitForTask(OunitTask task)

@@ -21,8 +21,8 @@
 
 package com.googlecode.ounit;
 
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 public class WelcomePage extends BasePage {
@@ -34,8 +34,7 @@ public class WelcomePage extends BasePage {
 		
 		log.debug("WelcomePage()");
 		
-		//mainForm.add(new Label("marks"));
-		//mainForm.add(new Label("maxMarks"));
+		mainForm.add(new HiddenField<String>("revision"));
 
 		mainForm.add(new Button("start") {
 			private static final long serialVersionUID = 1L;

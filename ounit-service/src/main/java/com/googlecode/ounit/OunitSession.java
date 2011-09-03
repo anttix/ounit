@@ -60,28 +60,25 @@ public class OunitSession extends OpaqueSession {
 		return _log;
 	}
 
-	private File qDir;
 	private File projDir;
 	private List<String> editFiles;
+	private OunitQuestion question;
 	private boolean prepared;
-	
-	public OunitSession(File qDir, File projDir, String[] initialParamNames,
+
+public OunitSession(File projDir, OunitQuestion question,
+			String[] initialParamNames,
 			String[] initialParamValues) throws OpaqueException {
 		super(initialParamNames, initialParamValues);
-		this.qDir = qDir;
 		this.projDir = projDir;
+		this.question = question;
 	}
-	
+
 	public static OunitSession get() {
 		return (OunitSession)OpaqueSession.get();
 	}
 	
 	public File getQDir() {
-		return qDir;
-	}
-	
-	public void setqDir(File qDir) {
-		this.qDir = qDir;
+		return question.getSrcDir();
 	}
 	
 	public File getProjDir() {
@@ -98,6 +95,14 @@ public class OunitSession extends OpaqueSession {
 	
 	public void setEditFiles(List<String> editFiles) {
 		this.editFiles = editFiles;
+	}
+	
+	public String getRevision() {
+		return question.getRevision();
+	}
+
+	public void setRevision(String revision) {
+		question.setRevision(revision);
 	}
 
 	/* These read-only properties can be easily recreated on-fly thus there is no
@@ -262,6 +267,9 @@ public class OunitSession extends OpaqueSession {
 	 */
 	private OunitTask startPrepare() {
 		getLog().debug("Preparation phase of session {} started", getEngineSessionId());
+		
+		File qDir = getQDir();
+		getLog().debug("Found question in {}", qDir);
 		
 		if(projDir.isDirectory())
 			throw new RuntimeException("Directory " + projDir + " already exists");
