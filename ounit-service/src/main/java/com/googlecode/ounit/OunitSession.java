@@ -21,6 +21,9 @@
 
 package com.googlecode.ounit;
 
+import static com.googlecode.ounit.OunitConfig.*;
+import static com.googlecode.ounit.OunitUtil.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -38,20 +41,6 @@ import com.googlecode.ounit.opaque.Results;
 import com.googlecode.ounit.opaque.Score;
 
 public class OunitSession extends OpaqueSession {
-	public static final String DESCRIPTION_FILE = "description/index.html";
-	public static final String RESULTS_FILE     = "target/ounit-reports/results.html";
-	public static final String MARKS_FILE       = "target/ounit-reports/marks.properties";
-	public static final String DEFAULT_PROPERTY = "default";
-	public static final String MARKS_PROPERTY   = "ounit.marks";
-	public static final String TITLE_PROPERTY   = "ounit.title";
-	public static final String RWFILES_PROPERTY = "ounit.editfiles";
-	public static final String PREPARE_LOG      = "prepare.log";
-	public static final String BUILD_LOG        = "build.log";
-	public static final String SRCDIR           = "src";
-	
-	// TODO: Make this configurable
-	public static final String WORKDIR = "/tmp/ounit-work";
-	
 	private transient org.slf4j.Logger _log;
 	private org.slf4j.Logger getLog() {
 		if(_log == null)
@@ -310,25 +299,5 @@ public class OunitSession extends OpaqueSession {
 			.setLogFile(new File(projDir, BUILD_LOG)));
 		
 		return task;
-	}
-	
-	/**
-	 * Helper function to recursively delete a directory.
-	 * 
-	 * @param path
-	 * @return
-	 */
-	public static boolean deleteDirectory(File path) {
-		if (path.exists()) {
-			File[] files = path.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].isDirectory()) {
-					deleteDirectory(files[i]);
-				} else {
-					files[i].delete();
-				}
-			}
-		}
-		return (path.delete());
 	}
 }

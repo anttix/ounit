@@ -23,39 +23,24 @@ package com.googlecode.ounit;
 
 import java.io.File;
 
-public interface OunitQuestion {
-
-	public abstract String getId();
-
-	public abstract String getVersion();
-	
+public class OunitUtil {
 	/**
-	 * Switch to another question version.
-	 * Please note that this will change the source
-	 * directory.
+	 * Helper function to recursively delete a directory.
 	 * 
-	 * @param version new version string eg. "1.0"
+	 * @param path
+	 * @return
 	 */
-	public abstract void setVersion(String version);
-
-	public abstract String getBaseURL();
-
-	public abstract String getRevision();
-
-	/**
-	 * Switch to another question revision.
-	 * Please note that this will change the source
-	 * directory.
-	 * 
-	 * @param revision new revision string
-	 */
-	public abstract void setRevision(String revision);
-
-	/**
-	 * Find a directory with question sources.
-	 * It may point to a cached version.
-	 *  
-	 * @return an object pointing to source directory
-	 */
-	public abstract File getSrcDir();
+	public static boolean deleteDirectory(File path) {
+		if (path.exists()) {
+			File[] files = path.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].isDirectory()) {
+					deleteDirectory(files[i]);
+				} else {
+					files[i].delete();
+				}
+			}
+		}
+		return (path.delete());
+	}
 }

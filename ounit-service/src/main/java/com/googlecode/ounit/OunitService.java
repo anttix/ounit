@@ -22,7 +22,8 @@
 package com.googlecode.ounit;
 
 import static com.googlecode.ounit.opaque.OpaqueUtils.*;
-import static com.googlecode.ounit.OunitSession.*;
+import static com.googlecode.ounit.OunitConfig.*;
+import static com.googlecode.ounit.OunitUtil.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -75,13 +76,15 @@ public class OunitService implements OpaqueService {
 	Map<String, EngineSession> sessions = 
 		Collections.synchronizedMap(new HashMap<String, EngineSession>());
 	PageRunner renderer;
+	QuestionFactory qf;
 	
 	/* Temporary directory to hold user files (aka sessions) */
-	static final File sessDir = new File(WORKDIR);
+	static final File sessDir = new File(WORKDIR, SESSION_DIR);
 		
 	public OunitService() {
 		log.debug("OunitService()");
-		renderer = new PageRunner(new OunitApplication());
+		renderer = new PageRunner(new OunitApplication()); 
+		qf = new DefaultQuestionFactory();
 	}
 	
 	public String getEngineInfo() {
@@ -110,14 +113,14 @@ public class OunitService implements OpaqueService {
 		if(questionID == null || questionVersion == null)
 			throw new OpaqueException("questionID and questionVersion must be present");
 		
-		OunitQuestion question = new OunitQuestion(questionID, questionVersion, questionBaseURL);
+		OunitQuestion question = qf.loadQuestion(questionID, questionVersion, questionBaseURL);
 		Properties qprops = getModelProperties(question.getSrcDir());
 		
 		int maxScore;
 		try {
 			maxScore = Integer.parseInt((String)qprops.get(MARKS_PROPERTY));
 		} catch(Exception e) {
-			maxScore = DEFAULT_MARKS;
+			maxScore = OunitSession.DEFAULT_MARKS;
 		}
 		
 		QuestionInfo rv = new QuestionInfo();
@@ -212,7 +215,7 @@ public class OunitService implements OpaqueService {
 			String[] initialParamNames, String[] initialParamValues,
 			String[] cachedResources) throws OpaqueException {
 
-		OunitQuestion question = new OunitQuestion(questionID, questionVersion, questionBaseURL);
+		OunitQuestion question = qf.loadQuestion(questionID, questionVersion, questionBaseURL);
 		EngineSession session = new EngineSession();
 		File outDir = new File(sessDir, session.getId());
 		OunitSession context = new OunitSession(outDir, question,
