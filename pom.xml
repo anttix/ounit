@@ -102,6 +102,13 @@
     <jgit.version>1.0.0.201106090707-r</jgit.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>jgit-repository</id>
+      <url>http://download.eclipse.org/jgit/maven</url>
+    </repository>
+  </repositories>
+
   <prerequisites>
     <maven>2.2</maven>
   </prerequisites>
@@ -180,6 +187,13 @@
         <groupId>${project.groupId}</groupId>
         <artifactId>wicket-extension-opaque</artifactId>
         <version>${wicket.version}</version>
+      </dependency>
+      
+      <!-- JGit -->
+      <dependency>
+        <groupId>org.eclipse.jgit</groupId>
+        <artifactId>org.eclipse.jgit</artifactId>
+        <version>${jgit.version}</version>
       </dependency>
 
       <!-- JUnit -->    
