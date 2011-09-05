@@ -194,7 +194,7 @@ public class OunitService implements OpaqueService {
 		log.debug("stop({})", questionSession);
 		EngineSession session = sessions.get(questionSession);
 		if(session == null) {
-			log.warn("Detected an attempt to stop a stale session {}", questionSession);
+			// Stale session. Do nothing!
 			return;
 		}
 
