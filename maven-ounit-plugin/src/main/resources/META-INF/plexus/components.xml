@@ -42,7 +42,7 @@
               executions in here if you want anything extra to be run-->          
 
           <generate-sources>
-            com.googlecode.ounit:maven-ounit-plugin:generate-student
+            com.googlecode.ounit:maven-ounit-plugin:prepare
           </generate-sources>
 
 <!--

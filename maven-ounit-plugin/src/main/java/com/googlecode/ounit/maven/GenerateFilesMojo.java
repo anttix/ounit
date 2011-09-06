@@ -22,8 +22,11 @@ package com.googlecode.ounit.maven;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,7 +43,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Generate student POM and other files needed by student project
+ * Generate student POM and other files to destination directory
  *
  * @goal generate-files
  */
@@ -85,6 +88,14 @@ public class GenerateFilesMojo
 	 * @required
 	 */
 	protected ModelWriter modelWriter;
+	
+	/**
+	 * What files to prepare for downloading.
+	 * Can be src, all or none
+	 * 
+	 * @parameter expression="${ounit.download}"
+	 */
+	protected String download;
 	
     public void execute()
         throws MojoExecutionException
@@ -193,8 +204,25 @@ public class GenerateFilesMojo
 			throw new MojoExecutionException("Failed to generate student pom.xml", e);
 		}
 		
-		// Classes have been compiled thus generated sources are not needed
-		deleteDirectory(new File(outputDirectory, "generated-sources"));
+		// Generate assembly descriptor for downloading files
+		if(download != null && !download.equals("none")) {
+			File f = new File(outputDirectory, "assembly.xml");
+			if(!f.exists()) {
+				InputStream is = this.getClass().getResourceAsStream(
+						"/assemblies/ounit-" + download + ".xml");
+				if(is == null) {
+					throw new MojoExecutionException("Invalid value " + download
+							+ " for ounit.download");
+				}
+				try {
+					OutputStream os = new FileOutputStream(f);
+					copyStream(is, os);
+				} catch(Exception e) {
+					throw new MojoExecutionException(
+							"Error copying assembly descriptor", e);
+				}
+			}
+		}
     }
     
 	private String listFiles(File dir, File baseDir) {
@@ -219,18 +247,22 @@ public class GenerateFilesMojo
 		
 		return rv.toString();
 	}
-	
-	public static boolean deleteDirectory(File path) {
-		if (path.exists()) {
-			File[] files = path.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				if (files[i].isDirectory()) {
-					deleteDirectory(files[i]);
-				} else {
-					files[i].delete();
-				}
+
+	private void copyStream(InputStream src, OutputStream dst)
+			throws IOException {
+		try {
+			byte[] buf = new byte[1024];
+			int len;
+			while ((len = src.read(buf)) > 0) {
+				dst.write(buf, 0, len);
+			}
+		} finally {
+			if (src != null) {
+				src.close();
+			}
+			if (dst != null) {
+				dst.close();
 			}
 		}
-		return (path.delete());
 	}
 }

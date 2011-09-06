@@ -38,6 +38,13 @@
           <execution>
             <goals>
               <goal>
+                com.googlecode.ounit:maven-ounit-plugin:generate-files
+              </goal>
+            </goals>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
                 org.apache.maven.plugins:maven-resources-plugin:copy-resources
               </goal>
             </goals>
@@ -135,7 +142,27 @@
             </goals>
           </execution>
         </executions>
-      </phase>      
+      </phase>   
+      <phase>
+        <id>package</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-assembly-plugin:single
+              </goal>
+            </goals>
+            <configuration>
+              <finalName>download</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+              <descriptors>
+                <descriptor>${project.build.directory}/assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </phase>   
     </phases>
   </lifecycle>
   
