@@ -46,4 +46,18 @@
     <maven>2.2</maven>
   </prerequisites>
 
+  <!-- Skip test phase to save time: we have no student written tests -->
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
 </project>
