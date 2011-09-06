@@ -161,11 +161,13 @@ public class GenerateFilesMojo
         for(Repository r: project.getRepositories()) {
         	if(r.getUrl().startsWith("file://")) continue;
         	if(r.getId().equals("central")) continue;
+        	if(r.getId().startsWith("ounit-dependency-")) continue;
         	model.addRepository(r);
         }        
         for(Repository r: project.getPluginRepositories()) {
         	if(r.getUrl().startsWith("file://")) continue;
         	if(r.getId().equals("central")) continue;
+        	if(r.getId().startsWith("ounit-dependency-")) continue;
         	model.addPluginRepository(r);
         }
         

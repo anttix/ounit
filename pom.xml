@@ -104,7 +104,7 @@
 
   <repositories>
     <repository>
-      <id>jgit-repository</id>
+      <id>ounit-dependency-jgit</id>
       <url>http://download.eclipse.org/jgit/maven</url>
     </repository>
   </repositories>
