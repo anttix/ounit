@@ -42,7 +42,7 @@ import org.apache.maven.project.MavenProject;
 /**
  * Goal which filters sources to output directory
  *
- * @execute lifecycle="prepare-question" phase="test-compile"
+ * @execute lifecycle="prepare-question" phase="package"
  * @goal generate-student
  */
 public class GenerateStudentMojo
