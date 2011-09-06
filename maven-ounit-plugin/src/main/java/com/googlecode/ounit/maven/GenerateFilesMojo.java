@@ -40,12 +40,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * Goal which filters sources to output directory
+ * Generate student POM and other files needed by student project
  *
- * @execute lifecycle="prepare-question" phase="package"
- * @goal generate-student
+ * @goal generate-files
  */
-public class GenerateStudentMojo
+public class GenerateFilesMojo
     extends AbstractMojo
 {
 	/**
@@ -86,14 +85,6 @@ public class GenerateStudentMojo
 	 * @required
 	 */
 	protected ModelWriter modelWriter;
-	
-	/**
-	 * Maven base directory
-	 * 
-	 * @parameter expression="${project}"
-	 * @required @readonly
-	 */
-
 	
     public void execute()
         throws MojoExecutionException
