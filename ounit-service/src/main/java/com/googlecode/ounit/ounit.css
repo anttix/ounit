@@ -38,9 +38,12 @@
 /* .opage .ou-question, .opage .ou-closed-question { float: left; width: 100%; } */
 div.opage { float: left; width: 100% } /* Required for Moodle 2.1+ */
 .opage ul.ou-explorer-tree { padding-left: 2em; }
+.opage .ou-explorer-tree ul { margin-top: 0px; margin-bottom: 0px; }
 .opage .ou-explorer-tree a { color: blue; } 
 /* .ou-buttons input { font-size: large; } */
 .opage div.ou-buttons { margin-top: 3px; }
+.opage div.explorer-buttons { float: right; margin: 1em; }
+.opage div.explorer-buttons a { padding: 0.5em; border: double; }
 
 /* Closed questions go grey */
 div.opage .ou-closed-question .ou-tabpanel,

@@ -28,8 +28,10 @@ import org.apache.wicket.Component;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.PropertyModel;
@@ -121,6 +123,10 @@ public class MainPage extends BasePage {
 				setVisible(tree.isVisible());
 			}
 		});
+
+		// FIXME: We shouldn't access it directly. Must use model.
+		quizPanel.add(new ExternalLink("download", "%%RESOURCES%%"
+				+ OunitSession.get().getDownloadFileName()));
 		
 		mainForm.add(new Button("compile") {
 			private static final long serialVersionUID = 1L;
@@ -136,9 +142,8 @@ public class MainPage extends BasePage {
 				OunitTask task = sess.startBuild();
 				OunitResult r = OunitService.waitForTask(task);
 
-				// FIXME: Refactor this logic to OunitSession
+				// FIXME: Refactor all this logic to OunitSession
 				if(r.hasErrors()) {
-					// TODO: This logic should be somewhere else
 					File rf = getOunitSession().getResultsFile();
 					log.debug("Build failed with errors: {}", r.getErrors());
 					rf.getParentFile().mkdirs();
@@ -152,7 +157,18 @@ public class MainPage extends BasePage {
 						log.warn("Failed to save result", e);
 						throw new RuntimeException(e);
 					}
-				} else {
+				}
+				
+				// Check if student is out of attempts
+				int attempt = sess.getAttempt();
+				int maxAttempts = sess.getMaxAttempts();
+				if(maxAttempts > 0 && attempt > maxAttempts) {
+					sess.setClosed(true);
+					return;
+				}
+				sess.setAttempt(attempt + 1);
+
+				if(!r.hasErrors()) {
 					// Successful build, see if we can get a (partial) grade
 					int marks = sess.getMarks();
 					
@@ -166,6 +182,18 @@ public class MainPage extends BasePage {
 				}
 			}
 		});
+		mainForm.add(new Label("attempt"));
+		mainForm.add(new Label("maxAttempts") {
+			private static final long serialVersionUID = 1L;
+			@Override
+			protected void onConfigure() {
+				super.onConfigure();
+				if(getOunitSession().isClosed()) {
+					setVisible(false);
+				} else {
+					setVisible(getOunitSession().getMaxAttempts() > 0);
+				}
+			}});
 	}
 	
 	@Override

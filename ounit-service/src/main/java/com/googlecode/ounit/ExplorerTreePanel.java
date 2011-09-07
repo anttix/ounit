@@ -78,7 +78,10 @@ public class ExplorerTreePanel extends Panel {
 		 * reasonable, there is no need to waste space on the project treeview.
 		 */
 		setVisible(tree.getRoNodes().size() > 0
-				|| tree.getRwNodes().size() >= 6);
+				|| tree.getRwNodes().size() >= 6
+				|| OunitSession.get().hasDownload());
+		
+		// FIXME: Shouldn't access session directly!
 	}
 
 	private class Rows extends ListView<ProjectTreeNode> {
@@ -109,8 +112,11 @@ public class ExplorerTreePanel extends Panel {
             } else {
             	frag = new TreeFragment("listitem", "leaf");
                 if(node.isReadonly()) {
-                	frag.add(new ExternalLink("link", node.getName(), node.getName())
-                				.add(new SimpleAttributeModifier("target", "_blank")));
+                	// FIXME: Make it work!
+                	frag.add(new Label("link", node.getName()));
+                	
+                	//frag.add(new ExternalLink("link", node.getName(), node.getName())
+                	//			.add(new SimpleAttributeModifier("target", "_blank")));
                 	//AbstractLink link = new ResourceLink<String>("link",
     				//			new ResourceStreamResource(new FileResourceStream(
     				//					node.getPathname())));

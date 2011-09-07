@@ -35,13 +35,16 @@ public class OunitConfig {
 	public static final String DESCRIPTION_FILE     = "description/index.html";
 	public static final String RESULTS_FILE         = "target/ounit-reports/results.html";
 	public static final String MARKS_FILE           = "target/ounit-reports/marks.properties";
+	public static final String DOWNLOAD_FILE		= "download.zip";
 	public static final String DEFAULT_PROPERTY     = "default";
 	public static final String MARKS_PROPERTY       = "ounit.marks";
 	public static final String TITLE_PROPERTY       = "ounit.title";
 	public static final String RWFILES_PROPERTY     = "ounit.editfiles";
+	public static final String ATTEMPTS_PROPERTY    = "ounit.attempts";
 	public static final String PREPARE_LOG          = "prepare.log";
 	public static final String BUILD_LOG            = "build.log";
 	public static final String SRCDIR               = "src";
+	public static final int    DEFAULT_ATTEMPTS		= 3;
 	
 	public static final String SESSION_DIR		    = "sessions";
 	public static final String SRC_CACHE_DIR	    = "src-cache";

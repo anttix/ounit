@@ -27,9 +27,14 @@ import static com.googlecode.ounit.OunitUtil.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.wicket.extensions.protocol.opaque.OpaqueSession;
 
@@ -53,6 +58,9 @@ public class OunitSession extends OpaqueSession {
 	private List<String> editFiles;
 	private OunitQuestion question;
 	private boolean prepared;
+	private String downloadChecksum;
+	private int attempt = 1;
+	private int maxAttempts = DEFAULT_ATTEMPTS;
 
 	public OunitSession(File projDir, OunitQuestion question,
 			String[] initialParamNames, String[] initialParamValues)
@@ -207,6 +215,11 @@ public class OunitSession extends OpaqueSession {
 			getLog().debug("Found " + MARKS_PROPERTY + " = {} in POM", marks);
 			setMaxMarks(Integer.parseInt((String) marks));
 		}
+		Object attempts = modelProps.get(ATTEMPTS_PROPERTY);
+		if (attempts != null) {
+			getLog().debug("Found " + ATTEMPTS_PROPERTY + " = {} in POM", attempts);
+			setMaxAttempts(Integer.parseInt((String) attempts));
+		}
 		String tmp = (String) modelProps.get(RWFILES_PROPERTY);
 		if (tmp == null)
 			throw new OpaqueException(
@@ -216,11 +229,49 @@ public class OunitSession extends OpaqueSession {
 			editFiles.add(f);
 	
 		getLog().debug("Editable files loaded from POM: {}", editFiles);		
-		setEditFiles(editFiles);
+		setEditFiles(editFiles);		
 	}
-
+	
+	public boolean hasDownload() {
+		File f = new File(projDir, DOWNLOAD_FILE);
+		
+		return f.exists();
+	}
+	
+	public File getDownloadFile() {
+		File f = new File(projDir, DOWNLOAD_FILE);
+		if(f.exists())
+			return f;
+		else
+			return null;
+	}
+	
+	public String getDownloadFileName() {
+		String hash = getDownloadChecksum();
+		if(hash == null)
+			return null;
+		else
+			return hash + ".zip";
+	}
+	
 	public boolean isPrepared() {
 		return prepared;
+	}
+	
+	public int getAttempt() {
+		return attempt;
+	}
+	
+	public void setAttempt(int nattempt) {
+		this.attempt = nattempt;
+	}
+	
+	public int getMaxAttempts() {
+		return maxAttempts;
+	}
+	
+	public void setMaxAttempts(int maxAttempt) {
+		this.maxAttempts = maxAttempt;
 	}
 
 	/**
@@ -229,8 +280,11 @@ public class OunitSession extends OpaqueSession {
 	 * @return
 	 */
 	public void prepare() {
-		if(prepared)
-			throw new RuntimeException("Session already prepared");
+		if(prepared) {
+			// FIXME: Ugly hack! Better fix Moodle or session locking that is causing this
+			return;
+			//throw new RuntimeException("Session already prepared");
+		}
 
 		OunitTask task = startPrepare();
 		OunitResult r = OunitService.waitForTask(task);
@@ -249,6 +303,42 @@ public class OunitSession extends OpaqueSession {
 		}
 		
 		prepared = true;
+	}
+	
+	/**
+	 * Calculate checksum of the download file.
+	 * We want a content based checksum that is not affected by modification
+	 * dates. Therefore we will concatenate all filenames along with their
+	 * CRC checksums and then calculate an MD5 hash over the resulting string.
+	 *  
+	 * @return a 32 character hex string
+	 */
+	private String getDownloadChecksum() {
+		if(downloadChecksum != null)
+			return downloadChecksum;
+		
+		File f = getDownloadFile();
+		if (f == null)
+			return null;
+
+		String chain = "";
+		try {
+			ZipFile zf = new ZipFile(f);
+			Enumeration<? extends ZipEntry> i = zf.entries();
+			while(i.hasMoreElements()) {
+				ZipEntry e = i.nextElement();
+				long crc = e.getCrc();
+				assert crc != -1: "Download files without CRC checking are not supported";
+				chain += e.getName();
+				chain += Long.toHexString(crc);
+			}
+			MessageDigest m = MessageDigest.getInstance("MD5");
+			byte[] digest = m.digest(chain.getBytes());
+			BigInteger bi = new BigInteger(1, digest);
+			return String.format("%1$032x", bi);
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to calculate download checksum", e);
+		}
 	}
 	
 	/**

@@ -26,6 +26,7 @@ import static com.googlecode.ounit.OunitConfig.*;
 import static com.googlecode.ounit.OunitUtil.*;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ import com.googlecode.ounit.opaque.OpaqueException;
 import com.googlecode.ounit.opaque.OpaqueService;
 import com.googlecode.ounit.opaque.ProcessReturn;
 import com.googlecode.ounit.opaque.QuestionInfo;
+import com.googlecode.ounit.opaque.Resource;
 import com.googlecode.ounit.opaque.StartReturn;
 
 @WebService(serviceName="Ounit")
@@ -185,6 +187,30 @@ public class OunitService implements OpaqueService {
 			renderer.doPage(context, rv);
 			if (context.isClosed())
 				rv.setResults(context.getResults());
+			
+			// FIXME: Ugly, ugly, ugly hack!
+			String fname = context.getDownloadFileName();
+			if (fname != null && !context.getCachedResources().contains(fname)) {
+				try {
+					FileInputStream is = new FileInputStream(context.getDownloadFile());
+					int len = (int) is.getChannel().size();
+					byte[] buf = new byte[len];
+					is.read(buf);
+					is.close();
+					Resource r = new Resource(fname,
+							"application/octet-stream", buf);
+					Resource[] rs = rv.getResources();
+					int rlen = rs == null ? 0 : rs.length;
+					Resource[] newrs = new Resource[rlen + 1];
+					if (rlen > 0)
+						System.arraycopy(rs, 0, newrs, 0, rlen);
+					newrs[rlen] = r;
+					rv.setResources(newrs);
+				} catch (Exception e) {
+					throw new RuntimeException(
+							"Error creating download resource", e);
+				}
+			}
 
 			return rv;
 		}

@@ -21,24 +21,26 @@
 
 package com.googlecode.ounit;
 
-import org.apache.wicket.Page;
-import org.apache.wicket.RuntimeConfigurationType;
-import org.apache.wicket.extensions.protocol.opaque.OpaqueApplication;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.IRequestMapper;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Url;
 
-public class OunitApplication extends OpaqueApplication {
+public class OunitRequestMapper implements IRequestMapper {
+	//private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
+
 	@Override
-	public Class<? extends Page> getHomePage() {
-		return WelcomePage.class;
+	public IRequestHandler mapRequest(Request request) {
+		return null;
 	}
-	
+
 	@Override
-	public RuntimeConfigurationType getConfigurationType() {
-		return RuntimeConfigurationType.DEPLOYMENT;
+	public int getCompatibilityScore(Request request) {
+		return 0;
 	}
-	
+
 	@Override
-	protected void init() {
-		super.init();
-		getRootRequestMapperAsCompound().add(new OunitRequestMapper());
+	public Url mapHandler(IRequestHandler requestHandler) {
+		return null;
 	}
 }

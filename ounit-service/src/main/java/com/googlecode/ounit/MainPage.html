@@ -108,6 +108,9 @@
         
         <wicket:enclosure child="tree">
           <div id="explorer">
+            <div class="explorer-buttons">
+              <a href="download.zip" wicket:id="download">Download ZIP</a>
+            </div>
             The following files are included in the test project and will be
             present when your code executes. Click on the file to open it.
             <ul class="ou-explorer-tree">
@@ -127,6 +130,11 @@
 
     <div class="ou-buttons">
       <input wicket:id="compile" type="submit" value="Submit for Testing" />
+      <wicket:enclosure child="maxAttempts">
+        <span class="ou-attempts">
+            attempt <span wicket:id="attempt">N</span> / <span wicket:id="maxAttempts">M</span>
+        </span>
+      </wicket:enclosure>
     </div>
     
   </wicket:extend>
