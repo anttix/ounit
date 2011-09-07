@@ -47,7 +47,7 @@ public class QuestionEditPage {
 		this.name.sendKeys(name);
 		this.remoteid.sendKeys(remoteid);
 		remoteversion.sendKeys(version);
-		testEngineSelect.setSelected();
+		testEngineSelect.click();
 		submitbutton.click();
 		if(driver.getCurrentUrl().contains("question.php")) // Still on edit page? Failed!
 			throw new IllegalStateException("Question creation FAILED");

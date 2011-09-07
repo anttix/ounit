@@ -73,7 +73,7 @@ public class QuizPage {
 	}
 	
 	public QuestionEditPage newOpaqueQuestion() {
-		opaqueQuestion.setSelected();
+		opaqueQuestion.click();
 		return PageFactory.initElements(driver, QuestionEditPage.class);
 	}
 

@@ -60,7 +60,7 @@ public class CoursePage {
 
 	private QuizPage createTestQuiz() {
 		toggleEditing();
-		newQuiz.setSelected();
+		newQuiz.click();
 		
     	QuizEditPage page = PageFactory.initElements(driver, QuizEditPage.class);
     	return page.newQuiz(quizName);

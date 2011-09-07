@@ -44,7 +44,7 @@ public class QuizEditPage {
 	public QuizPage newQuiz(String name) {
 		this.name.clear();
 		this.name.sendKeys(name);
-		oneQuestionPerPage.setSelected();
+		oneQuestionPerPage.click();
 		saveAndDisplay.click();
 		
 		return PageFactory.initElements(driver, QuizPage.class);
