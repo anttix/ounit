@@ -40,7 +40,15 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jgit.version>1.0.0.201106090707-r</jgit.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>ounit-dependency-jgit</id>
+      <url>http://download.eclipse.org/jgit/maven</url>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -87,11 +95,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.eclipse.jgit</groupId>
-      <artifactId>org.eclipse.jgit</artifactId>
-    </dependency>
-    
-    <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>opaque-api</artifactId>
       <version>${project.parent.version}</version>
@@ -99,6 +102,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- JGit -->
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+      <version>${jgit.version}</version>
+    </dependency>
+    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
