@@ -281,9 +281,7 @@ public class OunitSession extends OpaqueSession {
 	 */
 	public void prepare() {
 		if(prepared) {
-			// FIXME: Ugly hack! Better fix Moodle or session locking that is causing this
-			return;
-			//throw new RuntimeException("Session already prepared");
+			throw new RuntimeException("Session already prepared");
 		}
 
 		OunitTask task = startPrepare();
