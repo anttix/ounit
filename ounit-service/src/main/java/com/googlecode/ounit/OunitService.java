@@ -61,7 +61,7 @@ public class OunitService implements OpaqueService {
 		public OunitSession ounitSession;
 		
 		EngineSession() {
-			id = UUID.randomUUID().toString().substring(0, 8);	
+			id = UUID.randomUUID().toString().replaceAll("-", "");	
 		}
 		EngineSession(String id) {
 			this.id = id;
