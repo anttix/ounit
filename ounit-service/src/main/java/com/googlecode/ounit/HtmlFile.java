@@ -24,7 +24,6 @@ package com.googlecode.ounit;
 import java.io.IOException;
 
 import org.apache.wicket.extensions.protocol.opaque.InvalidMarkupFilter;
-import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.MarkupFactory;
 import org.apache.wicket.markup.MarkupResourceStream;
@@ -61,7 +60,7 @@ public class HtmlFile extends Panel {
 	}
 		
 	@Override
-	public IMarkupFragment getAssociatedMarkup() {
+	public Markup getAssociatedMarkup() {
 		File f = getFile();
 		
 		if(!getFile().canRead()) {

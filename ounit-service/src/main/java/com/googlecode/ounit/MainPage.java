@@ -24,8 +24,8 @@ package com.googlecode.ounit;
 import java.io.File;
 import java.io.FileWriter;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -87,7 +87,7 @@ public class MainPage extends BasePage {
 				node.setEditor(item);
 				TextArea<ProjectTreeNode> ta = new TextArea<ProjectTreeNode>("editorarea",
 						new PropertyModel<ProjectTreeNode>(node, "fileContents"));
-				ta.add(new SimpleAttributeModifier("title", node.getName()));
+				ta.add(AttributeModifier.replace("title", node.getName()));
 				ta.add(new QuizStateAttributeModifier(getOunitModel(),
 						"readonly", null, "readonly"));
 				item.add(ta);
