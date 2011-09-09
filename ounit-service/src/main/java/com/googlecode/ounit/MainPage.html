@@ -128,15 +128,22 @@
 
     </div> <!--  ou-question -->
 
-    <div class="ou-buttons">
-      <input wicket:id="compile" type="submit" value="Submit for Testing" />
-      <wicket:enclosure child="maxAttempts">
-        <span class="ou-attempts">
-            attempt <span wicket:id="attempt">N</span> / <span wicket:id="maxAttempts">M</span>
-        </span>
-      </wicket:enclosure>
+    <div class="ou-left-button-panel">
+      <div class="ou-buttons">
+        <input wicket:id="compile" type="submit" value="Submit for Testing" />
+      </div>
     </div>
     
+    <div class="ou-right-button-panel">
+      &nbsp;
+    </div>
+    
+    <wicket:enclosure child="maxAttempts">
+      <div class="ou-attempts">
+        attempt <span wicket:id="attempt">N</span>&nbsp;/&nbsp;<span wicket:id="maxAttempts">M</span>
+      </div>
+    </wicket:enclosure>
+        
   </wicket:extend>
  </div>
  <div style="clear: both;" />

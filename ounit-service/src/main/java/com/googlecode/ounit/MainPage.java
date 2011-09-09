@@ -56,6 +56,13 @@ public class MainPage extends BasePage {
 		super(parameters);
 		log.debug("MainPage()");
 		
+		if(getOunitSession() == null)
+			throw new RuntimeException("No model attached to the page");
+		
+		if(!getOunitSession().isPrepared()) {
+			throw new RuntimeException("Main page requires a prepared session");
+		}
+		
 		WebMarkupContainer quizPanel = new WebMarkupContainer("questiondiv");
 		mainForm.add(quizPanel);
 		quizPanel.add(new QuizStateAttributeModifier(getOunitModel(),
@@ -139,10 +146,25 @@ public class MainPage extends BasePage {
 			@Override
 			public void onSubmit() { 
 				OunitSession sess = getOunitSession();
-				OunitTask task = sess.startBuild();
-				OunitResult r = OunitService.waitForTask(task);
+
+				// Check if student is out of attempts
+				int attempt = sess.getAttempt();
+				int maxAttempts = sess.getMaxAttempts();
+				if (maxAttempts > 0) {
+					if (attempt >= maxAttempts)
+						sess.setClosed(true);
+					/*
+					 * Skip build if out of attempts. This is a sanity check, it
+					 * shouldn't happen under normal circumstances
+					 */
+					if (attempt > maxAttempts)
+						return;
+				}
+				sess.setAttempt(attempt + 1);
 
 				// FIXME: Refactor all this logic to OunitSession
+				OunitTask task = sess.startBuild();
+				OunitResult r = OunitService.waitForTask(task);
 				if(r.hasErrors()) {
 					File rf = getOunitSession().getResultsFile();
 					log.debug("Build failed with errors: {}", r.getErrors());
@@ -159,26 +181,15 @@ public class MainPage extends BasePage {
 					}
 				}
 				
-				// Check if student is out of attempts
-				int attempt = sess.getAttempt();
-				int maxAttempts = sess.getMaxAttempts();
-				if(maxAttempts > 0 && attempt > maxAttempts) {
+				int marks = sess.getMarks();
+				if(marks == sess.getMaxMarks()) {
+					// Max marks, grade NOW!
 					sess.setClosed(true);
-					return;
 				}
-				sess.setAttempt(attempt + 1);
 
-				if(!r.hasErrors()) {
-					// Successful build, see if we can get a (partial) grade
-					int marks = sess.getMarks();
-					
-					if(marks == sess.getMaxMarks()) {
-						// Max marks, grade NOW!
-						sess.setClosed(true);
-					} else {
-						// Partial marks
-						setResponsePage(ConfirmPage.class);
-					}
+				if(!r.hasErrors() && !sess.isClosed()) {
+					// Successful build, ask if student wants a partial grade			
+					setResponsePage(ConfirmPage.class);
 				}
 			}
 		});

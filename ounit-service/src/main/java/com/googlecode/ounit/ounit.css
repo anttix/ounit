@@ -42,6 +42,9 @@ div.opage { float: left; width: 100% } /* Required for Moodle 2.1+ */
 .opage .ou-explorer-tree a { color: blue; } 
 /* .ou-buttons input { font-size: large; } */
 .opage div.ou-buttons { margin-top: 3px; }
+.opage div.ou-left-button-panel { width: 10em; float: left; }
+.opage div.ou-right-button-panel { width: 10em; float: right; }
+.opage .ou-attempts { margin-top: 5px; text-align: center; }
 .opage div.explorer-buttons { float: right; margin: 1em; }
 .opage div.explorer-buttons a { padding: 0.5em; border: double; }
 
