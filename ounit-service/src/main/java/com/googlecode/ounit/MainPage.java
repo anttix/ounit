@@ -51,6 +51,10 @@ import com.googlecode.ounit.executor.OunitTask;
 public class MainPage extends BasePage {
 	private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 	private static final long serialVersionUID = 1L;
+	
+	// FIXME: This is a hack that should go away as soon as sessions
+	//        start working properly
+	boolean redirected = false;
 
 	public MainPage(PageParameters parameters) {
 		super(parameters);
@@ -144,7 +148,12 @@ public class MainPage extends BasePage {
 			}
 
 			@Override
-			public void onSubmit() { 
+			public void onSubmit() {
+				// FIXME: This is a hack that should go away as soon as sessions
+				//        start working properly
+				redirected = true;
+				setResponsePage(MainPage.class);
+				
 				OunitSession sess = getOunitSession();
 
 				// Check if student is out of attempts
@@ -231,5 +240,13 @@ public class MainPage extends BasePage {
 				MainPage.class, "codemirror/codemirror-allmodes.css"));
 		response.renderJavaScriptReference(new PackageResourceReference(
 				MainPage.class, "MainPage.js"));
+	}
+	
+	// FIXME: This is a hack that should go away as soon as sessions
+	//        start working properly	
+	@Override
+	protected void onMainFormSubmit() {
+		if(!redirected)
+			setResponsePage(MainPage.class);
 	}
 }

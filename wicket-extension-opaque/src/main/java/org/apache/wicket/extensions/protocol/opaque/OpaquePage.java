@@ -29,6 +29,9 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.form.StatelessForm;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 public abstract class OpaquePage extends WebPage {
@@ -49,6 +52,10 @@ public abstract class OpaquePage extends WebPage {
 				String url = getActionUrl().toString();
     			OpaqueReturn.get().setPageURL(url);
 			}
+
+			protected void onSubmit() {
+				onMainFormSubmit();
+			}
     	};
     	super.add(mainForm);
     	mainForm.setRenderBodyOnly(true);
@@ -63,7 +70,9 @@ public abstract class OpaquePage extends WebPage {
     		public void onComponentTag(Component component, ComponentTag tag) {
     			String url = OpaqueReturn.get().getPageURL();
     			if(url != null) {
-        			url = url.replaceAll("(\\.\\./)*\\.\\.\\?", "?"); // FIXME: Ugly hack!
+    				 // FIXME: Ugly hack!
+        			url = url.replaceAll("(\\.\\./)*", "");
+        			url = url.replaceAll("(\\.\\./)*\\.\\.\\?", "?");
     				tag.getAttributes().put("value", url);
     			}
     		}
@@ -73,4 +82,6 @@ public abstract class OpaquePage extends WebPage {
     	mainForm.setVersioned(false);
     	setStatelessHint(true);
     }
+    
+    protected void onMainFormSubmit() { }
 }
