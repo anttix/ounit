@@ -27,6 +27,9 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 public class ConfirmPage extends BasePage {
 	private static final long serialVersionUID = 1L;
+	// FIXME: This is a hack that should go away as soon as sessions
+	//        start working properly
+	boolean redirected = false;
 
 	public ConfirmPage(PageParameters parameters) {
 		super(parameters);
@@ -39,6 +42,9 @@ public class ConfirmPage extends BasePage {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void onSubmit() {
+				// FIXME: This is a hack that should go away as soon as sessions
+				//        start working properly
+				redirected = true;
 				getOunitSession().setClosed(true);
 		        setResponsePage(MainPage.class); 
 			}
@@ -48,8 +54,18 @@ public class ConfirmPage extends BasePage {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void onSubmit() {
+				// FIXME: This is a hack that should go away as soon as sessions
+				//        start working properly
+				redirected = true;
 		        setResponsePage(MainPage.class); 
 			}
 		});
-	}	
+	}
+	// FIXME: This is a hack that should go away as soon as sessions
+	//        start working properly	
+	@Override
+	protected void onMainFormSubmit() {
+		if(!redirected)
+			setResponsePage(ConfirmPage.class);
+	}
 }
