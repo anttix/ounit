@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+   OUnit - an OPAQUE compliant framework for Computer Aided Testing
+
+   Copyright (C) 2010, 2011  Antti Andreimann
+
+   This file is part of OUnit.
+
+   OUnit is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   OUnit is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with OUnit.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en"
+      xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.5-strict.dtd">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>MockHomePage Template Preview</title>
+  <wicket:head>
+    <style type="text/css">
+      .headdiv { display: none; }
+    </style>
+  </wicket:head>
+</head>
+
+<body>
+  <wicket:extend>
+  
+    <!-- MockWicketOpaqueService Question START -->
+    <wicket:child />
+    <div>
+      Entering -1 toggles between stateless and stateful pages.
+    </div>
+    <wicket:link>
+      <div class="picdiv"> 
+        If you can read this and do NOT see a black box, the autolinked resource image failed to load
+	    <img id="autolinkpic" src="mockpic.gif"
+	         width="50" height="50" />
+	  </div>
+    </wicket:link>
+
+	<div class="headdiv">
+      If you can read this, header injection did not work (only Moodle supports it)
+    </div>
+    <div class="cssdiv">If You can read this, CSS was not loaded</div>
+    <div class="jsdiv">If You can read this, JS was not loaded</div>
+    <script type="text/javascript">mockHideDivs("jsdiv");</script>
+    <!-- http://snippets.dzone.com/posts/show/89 -->
+    <script type="text/javascript">
+      function hideImgDiv() {
+        var img = document.getElementById('%%IDPREFIX%%autolinkpic');
+        if(img.complete && (typeof img.naturalWidth == 'undefined' || img.naturalWidth != 0)) {
+          img.parentNode.style.display = 'none';
+          return true;
+        } else {
+            return false;
+        }
+      }
+      
+      if(!hideImgDiv())
+        setTimeout(hideImgDiv, 1000);
+    </script>
+    <!-- MockOpaqueService Question END -->
+    
+  </wicket:extend>
+</body>
+</html>
