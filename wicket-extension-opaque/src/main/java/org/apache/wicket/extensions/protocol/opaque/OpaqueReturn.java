@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.MetaDataKey;
-import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.Url;
 
 public class OpaqueReturn {
 	
@@ -50,7 +50,7 @@ public class OpaqueReturn {
 	}
 
 	private List<String> cachedResources = new ArrayList<String>();
-	private Map<String, IRequestHandler> newResources = new HashMap<String, IRequestHandler>();
+	private Map<String, Url> newResources = new HashMap<String, Url>();
 	// private StringBuilder scripts = new StringBuilder();
 	private StringBuilder css = new StringBuilder();
 	private StringBuilder head = new StringBuilder();
@@ -69,12 +69,12 @@ public class OpaqueReturn {
 		this.cachedResources = cachedResources;
 	}
 
-	public void addNewResource(String name, IRequestHandler request) {
+	public void addNewResource(String name, Url url) {
 		if(!isCached(name))
-			newResources.put(name, request);
+			newResources.put(name, url);
 	}
 	
-	public Map<String, IRequestHandler> getNewResources() {
+	public Map<String, Url> getNewResources() {
 		return newResources;
 	}
 	

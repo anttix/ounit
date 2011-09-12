@@ -23,9 +23,12 @@ package org.apache.wicket.extensions.protocol.opaque;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.session.ISessionStore;
+import org.apache.wicket.util.IProvider;
 
 public class OpaqueApplication extends WebApplication {
 	Class<? extends Page> homePage;
+	private ISessionStore sessionStore;
 
 	@Override
 	public Class<? extends Page> getHomePage() {
@@ -35,10 +38,28 @@ public class OpaqueApplication extends WebApplication {
 	public void setHomePage(Class<? extends Page> homePage) {
 		this.homePage = homePage;
 	}
-
+	
+	
+	public void setSessionStore(ISessionStore sessionStore) {
+		this.sessionStore = sessionStore; 
+	}
+	
 	@Override
 	protected void init() {
 		super.init();
-		PageRunner.configure(this);
+		if (sessionStore != null) {
+			/* Set session store provider */
+			setSessionStoreProvider(new IProvider<ISessionStore>() {
+				@Override
+				public ISessionStore get() {
+					return sessionStore;
+				}
+			});
+		}
+	}
+	
+	@Override
+	public String getInitParameter(String key) {
+		return null;
 	}
 }

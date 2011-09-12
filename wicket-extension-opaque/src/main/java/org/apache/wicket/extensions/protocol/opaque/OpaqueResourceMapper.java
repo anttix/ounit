@@ -67,10 +67,9 @@ public class OpaqueResourceMapper implements IRequestMapper {
 		 * FIXME: Maybe there IS a way to combat this nonsense!
 		 */
 		if(requestHandler instanceof ResourceReferenceRequestHandler) {
-			//ResourceReferenceRequestHandler handler = (ResourceReferenceRequestHandler)requestHandler;
 			if(!url.toString().startsWith(PLACEHOLDER_HACK)) {
 				String name = url.toString().replace("wicket/resource/", "").replace('/', '.');
-				OpaqueReturn.get().addNewResource(name, requestHandler);
+				OpaqueReturn.get().addNewResource(name, new Url(url));
 				url.getSegments().clear();
 				url.getSegments().add(PLACEHOLDER_HACK);
 				url.getSegments().add(name);
