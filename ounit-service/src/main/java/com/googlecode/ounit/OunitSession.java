@@ -27,6 +27,7 @@ import static com.googlecode.ounit.OunitUtil.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -172,29 +173,31 @@ public class OunitSession extends OpaqueSession {
 		
 	@Override
 	public Results getResults() throws OpaqueException {
+		Results rv = super.getResults();
 		try {
 			Properties p = getMarksProps();
-			Results rv = super.getResults();
 			
 			for(Object key: p.keySet()) {
 				String k = (String) key;
 				if(k.equals(DEFAULT_PROPERTY)) continue;
 				int v = (int)Math.round(Double.parseDouble((String)p.get(key)));
 				rv.addScore(k, v);
-			}
-			
-			for(Score s: rv.getScores()) {
-				getLog().debug("Score axis '{}' = {}",
-						new Object[] { s.getAxis(), s.getMarks() } );
-			}
-
-			return rv;
-		} catch (Exception e) {
-			throw new RuntimeException("Can not build results", e);
+			}			
+		} catch (IOException e) {
+			// Exception while loading results property file normally
+			// means that the file was not generated
+			getLog().debug("Error loading results properties {}", e.getMessage());
 		}
+		
+		for(Score s: rv.getScores()) {
+			getLog().debug("Score axis '{}' = {}",
+					new Object[] { s.getAxis(), s.getMarks() } );
+		}
+
+		return rv;
 	}
 
-	private Properties getMarksProps() throws Exception {
+	private Properties getMarksProps() throws IOException {
 		File f = new File(projDir, MARKS_FILE);
 		getLog().debug("Loading marks from {}", f);
 		Properties p = new Properties();
