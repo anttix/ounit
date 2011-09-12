@@ -56,6 +56,8 @@ import com.googlecode.ounit.opaque.StartReturn;
 @SOAPBinding(style = Style.RPC)
 public class OunitService implements OpaqueService {
 	
+	private static Object lock = new Object();
+	
 	protected class EngineSession {
 		private String id;
 		public OunitSession ounitSession;
@@ -160,7 +162,7 @@ public class OunitService implements OpaqueService {
 		EngineSession session = sessions.get(context.getEngineSessionId());
 		assert session != null : "Engine session was not set up properly";
 		
-		synchronized(session) {
+		synchronized(lock) {
 			StartReturn rv = new StartReturn(context.getEngineSessionId());
 			renderer.doPage(context, rv);
 			return rv;
@@ -180,7 +182,7 @@ public class OunitService implements OpaqueService {
 			/* LMS should now request a new question session and replay all user responses */
 		}
 		
-		synchronized(session) {
+		synchronized(lock) {
 			OunitSession context = session.ounitSession;
 			context.newPostParameters(names, values);
 			ProcessReturn rv = new ProcessReturn();
