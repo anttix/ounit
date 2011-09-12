@@ -281,8 +281,6 @@ public class PageRunner {
 			List<Resource> newResources = new ArrayList<Resource>(rm.size());
 			
 			for(String name: rm.keySet()) {
-				log.debug("Rendering resource {}", rm.get(name));
-				
 				cycle = processRequest(rm.get(name).toString());
 				if(cycle == null)
 					// FIXME: Should we throw here?
