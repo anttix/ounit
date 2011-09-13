@@ -49,17 +49,13 @@
 
   <build>
     <!-- Goal executed by testing system to prepare student sources -->
-    <defaultGoal>process-sources</defaultGoal>
+    <defaultGoal>process-test-classes</defaultGoal>
 
-    <!-- Override source and output directories for the compiler -->
-    <sourceDirectory>${basedir}/student/main/java</sourceDirectory>
-    <outputDirectory>
-      ${project.build.directory}/target/classes
-    </outputDirectory>
+    <!-- Override source directories for the compiler. This is used by
+         m2eclipse to discover source directories. During a real build,
+         ounit plugin will override the directories automatically -->
+    <sourceDirectory>${basedir}/teacher/main/java</sourceDirectory>
     <testSourceDirectory>${basedir}/teacher/test/java</testSourceDirectory>
-    <testOutputDirectory>
-      ${project.build.directory}/bin/teacher-test-classes
-    </testOutputDirectory>
 
     <pluginManagement>
       <plugins>

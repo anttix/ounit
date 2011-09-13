@@ -37,14 +37,21 @@
       </implementation>
       <configuration>
         <phases>
-
-          <!--use the basic jar lifecycle bindings, add additional 
-              executions in here if you want anything extra to be run-->          
-
-          <generate-sources>
-            com.googlecode.ounit:maven-ounit-plugin:prepare
-          </generate-sources>
-
+          <initialize>
+            com.googlecode.ounit:maven-ounit-plugin:setup-paths
+          </initialize>     
+          <generate-resources> 
+            com.googlecode.ounit:maven-ounit-plugin:generate-files
+          </generate-resources>
+          <compile>
+            org.apache.maven.plugins:maven-compiler-plugin:compile
+          </compile>
+          <test-compile>
+            org.apache.maven.plugins:maven-compiler-plugin:testCompile
+          </test-compile>
+          <process-test-classes>
+            com.googlecode.ounit:maven-ounit-plugin:generate-project
+          </process-test-classes>
 <!--
           <process-resources>
             org.apache.maven.plugins:maven-resources-plugin:resources

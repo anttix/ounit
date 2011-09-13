@@ -30,18 +30,11 @@
 
 <lifecycles>
   <lifecycle>
-    <id>prepare-question</id>
+    <id>generate-project</id>
     <phases>
       <phase>
         <id>generate-sources</id>
         <executions>
-          <execution>
-            <goals>
-              <goal>
-                com.googlecode.ounit:maven-ounit-plugin:generate-files
-              </goal>
-            </goals>
-          </execution>
           <execution>
             <goals>
               <goal>
@@ -113,42 +106,6 @@
           <execution>
             <goals>
               <goal>
-                org.apache.maven.plugins:maven-dependency-plugin:go-offline
-              </goal>
-            </goals>
-          </execution>
-        </executions>
-      </phase>
-      <phase>
-        <id>compile</id>
-        <executions>
-          <execution>
-            <goals>
-              <goal>
-                org.apache.maven.plugins:maven-compiler-plugin:compile
-              </goal>
-            </goals>
-          </execution>
-        </executions>
-      </phase>      
-      <phase>
-        <id>test-compile</id>
-        <executions>
-          <execution>
-            <goals>
-              <goal>
-                org.apache.maven.plugins:maven-compiler-plugin:testCompile
-              </goal>
-            </goals>
-          </execution>
-        </executions>
-      </phase>   
-      <phase>
-        <id>package</id>
-        <executions>
-          <execution>
-            <goals>
-              <goal>
                 org.apache.maven.plugins:maven-assembly-plugin:single
               </goal>
             </goals>
@@ -161,8 +118,15 @@
               </descriptors>
             </configuration>
           </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-dependency-plugin:go-offline
+              </goal>
+            </goals>
+          </execution>
         </executions>
-      </phase>   
+      </phase>
     </phases>
   </lifecycle>
   
@@ -199,8 +163,7 @@
         </executions>
       </phase>
     </phases>
-  </lifecycle>
-  
+  </lifecycle>  
 </lifecycles>
 
 <!--

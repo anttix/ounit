@@ -28,7 +28,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 /**
  * Generate student project and store it to output directory
  *
- * @execute lifecycle="prepare-question" phase="package"
+ * @execute lifecycle="generate-project" phase="generate-sources"
  * @goal generate-project
  */
 public class GenerateProjectMojo
