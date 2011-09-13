@@ -26,12 +26,12 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
- * Goal which filters sources to output directory
+ * Generate student project and store it to output directory
  *
  * @execute lifecycle="prepare-question" phase="package"
- * @goal prepare
+ * @goal generate-project
  */
-public class PrepareMojo
+public class GenerateProjectMojo
     extends AbstractMojo
 {
 	/**
