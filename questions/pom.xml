@@ -51,9 +51,11 @@
     <!-- Goal executed by testing system to prepare student sources -->
     <defaultGoal>process-test-classes</defaultGoal>
 
-    <!-- Override source directories for the compiler. This is used by
-         m2eclipse to discover source directories. During a real build,
-         ounit plugin will override the directories automatically -->
+    <!-- 
+         Override source directories for the compiler. This is used by
+         Eclipse m2e to discover source directories. During a real build,
+         ounit plugin will override the directories automatically.
+    -->
     <sourceDirectory>${basedir}/teacher/main/java</sourceDirectory>
     <testSourceDirectory>${basedir}/teacher/test/java</testSourceDirectory>
 
@@ -66,6 +68,34 @@
           <configuration>
             <source>1.6</source>
             <target>1.6</target>
+          </configuration>
+        </plugin>
+
+        <!-- Instruct Eclipse m2e to ignore ounit plugin goals -->
+        <plugin>
+       	  <groupId>org.eclipse.m2e</groupId>
+       	  <artifactId>lifecycle-mapping</artifactId>
+       	  <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.googlecode.ounit</groupId>
+                    <artifactId>maven-ounit-plugin</artifactId>
+                    <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                    <goals>
+                      <goal>setup-paths</goal>
+                      <goal>generate-files</goal>
+                      <goal>generate-project</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
           </configuration>
         </plugin>
       </plugins>
