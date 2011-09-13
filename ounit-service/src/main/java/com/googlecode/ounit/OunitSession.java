@@ -26,6 +26,7 @@ import static com.googlecode.ounit.OunitUtil.*;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -199,9 +200,9 @@ public class OunitSession extends OpaqueSession {
 
 	private Properties getMarksProps() throws IOException {
 		File f = new File(projDir, MARKS_FILE);
-		getLog().debug("Loading marks from {}", f);
 		Properties p = new Properties();
 		p.load(new FileInputStream(f));
+		getLog().debug("Loaded marks from {}", f);
 		return p;
 	}
 
@@ -303,6 +304,7 @@ public class OunitSession extends OpaqueSession {
 			throw new RuntimeException(e);
 		}
 		
+		waitForNextMtimeSlot();
 		prepared = true;
 	}
 	
@@ -371,16 +373,39 @@ public class OunitSession extends OpaqueSession {
 	/**
 	 * Execute a build in project directory.
 	 * 
+	 * @return true if build was successful
 	 */
-	public void build() {
-		// TODO
+	public boolean build() {
+		OunitTask task = startBuild();
+		OunitResult r = OunitService.waitForTask(task);
+
+		if(r.hasErrors()) {
+			// Dump compiler errors into results file
+			// TODO: Create a proper Wicket template for this
+			File rf = getResultsFile();
+			getLog().debug("Build failed with errors: {}", r.getErrors());
+			rf.getParentFile().mkdirs();
+			try {
+				FileWriter wr = new FileWriter(rf);
+				wr.append("<pre>");
+				wr.append(r.getErrors());
+				wr.append("</pre>");
+				wr.close();
+			} catch(Exception e) {
+				throw new RuntimeException("Failed to save result", e);
+			}
+		}
+		
+		waitForNextMtimeSlot();
+		
+		return r.hasErrors();
 	}
 	
 	/**
 	 * Request a maven build
 	 * @return
 	 */
-	public OunitTask startBuild() {
+	private OunitTask startBuild() {
 		getLog().debug("Build of session {} started", getEngineSessionId());
 		
 		if(!projDir.isDirectory()) throw new RuntimeException("Attempted to compile a stale session");
@@ -390,5 +415,32 @@ public class OunitSession extends OpaqueSession {
 			.setLogFile(new File(projDir, BUILD_LOG)));
 		
 		return task;
+	}
+
+	/**
+	 * There are many file systems out there that store modification
+	 * time in seconds. This function tries to detect the situation
+	 * and wait for the next full second to elapse.
+	 * If we fail to wait, the compiler may not detect that files
+	 * have been changed. It may seem strange that projects can be
+	 * recompiled multiple times inside a same second, but this is
+	 * exactly what happens when LMS replays the session. 
+	 */
+	private void waitForNextMtimeSlot() {
+		long mtime = projDir.lastModified();
+
+		if (mtime % 1000 == 0) {
+			// Probability of hitting a timestamp that falls exactly on full
+			// second is very low thus we use the fact to decide that
+			// the file system stores mtimes in seconds
+			long currentTime = System.currentTimeMillis();
+			long sleepTime = 1001 - currentTime % 1000;
+			getLog().debug("Sleeping for {}ms", sleepTime);
+			try {
+				Thread.sleep(sleepTime);
+			} catch (InterruptedException e) {
+				// Eat it !
+			}
+		}
 	}
 }

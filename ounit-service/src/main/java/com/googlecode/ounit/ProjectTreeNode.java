@@ -43,6 +43,7 @@ import org.apache.wicket.Component;
  *
  */
 public class ProjectTreeNode implements Serializable, Comparable<ProjectTreeNode> {
+	private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private File pathname;
@@ -115,6 +116,8 @@ public class ProjectTreeNode implements Serializable, Comparable<ProjectTreeNode
 	}
 	
 	public String getFileContents() throws IOException {
+		log.debug("Reading file {}", pathname);
+		
 		FileInputStream stream = new FileInputStream(pathname);
 		try {
 		    FileChannel fc = stream.getChannel();
@@ -128,7 +131,18 @@ public class ProjectTreeNode implements Serializable, Comparable<ProjectTreeNode
 	
 	public void setFileContents(String text) throws IOException {
 		if(text == null) return;
+		
+		log.debug("Writing file {}", pathname);
+		
+		long mtime = pathname.lastModified();
+		long currentTime = System.currentTimeMillis();
 
+		if (currentTime < mtime) {
+			// Modification time in future. Unlink the stupid file!
+			log.info("{} has modification time in the future.", pathname);
+			pathname.delete();
+		}
+				
 		FileOutputStream stream = new FileOutputStream(pathname);
 		try {
 		    FileChannel fc = stream.getChannel();

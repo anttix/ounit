@@ -21,9 +21,6 @@
 
 package com.googlecode.ounit;
 
-import java.io.File;
-import java.io.FileWriter;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.IHeaderResponse;
@@ -37,9 +34,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.PackageResourceReference;
-
-import com.googlecode.ounit.executor.OunitResult;
-import com.googlecode.ounit.executor.OunitTask;
 
 /**
  * 
@@ -170,33 +164,16 @@ public class MainPage extends BasePage {
 						return;
 				}
 				sess.setAttempt(attempt + 1);
-
-				// FIXME: Refactor all this logic to OunitSession
-				OunitTask task = sess.startBuild();
-				OunitResult r = OunitService.waitForTask(task);
-				if(r.hasErrors()) {
-					File rf = getOunitSession().getResultsFile();
-					log.debug("Build failed with errors: {}", r.getErrors());
-					rf.getParentFile().mkdirs();
-					try {
-						FileWriter wr = new FileWriter(rf);
-						wr.append("<pre>");
-						wr.append(r.getErrors());
-						wr.append("</pre>");
-						wr.close();
-					} catch(Exception e) {
-						log.warn("Failed to save result", e);
-						throw new RuntimeException(e);
-					}
-				}
 				
+				boolean buildSuccessful = sess.build();
+
 				int marks = sess.getMarks();
 				if(marks == sess.getMaxMarks()) {
 					// Max marks, grade NOW!
 					sess.setClosed(true);
 				}
 
-				if(!r.hasErrors() && !sess.isClosed()) {
+				if(!buildSuccessful && !sess.isClosed()) {
 					// Successful build, ask if student wants a partial grade			
 					setResponsePage(ConfirmPage.class);
 				}
