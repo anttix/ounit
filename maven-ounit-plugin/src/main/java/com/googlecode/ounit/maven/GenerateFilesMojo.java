@@ -207,24 +207,23 @@ public class GenerateFilesMojo
 		}
 		
 		// Generate assembly descriptor for downloading files
-		if(download != null && !download.equals("none")) {
+		if (download != null && !download.equals("none")) {
 			File f = new File(outputDirectory, "assembly.xml");
-			if(!f.exists()) {
-				InputStream is = this.getClass().getResourceAsStream(
-						"/assemblies/ounit-" + download + ".xml");
-				if(is == null) {
-					throw new MojoExecutionException("Invalid value " + download
-							+ " for ounit.download");
-				}
-				try {
-					OutputStream os = new FileOutputStream(f);
-					copyStream(is, os);
-				} catch(Exception e) {
-					throw new MojoExecutionException(
-							"Error copying assembly descriptor", e);
-				}
+			InputStream is = this.getClass().getResourceAsStream(
+					"/assemblies/ounit-" + download + ".xml");
+			if (is == null) {
+				throw new MojoExecutionException("Invalid value " + download
+						+ " for ounit.download");
+			}
+			try {
+				OutputStream os = new FileOutputStream(f);
+				copyStream(is, os);
+			} catch (Exception e) {
+				throw new MojoExecutionException(
+						"Error copying assembly descriptor", e);
 			}
 		}
+
     }
     
 	private String listFiles(File dir, File baseDir) {
