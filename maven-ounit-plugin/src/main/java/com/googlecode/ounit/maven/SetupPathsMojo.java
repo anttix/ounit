@@ -89,7 +89,7 @@ public class SetupPathsMojo
 		}
 		
 		for(String topDir: testSrcTopDirs) {
-			String subDir = topDir + FS + "main" + FS + "java";
+			String subDir = topDir + FS + "test" + FS + "java";
 			String newDir = new File(baseDirectory, subDir).getAbsolutePath();
 			testSrcDirs.add(newDir);
 		}
