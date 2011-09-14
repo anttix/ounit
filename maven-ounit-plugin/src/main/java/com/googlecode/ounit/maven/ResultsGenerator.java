@@ -73,6 +73,10 @@ public class ResultsGenerator {
 		dirs = mavenInternals.getTeacherTestDirectories();
 		suite = new TestSuite(labelTeacher, dirs);
 		suite.setResults(parser.parseReportFiles(dirs));
+		
+		if(suite.getResults().getTotalTests() <= 0) 
+			throw new Exception("Teacher tests were not executed");
+		
 		marks.put("teacher", suite.getResults().getTotalPercentage());
 		testResults.add(suite);
 	}
