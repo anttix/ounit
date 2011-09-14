@@ -72,9 +72,10 @@
         (function($) {
           $('input.ou-continue[type="submit"]').each(function(index, element) {
             $(function() {
+              if(element.style.display == "none") return;
               element.style.display = "none";
               element.click();
-        	});
+            });
           });
         })(jQuery);        
       </script>
