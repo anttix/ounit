@@ -15,6 +15,9 @@
         <exclude>**/*.log</exclude>
         <exclude>/archive-tmp/**</exclude>
         <exclude>/generated-sources/**</exclude>
+        <exclude>/classes/**</exclude>
+        <exclude>/test-classes/**</exclude>
+        <exclude>assembly.xml</exclude>
         <exclude>/download.*</exclude>
       </excludes>
     </fileSet>
