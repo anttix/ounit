@@ -285,7 +285,8 @@ public class OunitSession extends OpaqueSession {
 	 */
 	public void prepare() {
 		if(prepared) {
-			throw new RuntimeException("Session already prepared");
+			getLog().warn("Session already prepared. Buggy client?");
+			return;
 		}
 
 		OunitTask task = startPrepare();
