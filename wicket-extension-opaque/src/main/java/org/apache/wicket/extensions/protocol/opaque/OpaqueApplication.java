@@ -21,26 +21,40 @@
 
 package org.apache.wicket.extensions.protocol.opaque;
 
-import org.apache.wicket.Page;
+import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
 import org.apache.wicket.session.ISessionStore;
 import org.apache.wicket.util.IProvider;
 
-public class OpaqueApplication extends WebApplication {
-	Class<? extends Page> homePage;
-	private ISessionStore sessionStore;
+import com.googlecode.ounit.opaque.OpaqueException;
 
-	@Override
-	public Class<? extends Page> getHomePage() {
-		return homePage;
-	}
+public abstract class OpaqueApplication extends WebApplication {
+	private OpaqueSessionStore sessionStore;
+	
+	/**
+	 * Fetch question from question database.
+	 * This function is called from getQuestionMetadata and start to
+	 * make sure the question exists.
+	 * 
+	 * @param questionID
+	 * @param questionVersion
+	 * @param questionBaseURL
+	 * @return
+	 */
+	public abstract OpaqueQuestion fetchQuestion(String id, String version,
+			String baseUrl) throws OpaqueException;
 
-	public void setHomePage(Class<? extends Page> homePage) {
-		this.homePage = homePage;
+	public int getActiveSessions() {
+		if(sessionStore != null) {
+			return sessionStore.getActiveSessionCount();
+		} else {
+			return -1; // Unknown
+		}
 	}
 	
-	
-	public void setSessionStore(ISessionStore sessionStore) {
+	public void setSessionStore(OpaqueSessionStore sessionStore) {
 		this.sessionStore = sessionStore; 
 	}
 	
@@ -61,5 +75,10 @@ public class OpaqueApplication extends WebApplication {
 	@Override
 	public String getInitParameter(String key) {
 		return null;
+	}
+
+	@Override
+	public Session newSession(Request request, Response response) {
+		return new OpaqueSession(request);
 	}
 }

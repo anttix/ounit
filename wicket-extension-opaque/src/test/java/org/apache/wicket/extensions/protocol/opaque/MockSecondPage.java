@@ -22,7 +22,7 @@ public class MockSecondPage extends MockBasePage {
 			public void onSubmit() {
 				log.debug("Go clicked");
 				if(m.getNr() == -1)
-				    setResponsePage(MockHomePage.class);
+				    setResponsePage(MockHomePage.class);				
 			}
 		});
 	}

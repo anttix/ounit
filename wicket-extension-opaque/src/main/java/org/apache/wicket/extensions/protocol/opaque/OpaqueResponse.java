@@ -24,10 +24,13 @@ package org.apache.wicket.extensions.protocol.opaque;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.request.Url;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.util.time.Time;
 
@@ -37,7 +40,12 @@ public class OpaqueResponse extends WebResponse {
 	
 	private ByteArrayOutputStream byteStream;
 	private StringWriter stringWriter;
-	
+
+	private Map<String, Url> referencedResources = new HashMap<String, Url>();
+	private StringBuilder css = new StringBuilder();
+	private StringBuilder head = new StringBuilder();
+	private String pageURL;
+		
 	OpaqueResponse() {
 		stringWriter = new StringWriter();
 		byteStream = new ByteArrayOutputStream();
@@ -74,6 +82,41 @@ public class OpaqueResponse extends WebResponse {
 	 */
 	public String getRedirectLocation() {
 		return redirectLocation;
+	}
+	
+	public Map<String, Url> getReferencedResources() {
+		return referencedResources;
+	}
+	
+	public void setReferencedResources(Map<String, Url> referencedResources) {
+		this.referencedResources = referencedResources;
+	}
+	
+	public void addReferencedResource(String name, Url url) {
+		if(!referencedResources.containsKey(name))
+			referencedResources.put(name, url);
+	}
+		
+	public String getCSS() {
+		return css.toString();
+	}
+	
+	public String getHeader() {
+		return head.toString();
+	}
+
+	public void setHeader(String header) {
+		// TODO: Consider other tags to filter (eg: <meta http-equiv="Content-Type: ...)
+		header = header.replaceAll("<title[^>]*>[^<]*</title>", "");
+		head.append(header);
+	}
+
+	public String getPageURL() {
+		return pageURL;
+	}
+	
+	public void setPageURL(String url) {
+		pageURL = url;
 	}
 
 	@Override

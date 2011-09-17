@@ -47,7 +47,7 @@ public abstract class OpaquePage extends WebPage {
 			protected void onConfigure() {
 				super.onConfigure();
 				String url = getActionUrl().toString();
-    			OpaqueReturn.get().setPageURL(url);
+    			getOpaqueResponse().setPageURL(url);
 			}
 
 			protected void onSubmit() {
@@ -60,12 +60,15 @@ public abstract class OpaquePage extends WebPage {
     	mainForm.add(wicketpage);
     	/* We specifically do not use a model here, because it's easier to implement with 
     	 * a behaviour. */
+    	
+    	// FIXME: This should be added by a PageManager or something
+    	//        so we do not depend on OpaqueResponse from this class
     	wicketpage.add(new Behavior() {
     		private static final long serialVersionUID = 1L;
     		
     		@Override
     		public void onComponentTag(Component component, ComponentTag tag) {
-    			String url = OpaqueReturn.get().getPageURL();
+    			String url = getOpaqueResponse().getPageURL();
     			if(url != null) {
     				 // FIXME: Ugly hack!
         			url = url.replaceAll("(\\.\\./)*", "");
@@ -78,6 +81,14 @@ public abstract class OpaquePage extends WebPage {
     	setVersioned(false);
     	mainForm.setVersioned(false);
     	setStatelessHint(true);
+    }
+    
+    private OpaqueResponse getOpaqueResponse() {
+    	return (OpaqueResponse)getRequestCycle().getOriginalResponse();
+    }
+    
+    protected OpaqueSession getOpaqueSession() { 
+    	return (OpaqueSession)getSession();
     }
     
     protected void onMainFormSubmit() { }

@@ -22,21 +22,102 @@
 package org.apache.wicket.extensions.protocol.opaque;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.Cookie;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.parameter.EmptyRequestParameters;
+import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.time.Time;
 
 public class OpaqueRequest extends WebRequest {
-	Url url;
-	IRequestParameters postParameters;
+	public final static String PAGE_PARAMETER_NAME = "wicketpage";
+	public final static String MOODLE_EVENT_PARAMETER_NAME = "event";
+
+	public enum CallType {
+		START, PROCESS, OTHER
+	};
+	
+	protected String sessionId;
+	protected Url url;
+	protected CallType callType = CallType.OTHER;
+	
+	protected OpaqueRequestParameters postParameters;
+	protected OpaqueQuestion question;
+	protected List<String> cachedResources;
+
+	public OpaqueRequest(String sessionId, Url url) {
+		this.sessionId = sessionId;
+		this.url = url;
+	}	
+
+	public OpaqueRequest(OpaqueQuestion question, String[] initialParamNames,
+			String[] initialParamValues, String[] cachedResources) {
+
+		Args.notNull(question, "question");
+
+		this.callType = CallType.START;
+		this.question = question;
+		this.cachedResources = Arrays.asList(cachedResources);
+
+		// TODO: Do something with the initial parameters
 		
+		setUrl("");
+	}
+	
+	public OpaqueRequest(String sessionId, String[] names, String[] values) {
+		Args.notEmpty(sessionId, "sessionId");
+		
+		this.callType = CallType.PROCESS;
+		this.sessionId = sessionId;
+		
+		/* Parse parameters */
+		if(values.length != values.length)
+			throw new WicketRuntimeException(
+					"The count of parameter names and values does not match");
+		
+		postParameters = new OpaqueRequestParameters();
+		
+		for(int i = 0; i <  names.length; i++) {
+			/* Find "special" parameters */
+			if(names[i].equals(MOODLE_EVENT_PARAMETER_NAME)) {
+				// TODO: Do something with it (eg. detect replay)
+				continue;
+			}
+			if(names[i].equals(PAGE_PARAMETER_NAME)) {
+				String pageUrl = values[i];
+				
+				// FIXME: This is a seriously ugly temporary hack!
+				if(!pageUrl.startsWith("?") && !pageUrl.startsWith("wicket/")) {
+					if(pageUrl.startsWith("page?"))
+						pageUrl = "wicket/" + pageUrl;
+					else
+						pageUrl = "wicket/bookmarkable/" + pageUrl;
+				}
+				
+				setUrl(pageUrl);
+				continue;
+			}
+			
+			/* Parameter not recognized, must belong to the page */
+			postParameters.add(names[i], values[i]);
+		}
+		
+		if (getUrl() == null)
+			throw new WicketRuntimeException(PAGE_PARAMETER_NAME
+					+ " not present in POST parameters");
+	}
+
+	public CallType getCallType() {
+		return callType;
+	}
+
 	public void setUrl(Url url) {
 		this.url = url;
 	}
@@ -44,11 +125,19 @@ public class OpaqueRequest extends WebRequest {
 	public void setUrl(String url) {
 		this.url = Url.parse(url, getCharset());
 	}
-	
-	public void setPostParameters(IRequestParameters postParameters) {
-		this.postParameters = postParameters;
+
+	public String getSessionId() {
+		return sessionId;
 	}
 	
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public List<String> getCachedResources() {
+		return cachedResources;
+	}
+
 	@Override
 	public IRequestParameters getPostParameters() {
 		if(postParameters == null)
@@ -84,14 +173,13 @@ public class OpaqueRequest extends WebRequest {
 
 	@Override
 	public Url getClientUrl() {
-		// OPAQUE can not support Ajax requests so both URLs always match
-		//return getUrl();
+		// We want Wicket to always generate absolute URLs (wicket/...)
 		return Url.parse("/");
 	}
 
 	@Override
 	public Locale getLocale() {
-		// FIXME: Derive it from language passed to start call
+		// FIXME: Derive it from language passed to the start call
 		return Locale.getDefault();
 	}
 
@@ -104,4 +192,8 @@ public class OpaqueRequest extends WebRequest {
 	public Object getContainerRequest() {
 		return null;
 	}
+
+	public OpaqueQuestion getQuestion() {
+		return question;
+	}	
 }

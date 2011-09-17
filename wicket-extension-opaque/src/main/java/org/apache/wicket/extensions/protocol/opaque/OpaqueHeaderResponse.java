@@ -60,9 +60,17 @@ public class OpaqueHeaderResponse extends HeaderResponse {
 	Response real;
 	StringResponse buf = new StringResponse();
 	Response active = buf;
+	OpaqueResponse opaqueResponse;
 
 	OpaqueHeaderResponse(IHeaderResponse response) {
 		real = response.getResponse();
+		
+		RequestCycle requestCycle = RequestCycle.get();
+		if(!(requestCycle.getOriginalResponse() instanceof OpaqueResponse))
+			throw new IllegalArgumentException(
+					"Opaque header extractor can only be used with OpaqueResponse");
+
+		opaqueResponse = (OpaqueResponse)requestCycle.getOriginalResponse();
 	}
 
 	@Override
@@ -153,7 +161,7 @@ public class OpaqueHeaderResponse extends HeaderResponse {
 				.getResponseFilters()) {
 			f.filter(a);
 		}
-		OpaqueReturn.get().setHeader(a.toString());
+		opaqueResponse.setHeader(a.toString());
 		buf.reset();
 	}
 

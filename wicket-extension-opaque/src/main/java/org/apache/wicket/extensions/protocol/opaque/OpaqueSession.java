@@ -22,75 +22,58 @@
 package org.apache.wicket.extensions.protocol.opaque;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.wicket.Application;
-import org.apache.wicket.MetaDataKey;
-import org.apache.wicket.Session;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.extensions.protocol.opaque.OpaqueRequest.CallType;
+import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.request.Request;
 
 import com.googlecode.ounit.opaque.OpaqueException;
 import com.googlecode.ounit.opaque.Results;
 
-public class OpaqueSession {
-	public final static String SESSION_PARAMETER_NAME = "opaque:wicket:" + Session.SESSION_ATTRIBUTE_NAME;
-	public final static String PAGE_PARAMETER_NAME = "wicketpage";
-	public final static String MOODLE_EVENT_PARAMETER_NAME = "event";
+public class OpaqueSession extends WebSession {
+	private static final long serialVersionUID = 1L;
+	
 	public final static int DEFAULT_MARKS = 10;
 	
-	String wicketPage;
-	String wicketSessionId;
-	String engineSessionId;
-	
-	PageParameters initialParams;
-	PageParameters postParameters;
-	List<String> cachedResources = new ArrayList<String>();
-	int maxMarks = DEFAULT_MARKS;
-	double score = 0;
-	boolean closed;
-	Results results;
-	
-	/** meta data for session data */
-	private static final MetaDataKey<OpaqueSession> OPAQUE_SESSION_KEY = new MetaDataKey<OpaqueSession>()
-	{
-		private static final long serialVersionUID = 1L;
-	};
-	
-	public static OpaqueSession get() {
-		return Application.get().getMetaData(OPAQUE_SESSION_KEY);
-	}
-	
-	public static void set(OpaqueSession session) {
-		Application.get().setMetaData(OPAQUE_SESSION_KEY, session);
-	}
-	
-	public static void detach() {
-		Application.get().setMetaData(OPAQUE_SESSION_KEY, null);
-	}
-	
+	protected OpaqueQuestion question;
+	protected List<String> cachedResources;
+	protected int maxMarks = DEFAULT_MARKS;
+	protected double score = 0;
+	protected boolean closed;
+
 	// TODO: This has a potential to consume up a lot of memory so it's not enabled
 	// until the real need surfaces.
 	//LinkedList<PageParameters> history = new LinkedList<PageParameters>();
 	
-	public OpaqueSession(String[] initialParamNames, String[] initialParamValues)
-			throws OpaqueException {
-		
-		initialParams = arraysToParameters(initialParamNames, initialParamValues);
-	}
-	
-	private PageParameters arraysToParameters(String[] names, String[] values)
-			throws OpaqueException {
-		
-		PageParameters rv = new PageParameters();
-		if(values.length != values.length)
-			throw new OpaqueException("The count of parameter names and values does not match");
+	public OpaqueSession(Request request) {
+		super(request);
 
-		for(int i = 0; i <  names.length; i++) {
-			rv.add(names[i], values[i]);
+		if (request instanceof OpaqueRequest) {
+			OpaqueRequest rq = (OpaqueRequest) request;
+
+			if (rq.getCallType() != CallType.START)
+				throw new IllegalArgumentException(
+						"New sessions must be created from START requests." +
+						"Stale session ID?");
+
+			this.question = rq.getQuestion();
+
+			cachedResources = new ArrayList<String>(rq.getCachedResources());
+			
+			bind(); // Make sure session ID is generated!
+		} else {
+			// TODO: Remove the exception when it becomes possible to run
+			// OpaqueApps with the normal WicketFilter
+			// (for testing purposes)
+			throw new WicketRuntimeException(
+					"Opaque application only works with OpaqueRequest");
 		}
-		return rv;
 	}
-	
+
+	/*
 	public String getWicketPage() {
 		return wicketPage;
 	}
@@ -98,46 +81,20 @@ public class OpaqueSession {
 	public void setWicketPage(String wicketPage) {
 		this.wicketPage = wicketPage;
 	}
-	
-	public String getWicketSessionId() {
-		return wicketSessionId;
-	}
-	
-	public void setWicketSessionId(String wicketSessionId) {
-		this.wicketSessionId = wicketSessionId;
-	}
+	*/
 	
 	public List<String> getCachedResources() {
-		return cachedResources;
+		return Collections.unmodifiableList(cachedResources);
 	}
 
-	public void setCachedResources(List<String> cachedResources) {
+	void setCachedResources(List<String> cachedResources) {
 		this.cachedResources = cachedResources;
+		dirty();
 	}
-	
-	public void setCachedResources(String [] cachedResources) {
-		this.cachedResources.clear();
-		for(String r : cachedResources) {
-			this.cachedResources.add(r);
-		}
-	}
-
-	public void newPostParameters(String[] names, String[] values) throws OpaqueException {
-		postParameters = arraysToParameters(names, values);
 		
-		setWicketPage(postParameters.get(PAGE_PARAMETER_NAME).toString());
-		setWicketSessionId(postParameters.get(SESSION_PARAMETER_NAME).toString());
-		postParameters.remove(PAGE_PARAMETER_NAME);
-		postParameters.remove(SESSION_PARAMETER_NAME);
-		postParameters.remove(MOODLE_EVENT_PARAMETER_NAME);
-		
-		// TODO: This has a potential to consume up a lot of memory so it's not enabled
-		// until the real need surfaces.
-		//history.add(postParameters);
-	}
-
-	public PageParameters getPostParameters() {
-		return postParameters;
+	void addCachedResource(String resource) {
+		this.cachedResources.add(resource);
+		dirty();
 	}
 	
 	public boolean isClosed() {
@@ -146,6 +103,7 @@ public class OpaqueSession {
 	
 	public void setClosed(boolean closed) {
 		this.closed = closed;
+		dirty();
 	}
 	
 	public int getMaxMarks() {
@@ -154,28 +112,23 @@ public class OpaqueSession {
 	
 	public void setMaxMarks(int marks) {
 		this.maxMarks = marks;
+		dirty();
 	}
 	
-	public String getEngineSessionId() {
-		return engineSessionId;
-	}
-	
-	public void setEngineSessionId(String engineSessionId) {
-		this.engineSessionId = engineSessionId;
-	}
-	
+	/**
+	 * Build an OPAQUE results object from the session data. Override this
+	 * method in your own session if you wish to pass more details back to the LMS.
+	 * 
+	 * @return a new results object containing only a single score returned
+	 *         by {@link #getMarks()}
+	 * @throws OpaqueException
+	 */
+
 	public Results getResults() throws OpaqueException {
-		if(results == null) {
-			results = new Results();
-		}
-		
+		Results results = new Results();
 		results.addScore(getMarks(), Results.ATTEMPTS_UNSET);
 
 		return results;
-	}
-	
-	public void setResults(Results results) {
-		this.results = results;
 	}
 	
 	/**
@@ -190,6 +143,7 @@ public class OpaqueSession {
 	
 	public void setScore(double score) {
 		this.score = score;
+		dirty();
 	}
 	
 	/**

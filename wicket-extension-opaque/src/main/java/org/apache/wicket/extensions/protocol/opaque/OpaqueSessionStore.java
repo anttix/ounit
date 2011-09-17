@@ -22,52 +22,70 @@
 package org.apache.wicket.extensions.protocol.opaque;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.wicket.Session;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.session.ISessionStore;
+import org.apache.wicket.util.lang.Args;
 
 public class OpaqueSessionStore implements ISessionStore {
 	//private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 	private final Set<UnboundListener> unboundListeners = new CopyOnWriteArraySet<UnboundListener>();
-	
-	/*
-	final Map<String, Serializable> attributes = Collections
-	.synchronizedMap(new HashMap<String, Serializable>());
-	*/
 
+	final Map<String, Map<String, Serializable>> attributes = Collections
+			.synchronizedMap(new HashMap<String, Map<String, Serializable>>());
+
+	final Map<String, Session> sessions = Collections
+			.synchronizedMap(new HashMap<String, Session>());
+
+	private Map<String, Serializable> getSessionMap(Request request) {
+		String id = getSessionId(request, false);
+		
+		if(attributes.get(id) == null)
+			throw new WicketRuntimeException("Stale session!");
+		
+		return attributes.get(id);
+	}
+	
+	public int getActiveSessionCount() {
+		return sessions.size();
+	}
+	
 	@Override
 	public Serializable getAttribute(Request request, String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return getSessionMap(request).get(name);
 	}
 
 	@Override
 	public List<String> getAttributeNames(Request request) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<String>(getSessionMap(request).keySet());
 	}
 
 	@Override
 	public void setAttribute(Request request, String name, Serializable value) {
-		// TODO Auto-generated method stub
-		
+		getSessionMap(request).put(name, value);		
 	}
 
 	@Override
 	public void removeAttribute(Request request, String name) {
-		// TODO Auto-generated method stub
-		
+		getSessionMap(request).remove(name);		
 	}
 
 	@Override
 	public void invalidate(Request request) {
-		// TODO Auto-generated method stub
+		String id = getSessionId(request, false);
+		attributes.remove(id);
 		
+		// TODO: 
 		//for (UnboundListener l : unboundListeners) {
 		//	l.sessionUnbound(sessId);
 		//}
@@ -76,27 +94,43 @@ public class OpaqueSessionStore implements ISessionStore {
 
 	@Override
 	public String getSessionId(Request request, boolean create) {
-		// TODO Auto-generated method stub
-		return null;
+		//if(request instanceof OpaqueRequest)
+		OpaqueRequest rq = (OpaqueRequest)request;
+		String id = ((OpaqueRequest)request).getSessionId();
+		
+		if(id == null && create) {
+			if(rq.callType != OpaqueRequest.CallType.START) {
+				throw new WicketRuntimeException("Stale OPAQUE session!");
+			}
+			id = UUID.randomUUID().toString().replaceAll("-", "");
+			rq.setSessionId(id);
+		}
+
+		return id;
 	}
 
 	@Override
 	public Session lookup(Request request) {
-		// TODO Auto-generated method stub
-		return null;
+		String id = getSessionId(request, false);
+		Session rv = sessions.get(id);
+		OpaqueRequest rq = (OpaqueRequest)request;
+		if(rq.callType == OpaqueRequest.CallType.PROCESS && rv == null)
+			/* LMS should now request a new question session and replay all user responses */
+			throw new WicketRuntimeException("Stale OPAQUE session!");
+
+		return rv;
 	}
 
 	@Override
 	public void bind(Request request, Session newSession) {
-		// TODO
-		//if(request instanceof OpaqueRequest) {
-		//}		
+		String id = getSessionId(request, false);
+		Args.notEmpty(id, "Session ID");
+		sessions.put(id, newSession);
 	}
 
 	@Override
 	public void flushSession(Request request, Session session) {
-		// TODO Auto-generated method stub
-		
+		bind(request, session);
 	}
 
 	@Override

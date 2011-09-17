@@ -34,25 +34,18 @@ public class MockHomePage extends MockBasePage {
 		log.debug("MockHomePage()");
 		
 		setVersioned(false);
-		
-		final MockModelObject m = (MockModelObject)getDefaultModelObject();
 
 		mainForm.add(new TextField<Integer>("nr"));
 		mainForm.add(new Button("go") {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void onSubmit() {
-				setResponsePage(MockHomePage.class);
-				
-				OpaqueSession os = OpaqueSession.get();
 				log.debug("Go clicked");
+
 				if(m.getNr() == -1)
 				    setResponsePage(MockSecondPage.class);
-				else if(m.getNr() < 4) {
-					os.setMaxMarks(3);
-					os.setScore(m.getNr() * 33.3);
-					os.setClosed(true);
-				}
+				else
+					setResponsePage(MockHomePage.class);
 			}
 		});
 	}

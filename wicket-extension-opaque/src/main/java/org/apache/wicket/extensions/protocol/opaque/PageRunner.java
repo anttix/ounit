@@ -30,6 +30,7 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.IPageManagerProvider;
 import org.apache.wicket.IRequestCycleProvider;
+import org.apache.wicket.Session;
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.application.IComponentInstantiationListener;
@@ -41,17 +42,17 @@ import org.apache.wicket.page.IPageManagerContext;
 import org.apache.wicket.protocol.http.mock.MockServletContext;
 import org.apache.wicket.request.IExceptionMapper;
 import org.apache.wicket.request.IRequestHandler;
-import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.settings.IRequestCycleSettings.RenderStrategy;
 import org.apache.wicket.util.lang.Args;
 
 import com.googlecode.ounit.opaque.OpaqueException;
+import com.googlecode.ounit.opaque.ProcessReturn;
 import com.googlecode.ounit.opaque.Resource;
 import com.googlecode.ounit.opaque.ReturnBase;
+import com.googlecode.ounit.opaque.StartReturn;
 
 public class PageRunner {
 	private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
@@ -148,74 +149,47 @@ public class PageRunner {
 				return new MockPageManager();
 			}
 		});
-		
-		//app.getResourceSettings().setResourcePollFrequency(null);
 	}
 	
 	/**
 	 * Create a request cycle and execute it. Follows redirects if necessary.
 	 * 
-	 * @param url
-	 *            page URL
-	 * @return a RequestCycle object, null if URL was not resolved to a wicket
-	 *         request
+	 * @param request
+	 *            the request
+	 * @return a RequestCycle object, null if request URL was not resolved to a
+	 *         wicket request
 	 */
-	private RequestCycle processRequest(final String url) {
-		return processRequest(url, null);
-	}
-	
-	/**
-	 * Create a request cycle and execute it. Follows redirects if necessary.
-	 * 
-	 * @param url
-	 *            page URL
-	 * @param postParameters
-	 *            POST parameters
-	 * @return a RequestCycle object, null if URL was not resolved to a wicket
-	 *         request
-	 */
-	private RequestCycle processRequest(final String url,
-			final IRequestParameters postParameters) {
+	private RequestCycle processRequest(OpaqueRequest request) {
 		
-		Args.notNull(url, "wicketPage");
+		Args.notNull(request, "request");
 		
-		OpaqueRequest request;
 		OpaqueResponse response;
 		RequestCycle requestCycle;
 		
 		int redirectCount = 0;
-		Url nextUrl = Url.parse(url);
 		do {
 			if(redirectCount > 100)
 				throw new WicketRuntimeException("Infinite redirect detected!");
 			
-			log.debug("Rendering {}", nextUrl);
+			log.debug("Rendering {}", request.getUrl());
 			
 			// Setup request cycle
-			request = new OpaqueRequest();
 			response = new OpaqueResponse();
 			requestCycle = application.createRequestCycle(request, response);
-			
-			// FIXME: Are these lines actually required?
-			requestCycle.setCleanupFeedbackMessagesOnDetach(false);
-			ThreadContext.setRequestCycle(requestCycle);
-			requestCycle.scheduleRequestHandlerAfterCurrent(null);
-			
-			request.setUrl(nextUrl);
-			request.setPostParameters(postParameters);
-			
+
 			if (!requestCycle.processRequestAndDetach()) {
 				return null; // did not resolve to a wicket request
 			}
 			
 			if (response.isRedirect()) {
-				nextUrl = Url.parse(response.getRedirectLocation());
+				Url nextUrl = Url.parse(response.getRedirectLocation());
 				if (!nextUrl.isAbsolute()) {
 					Url newUrl = new Url(request.getClientUrl().getSegments(),
 							nextUrl.getQueryParameters());
 					newUrl.concatSegments(nextUrl.getSegments());
 					nextUrl = newUrl;
 				}
+				request = new OpaqueRequest(request.getSessionId(), nextUrl);
 			}
 			redirectCount++;
 		} while(response.isRedirect());
@@ -223,72 +197,65 @@ public class PageRunner {
 		return requestCycle;
 	}
 	
-	public void doPage(OpaqueSession rq, ReturnBase rv) throws OpaqueException {
+	public void execute(final OpaqueRequest request, final ReturnBase rv)
+			throws OpaqueException {
+		final ThreadContext previousThreadContext = ThreadContext.detach();
+
 		try {
 			ThreadContext.setApplication(application);
-			OpaqueReturn rh = OpaqueReturn.get();
-			OpaqueSession.set(rq);
-			
-			rh.setCachedResources(rq.getCachedResources());
-			rh.setEngineSessionId(rq.getEngineSessionId());
-			
-			String pageUrl = rq.getWicketPage();
-			if(pageUrl == null) {
-				log.debug("Rendering HomePage");
-				pageUrl = "";
-			} else {
-				log.debug("Rendering URL: {}", pageUrl);
-				
-				// FIXME: This is a seriously ugly temporary hack!
-				if(!pageUrl.startsWith("?") && !pageUrl.startsWith("wicket/")) {
-					if(pageUrl.startsWith("page?"))
-						pageUrl = "wicket/" + pageUrl;
-					else
-						pageUrl = "wicket/bookmarkable/" + pageUrl;
-				}
-
-			}
+			log.debug("Rendering URL: {}", request.getUrl());
 
 			// Render the page
 			RequestCycle cycle;
-			PageParameters postParameters = rq.getPostParameters();
-			if(postParameters != null)
-				cycle = processRequest(pageUrl, new PageRequestParameters(
-					postParameters));
-			else
-				cycle = processRequest(pageUrl);
+			cycle = processRequest(request);
 
 			if(cycle == null)
-				throw new WicketRuntimeException("Can't resolve URL: " + pageUrl);
+				throw new WicketRuntimeException("Can't resolve URL: "
+						+ request.getUrl());
 			
 			OpaqueResponse r = (OpaqueResponse)cycle.getResponse();
-			
-			// TODO: Why does this throw NullPointers 
-			// at org.apache.wicket.Session.getId(Session.java:368)
-			//log.debug("Wiket session ID = {}", renderer.getSession().getId());
+			OpaqueSession session = (OpaqueSession)Session.get();
 
-			rv.setXHTML(r.getCharacterContent());
-			rv.setHead(rh.getHeader());
+			if(rv instanceof StartReturn) {
+				((StartReturn)rv).setQuestionSession(session.getId());
+			}
 			
-			String css = rh.getCSS();		
+			if(session.isClosed() && rv instanceof ProcessReturn) {
+				((ProcessReturn)rv).setResults(session.getResults());
+				// We do not set the questionEnd flag here because it will
+				// discard the output HTML. 
+			}
+			
+			rv.setXHTML(r.getCharacterContent());
+			rv.setHead(r.getHeader());
+			
+			String css = r.getCSS();		
 			if(css.length() > 0) {
 				rv.setCSS(css);
 			}
 			
 			// Render referenced resources
 			// TODO: allow resources to reference more resources
-			Map<String, Url> rm = rh.getNewResources(); 
-			List<Resource> newResources = new ArrayList<Resource>(rm.size());
+			Map<String, Url> rm = r.getReferencedResources(); 
+			List<Resource> newResources = new ArrayList<Resource>();
 			
 			for(String name: rm.keySet()) {
-				cycle = processRequest(rm.get(name).toString());
+				if(session.getCachedResources().contains(name))
+					continue;
+				
+				OpaqueRequest resourceRequest = new OpaqueRequest(
+						request.getSessionId(), rm.get(name));
+				
+				cycle = processRequest(resourceRequest);
 				if(cycle == null)
 					// FIXME: Should we throw here?
 					continue;
 				r = (OpaqueResponse)cycle.getResponse();
 				newResources.add(new Resource(name, r.getContentType(),
 						r.getBinaryContent()));
-				// TODO: rh.getCachedResources().add(name);
+
+				session.addCachedResource(name);
+				session.dirty();
 			}
 			
 			if(newResources.size() > 0) {
@@ -298,9 +265,7 @@ public class PageRunner {
 		}
 		finally
 		{
-			OpaqueReturn.detach();
-			OpaqueSession.detach();
-			ThreadContext.detach();
+			ThreadContext.restore(previousThreadContext);
 		}
 	}
 }

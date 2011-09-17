@@ -28,10 +28,12 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 
 public class MockBasePage extends OpaquePage {
 	private static final long serialVersionUID = 1L;
+	final MockModelObject m;
 
 	public MockBasePage(PageParameters parameters) {
 		super(parameters);
 		setDefaultModel(new CompoundPropertyModel<MockModelObject>(new MockModelObject()));
+		m = (MockModelObject)getDefaultModelObject();
 	}
 	
 	@Override
@@ -42,5 +44,16 @@ public class MockBasePage extends OpaquePage {
 				MockHomePage.class, "mockstyle.css"));
 		response.renderJavaScriptReference(new PackageResourceReference(
 				MockHomePage.class, "mockscript.js"));
+	}
+	
+	@Override
+	protected void onMainFormSubmit() {
+		OpaqueSession os = getOpaqueSession();
+		int nr = m.getNr();
+		if(nr >= 0 && nr < 10) {
+			//os.setMaxMarks(3);
+			os.setScore(nr * 33.3);
+			os.setClosed(true);
+		}
 	}
 }

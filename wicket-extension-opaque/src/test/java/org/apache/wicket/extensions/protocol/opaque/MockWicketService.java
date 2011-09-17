@@ -28,7 +28,6 @@ import javax.jws.soap.SOAPBinding.Style;
 import org.apache.wicket.Page;
 
 import com.googlecode.ounit.opaque.OpaqueException;
-import com.googlecode.ounit.opaque.QuestionInfo;
 
 @WebService(serviceName="MockWicketService")
 @SOAPBinding(style = Style.RPC)
@@ -39,14 +38,14 @@ public class MockWicketService extends WicketOpaqueService {
 			public Class<? extends Page> getHomePage() {
 				return MockHomePage.class;
 			}
+
+			@Override
+			public OpaqueQuestion fetchQuestion(String id, String version,
+					String baseUrl) throws OpaqueException {
+
+				// Mock engine responds to any question ID and Version.				
+				return new OpaqueQuestion(id, version, baseUrl);
+			}
 		});
-	}
-	
-	public QuestionInfo fetchQuestionMetadata(String questionID,
-			String questionVersion, String questionBaseURL)
-			throws OpaqueException {
-		
-		// Mock engine responds to any question ID and Version.
-		return new QuestionInfo();
 	}
 }

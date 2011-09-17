@@ -21,40 +21,38 @@
 
 package org.apache.wicket.extensions.protocol.opaque;
 
-import java.util.List;
-import java.util.Set;
-
-import org.apache.wicket.request.IRequestParameters;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Args;
-import org.apache.wicket.util.string.StringValue;
 
-/**
- * Utility class that expresses PageParameters as {@link IRequestParameters}.
- * 
- * @author Antti Andreimann
- */
-public class PageRequestParameters implements IRequestParameters {
-	private final PageParameters parameters;
+import com.googlecode.ounit.opaque.QuestionInfo;
 
-	public PageRequestParameters(final PageParameters parameters) { 
-		Args.notNull(parameters, "parameters");
+public class OpaqueQuestion {
+	protected String id;
+	protected String version;
+	protected String baseUrl;
+	protected QuestionInfo info;
+	
+	public OpaqueQuestion(String id, String version, String baseUrl) {
+		Args.notEmpty(id, "id");
 		
-		this.parameters = parameters;
+		this.id = id;
+		this.version = version;
+		this.baseUrl = baseUrl;
+		this.info = new QuestionInfo();
 	}
-
-	@Override
-	public Set<String> getParameterNames() {
-		return parameters.getNamedKeys();
+	
+	public String getId() {
+		return id;
 	}
-
-	@Override
-	public StringValue getParameterValue(String name) {
-		return parameters.get(name);
+	public String getVersion() {
+		return version;
 	}
-
-	@Override
-	public List<StringValue> getParameterValues(String name) {
-		return parameters.getValues(name);
+	public String getBaseUrl() {
+		return baseUrl;
+	}
+	public QuestionInfo getInfo() {
+		return info;
+	}
+	public void setInfo(QuestionInfo info) {
+		this.info = info;
 	}
 }

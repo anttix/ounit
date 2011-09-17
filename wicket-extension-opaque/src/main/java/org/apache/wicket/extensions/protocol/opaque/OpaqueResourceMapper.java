@@ -21,10 +21,12 @@
 
 package org.apache.wicket.extensions.protocol.opaque;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.handler.resource.ResourceReferenceRequestHandler;
 import org.apache.wicket.response.filter.IResponseFilter;
 import org.apache.wicket.util.lang.Args;
@@ -55,8 +57,16 @@ public class OpaqueResourceMapper implements IRequestMapper {
 		return delegate.getCompatibilityScore(request);
 	}
 
-	public Url mapHandler(IRequestHandler requestHandler) {
+	public Url mapHandler(IRequestHandler requestHandler) { 
 		Url url = delegate.mapHandler(requestHandler);
+		RequestCycle requestCycle = RequestCycle.get();
+		
+		if(!(requestCycle.getOriginalResponse() instanceof OpaqueResponse))
+			throw new WicketRuntimeException(
+					"Opaque resource mapper can only be used with OpaqueResponse");
+		
+		OpaqueResponse response = (OpaqueResponse) requestCycle
+				.getOriginalResponse();
 		
 		/* This is a marvelous piece of ugly hackery!
 		 * OPAQUE uses %%RESOURCES%% as a resource prefix. Of-course the {@link Url}
@@ -69,7 +79,7 @@ public class OpaqueResourceMapper implements IRequestMapper {
 		if(requestHandler instanceof ResourceReferenceRequestHandler) {
 			if(!url.toString().startsWith(PLACEHOLDER_HACK)) {
 				String name = url.toString().replace("wicket/resource/", "").replace('/', '.');
-				OpaqueReturn.get().addNewResource(name, new Url(url));
+				response.addReferencedResource(name, new Url(url));
 				url.getSegments().clear();
 				url.getSegments().add(PLACEHOLDER_HACK);
 				url.getSegments().add(name);
