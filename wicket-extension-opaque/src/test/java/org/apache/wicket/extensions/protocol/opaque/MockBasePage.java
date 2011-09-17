@@ -52,7 +52,8 @@ public class MockBasePage extends OpaquePage {
 		int nr = m.getNr();
 		if(nr >= 0 && nr < 10) {
 			//os.setMaxMarks(3);
-			os.setScore(nr * 33.3);
+			//os.setScore(nr * 33.3);
+			os.setScore(nr * 10);
 			os.setClosed(true);
 		}
 	}
