@@ -23,10 +23,9 @@ package com.googlecode.ounit;
 
 import java.util.List;
 
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.ExternalLink;
+//import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Fragment;
@@ -77,11 +76,16 @@ public class ExplorerTreePanel extends Panel {
 		 * If there is no Read Only nodes to display and the number of read-write nodes is
 		 * reasonable, there is no need to waste space on the project treeview.
 		 */
+
+		// FIXME: Shouldn't access session directly.
+		//        better use a model property.
+		//OunitSession sess = (OunitSession)getPage().getDefaultModelObject();
+		//OunitSession sess = ((BasePage)getPage()).getOunitSession();
+		OunitSession sess = OunitSession.get();
+		
 		setVisible(tree.getRoNodes().size() > 0
 				|| tree.getRwNodes().size() >= 6
-				|| OunitSession.get().hasDownload());
-		
-		// FIXME: Shouldn't access session directly!
+				|| sess.hasDownload());
 	}
 
 	private class Rows extends ListView<ProjectTreeNode> {

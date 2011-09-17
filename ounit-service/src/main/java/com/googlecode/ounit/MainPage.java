@@ -131,7 +131,8 @@ public class MainPage extends BasePage {
 
 		// FIXME: We shouldn't access it directly. Must use model.
 		quizPanel.add(new ExternalLink("download", "%%RESOURCES%%"
-				+ OunitSession.get().getDownloadFileName()));
+				+ getOunitSession().getDownloadFileName()));
+		
 		
 		mainForm.add(new Button("compile") {
 			private static final long serialVersionUID = 1L;

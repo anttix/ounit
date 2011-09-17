@@ -23,22 +23,9 @@ package com.googlecode.ounit;
 
 import java.io.File;
 
-public interface OunitQuestion {
+import org.apache.wicket.extensions.protocol.opaque.OpaqueQuestion;
 
-	public abstract String getId();
-
-	public abstract String getVersion();
-	
-	/**
-	 * Switch to another question version.
-	 * Please note that this will change the source
-	 * directory.
-	 * 
-	 * @param version new version string eg. "1.0"
-	 */
-	public abstract void setVersion(String version);
-
-	public abstract String getBaseURL();
+public interface OunitQuestion extends OpaqueQuestion {
 
 	public abstract String getRevision();
 

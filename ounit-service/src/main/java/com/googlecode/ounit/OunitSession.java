@@ -39,6 +39,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.wicket.extensions.protocol.opaque.OpaqueSession;
+import org.apache.wicket.request.Request;
 
 import com.googlecode.ounit.executor.OunitExecutionRequest;
 import com.googlecode.ounit.executor.OunitResult;
@@ -48,6 +49,13 @@ import com.googlecode.ounit.opaque.Results;
 import com.googlecode.ounit.opaque.Score;
 
 public class OunitSession extends OpaqueSession {
+	private static final long serialVersionUID = 1L;
+	
+	// TODO: Do not allow more than one thread to mess with a single session
+	
+	/* Temporary directory to hold user files (aka sessions) */
+	static final File sessDir = new File(WORKDIR, SESSION_DIR);
+	
 	private transient org.slf4j.Logger _log;
 	private org.slf4j.Logger getLog() {
 		if(_log == null)
@@ -58,26 +66,25 @@ public class OunitSession extends OpaqueSession {
 
 	private File projDir;
 	private List<String> editFiles;
-	private OunitQuestion question;
 	private boolean prepared;
 	private String downloadChecksum;
 	private int attempt = 1;
 	private int maxAttempts = DEFAULT_ATTEMPTS;
 
-	public OunitSession(File projDir, OunitQuestion question,
-			String[] initialParamNames, String[] initialParamValues)
-			throws OpaqueException {
-		super(initialParamNames, initialParamValues);
-		this.projDir = projDir;
-		this.question = question;
+	public OunitSession(Request request) {
+		super(request);
+		this.projDir = new File(sessDir, getId());
+		
+		getLog().debug("Successfully set up new engine session: {}", getId());
 	}
 
 	public static OunitSession get() {
 		return (OunitSession)OpaqueSession.get();
 	}
 	
+	@Override
 	public OunitQuestion getQuestion() {
-		return question;
+		return (OunitQuestion)question;
 	}
 	
 	public File getProjDir() {
@@ -99,11 +106,11 @@ public class OunitSession extends OpaqueSession {
 	/* Sent to LMS by WelcomePage so question revision will be 
 	 * included in replays */ 
 	public String getRevision() {
-		return question.getRevision();
+		return getQuestion().getRevision();
 	}
 
 	public void setRevision(String revision) {
-		question.setRevision(revision);
+		getQuestion().setRevision(revision);
 	}
 
 	/* These read-only properties can be easily recreated on-fly thus there is no
@@ -212,7 +219,7 @@ public class OunitSession extends OpaqueSession {
 	 * @throws OpaqueException
 	 */
 	public void loadModelProps() throws OpaqueException {
-		Properties modelProps = OunitService.getModelProperties(projDir);
+		Properties modelProps = OunitApplication.getModelProperties(projDir);
 	
 		Object marks = modelProps.get(MARKS_PROPERTY);
 		if (marks != null) {
@@ -290,7 +297,7 @@ public class OunitSession extends OpaqueSession {
 		}
 
 		OunitTask task = startPrepare();
-		OunitResult r = OunitService.waitForTask(task);
+		OunitResult r = OunitApplication.waitForTask(task);
 		
 		String errstr = "Failed to prepare question";
 		try {
@@ -351,9 +358,9 @@ public class OunitSession extends OpaqueSession {
 	 * @return
 	 */
 	private OunitTask startPrepare() {
-		getLog().debug("Preparation phase of session {} started", getEngineSessionId());
+		getLog().debug("Preparation phase of session {} started", getId());
 		
-		File qDir = question.getSrcDir();
+		File qDir = getQuestion().getSrcDir();
 		getLog().debug("Found question in {}", qDir);
 		
 		if(projDir.isDirectory())
@@ -363,7 +370,7 @@ public class OunitSession extends OpaqueSession {
 		getLog().debug("Preparing question from {} to {}",
 					new Object[] { qDir, projDir });
 			
-		OunitTask task = OunitService.scheduleTask(new OunitExecutionRequest()
+		OunitTask task = OunitApplication.scheduleTask(new OunitExecutionRequest()
 			.setBaseDirectory(qDir)
 			.setOutputDirectory(projDir.getAbsolutePath())
 			.setLogFile(new File(projDir, PREPARE_LOG)));
@@ -378,7 +385,7 @@ public class OunitSession extends OpaqueSession {
 	 */
 	public boolean build() {
 		OunitTask task = startBuild();
-		OunitResult r = OunitService.waitForTask(task);
+		OunitResult r = OunitApplication.waitForTask(task);
 
 		if(r.hasErrors()) {
 			// Dump compiler errors into results file
@@ -407,11 +414,11 @@ public class OunitSession extends OpaqueSession {
 	 * @return
 	 */
 	private OunitTask startBuild() {
-		getLog().debug("Build of session {} started", getEngineSessionId());
+		getLog().debug("Build of session {} started", getId());
 		
 		if(!projDir.isDirectory()) throw new RuntimeException("Attempted to compile a stale session");
 		
-		OunitTask task = OunitService.scheduleTask(new OunitExecutionRequest()
+		OunitTask task = OunitApplication.scheduleTask(new OunitExecutionRequest()
 			.setBaseDirectory(projDir)
 			.setLogFile(new File(projDir, BUILD_LOG)));
 		
