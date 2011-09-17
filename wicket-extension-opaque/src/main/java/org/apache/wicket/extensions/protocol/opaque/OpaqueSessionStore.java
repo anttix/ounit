@@ -85,11 +85,10 @@ public class OpaqueSessionStore implements ISessionStore {
 		String id = getSessionId(request, false);
 		attributes.remove(id);
 		
-		// TODO: 
-		//for (UnboundListener l : unboundListeners) {
-		//	l.sessionUnbound(sessId);
-		//}
-		
+		for (UnboundListener l : unboundListeners)
+		{
+			l.sessionUnbound(id);
+		}
 	}
 
 	@Override
@@ -136,7 +135,6 @@ public class OpaqueSessionStore implements ISessionStore {
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
