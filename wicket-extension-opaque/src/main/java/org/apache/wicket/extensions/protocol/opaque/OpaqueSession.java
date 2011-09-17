@@ -73,6 +73,10 @@ public class OpaqueSession extends WebSession {
 		}
 	}
 
+	public OpaqueQuestion getQuestion() {
+		return question;
+	}
+
 	public List<String> getCachedResources() {
 		return Collections.unmodifiableList(cachedResources);
 	}
