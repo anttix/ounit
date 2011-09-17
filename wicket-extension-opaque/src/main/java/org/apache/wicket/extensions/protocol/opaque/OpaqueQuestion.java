@@ -21,38 +21,11 @@
 
 package org.apache.wicket.extensions.protocol.opaque;
 
-import org.apache.wicket.util.lang.Args;
-
 import com.googlecode.ounit.opaque.QuestionInfo;
 
-public class OpaqueQuestion {
-	protected String id;
-	protected String version;
-	protected String baseUrl;
-	protected QuestionInfo info;
-	
-	public OpaqueQuestion(String id, String version, String baseUrl) {
-		Args.notEmpty(id, "id");
-		
-		this.id = id;
-		this.version = version;
-		this.baseUrl = baseUrl;
-		this.info = new QuestionInfo();
-	}
-	
-	public String getId() {
-		return id;
-	}
-	public String getVersion() {
-		return version;
-	}
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-	public QuestionInfo getInfo() {
-		return info;
-	}
-	public void setInfo(QuestionInfo info) {
-		this.info = info;
-	}
+public interface OpaqueQuestion {
+	public String getId();
+	public String getVersion();
+	public String getBaseUrl();
+	public QuestionInfo getInfo();
 }

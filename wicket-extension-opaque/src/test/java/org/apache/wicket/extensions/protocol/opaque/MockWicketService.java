@@ -28,6 +28,7 @@ import javax.jws.soap.SOAPBinding.Style;
 import org.apache.wicket.Page;
 
 import com.googlecode.ounit.opaque.OpaqueException;
+import com.googlecode.ounit.opaque.QuestionInfo;
 
 @WebService(serviceName="MockWicketService")
 @SOAPBinding(style = Style.RPC)
@@ -40,11 +41,29 @@ public class MockWicketService extends WicketOpaqueService {
 			}
 
 			@Override
-			public OpaqueQuestion fetchQuestion(String id, String version,
-					String baseUrl) throws OpaqueException {
+			public OpaqueQuestion fetchQuestion(final String id,
+					final String version, final String baseUrl)
+					throws OpaqueException {
 
 				// Mock engine responds to any question ID and Version.				
-				return new OpaqueQuestion(id, version, baseUrl);
+				return new OpaqueQuestion() {
+					@Override
+					public String getId() {
+						return id;
+					}
+					@Override
+					public String getVersion() {
+						return version;
+					}
+					@Override
+					public String getBaseUrl() {
+						return baseUrl;
+					}
+					@Override
+					public QuestionInfo getInfo() {
+						return new QuestionInfo();
+					}
+				};
 			}
 		});
 	}
