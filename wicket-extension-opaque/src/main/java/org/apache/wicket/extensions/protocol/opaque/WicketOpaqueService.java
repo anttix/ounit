@@ -61,8 +61,8 @@ import com.googlecode.ounit.opaque.StartReturn;
 public abstract class WicketOpaqueService implements OpaqueService {
 	private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 	
-	OpaqueApplication app;
-	PageRunner renderer;
+	protected OpaqueApplication app;
+	protected PageRunner renderer;
 
 	public WicketOpaqueService(OpaqueApplication app) {
 		this.app = app;
