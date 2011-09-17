@@ -73,16 +73,6 @@ public class OpaqueSession extends WebSession {
 		}
 	}
 
-	/*
-	public String getWicketPage() {
-		return wicketPage;
-	}
-	
-	public void setWicketPage(String wicketPage) {
-		this.wicketPage = wicketPage;
-	}
-	*/
-	
 	public List<String> getCachedResources() {
 		return Collections.unmodifiableList(cachedResources);
 	}
