@@ -174,7 +174,7 @@ public class OpaqueRequest extends WebRequest {
 	@Override
 	public Url getClientUrl() {
 		// We want Wicket to always generate absolute URLs (wicket/...)
-		return Url.parse("/");
+		return new Url();
 	}
 
 	@Override
