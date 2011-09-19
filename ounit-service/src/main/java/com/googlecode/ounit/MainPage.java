@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.link.ExternalLink;
+
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.PropertyModel;
@@ -129,11 +129,9 @@ public class MainPage extends BasePage {
 			}
 		});
 
-		// FIXME: We shouldn't access it directly. Must use model.
-		quizPanel.add(new ExternalLink("download", "%%RESOURCES%%"
-				+ getOunitSession().getDownloadFileName()));
-		
-		
+		// FIXME: We shouldn't access it directly. Should use model or something
+		quizPanel.add(new QuestionDownloadLink("download"));
+
 		mainForm.add(new Button("compile") {
 			private static final long serialVersionUID = 1L;
 			@Override

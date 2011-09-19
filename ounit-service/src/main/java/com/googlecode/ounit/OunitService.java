@@ -39,4 +39,84 @@ public class OunitService extends WicketOpaqueService {
 
 		log.debug("OunitService()");
 	}
+
+	/*
+	@Override
+	public StartReturn start(String questionID, String questionVersion,
+			String questionBaseURL, String[] initialParamNames,
+			String[] initialParamValues, String[] cachedResources)
+			throws OpaqueException {
+		
+		log.debug("start({}, {}, {}, {}, {}, {})", new Object[] { questionID,
+				questionVersion, questionBaseURL, initialParamNames,
+				initialParamValues, cachedResources });
+
+		// Do not allow more than one thread to mess with a single session
+		SessionLock lock = null;
+		assert lock != null : "Engine session was not set up properly";
+		
+		synchronized (lock) {
+			StartReturn rv = super.start(questionID, questionVersion,
+					questionBaseURL, initialParamNames, initialParamValues,
+					cachedResources);
+			return rv;
+		}				
+	}
+
+	@Override
+	public ProcessReturn process(String questionSession, String[] names,
+			String[] values) throws OpaqueException {
+		
+		log.debug("process({}, {}, {}, {}, {}, {})", new Object[] {
+				questionSession, names, values });
+		
+		// Do not allow more than one thread to mess with a single session
+		SessionLock lock = null;
+		assert lock != null : "Stale session";
+		
+		synchronized (lock) {
+
+			ProcessReturn rv = super.process(questionSession, names, values);
+			
+			// FIXME: Ugly, ugly, ugly hack!
+			String fname = context.getDownloadFileName();
+			if (fname != null && !context.getCachedResources().contains(fname)) {
+				try {
+					FileInputStream is = new FileInputStream(context.getDownloadFile());
+					int len = (int) is.getChannel().size();
+					byte[] buf = new byte[len];
+					is.read(buf);
+					is.close();
+					Resource r = new Resource(fname,
+							"application/octet-stream", buf);
+					Resource[] rs = rv.getResources();
+					int rlen = rs == null ? 0 : rs.length;
+					Resource[] newrs = new Resource[rlen + 1];
+					if (rlen > 0)
+						System.arraycopy(rs, 0, newrs, 0, rlen);
+					newrs[rlen] = r;
+					rv.setResources(newrs);
+				} catch (Exception e) {
+					throw new RuntimeException(
+							"Error creating download resource", e);
+				}
+			}
+			
+			return rv;
+		}
+	}
+
+	@Override
+	public void stop(String questionSession) throws OpaqueException {
+		log.debug("stop({})", questionSession);
+
+		SessionLock lock = null;
+		synchronized(lock) {
+			super.stop(questionSession);
+			// FIXME: This should be in some listener
+			deleteDirectory(new File(OunitSession.sessDir, questionSession));
+		}
+	}
+	*/
+
 }
