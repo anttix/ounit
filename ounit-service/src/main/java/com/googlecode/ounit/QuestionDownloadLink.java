@@ -55,7 +55,7 @@ public class QuestionDownloadLink extends ResourceLink<Void> {
 			}
 		}
 	}
-	
+
 	public QuestionDownloadLink(String id) {
 		super(id, new ResourceReference(QuestionDownloadLink.class, "download") {
 			private static final long serialVersionUID = 1L;
@@ -66,5 +66,10 @@ public class QuestionDownloadLink extends ResourceLink<Void> {
 				return resource;
 			}
 		});
+	}
+
+	@Override
+	protected boolean getStatelessHint() {
+		return true;
 	}
 }
