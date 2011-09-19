@@ -45,6 +45,12 @@ import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
+import org.apache.wicket.request.resource.caching.FilenameWithVersionResourceCachingStrategy;
+import org.apache.wicket.request.resource.caching.IResourceCachingStrategy;
+import org.apache.wicket.request.resource.caching.version.CachingResourceVersion;
+import org.apache.wicket.request.resource.caching.version.IResourceVersion;
+import org.apache.wicket.request.resource.caching.version.MessageDigestResourceVersion;
+import org.apache.wicket.request.resource.caching.version.RequestCycleCachedResourceVersion;
 import org.apache.wicket.settings.IRequestCycleSettings.RenderStrategy;
 import org.apache.wicket.util.lang.Args;
 
@@ -141,6 +147,27 @@ public class PageRunner {
 		
 		/* Add our mapper between the app and rest of the bunch */
 		app.setRootRequestMapper(new OpaqueResourceMapper(app.getRootRequestMapper()));
+		
+		/*
+		 * Force MD5 digest based versions to be included in resource filenames
+		 * ({@see org.apache.wicket.settings.def.ResourceSettings}) This is
+		 * required to make sure resource changes are picked up and disk space
+		 * on the LMS side is used sparingly (all resources passed to the LMS
+		 * will be cached on it's local disk and as of 09/2011 Moodle has no
+		 * garbage collection so they stay there forever).
+		 */
+		final IResourceVersion resourceVersion;
+		final IResourceCachingStrategy resourceCachingStrategy;
+		if (app.usesDevelopmentConfig()) {
+			resourceVersion = new RequestCycleCachedResourceVersion(
+					new MessageDigestResourceVersion());
+		} else {
+			resourceVersion = new CachingResourceVersion(
+					new MessageDigestResourceVersion());
+		}
+		resourceCachingStrategy = new FilenameWithVersionResourceCachingStrategy(
+				resourceVersion);
+		app.getResourceSettings().setCachingStrategy(resourceCachingStrategy);
 		
 		/* TODO: Create our own page manager */
 		app.setPageManagerProvider(new IPageManagerProvider() {
