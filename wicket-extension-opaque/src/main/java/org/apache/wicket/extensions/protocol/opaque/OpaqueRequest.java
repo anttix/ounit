@@ -39,6 +39,7 @@ import org.apache.wicket.util.time.Time;
 public class OpaqueRequest extends WebRequest {
 	public final static String PAGE_PARAMETER_NAME = "wicketpage";
 	public final static String MOODLE_EVENT_PARAMETER_NAME = "event";
+	public final static String MOODLE_FINISH_PARAMETER_NAME = "-finish";
 
 	public enum CallType {
 		START, PROCESS, OTHER
@@ -90,6 +91,13 @@ public class OpaqueRequest extends WebRequest {
 				// TODO: Do something with it (eg. detect replay)
 				continue;
 			}
+			
+			if(names[i].equals(MOODLE_FINISH_PARAMETER_NAME)) {
+				setUrl("");
+				postParameters.add("finish", "true");
+				continue;
+			}
+			
 			if(names[i].equals(PAGE_PARAMETER_NAME)) {
 				String pageUrl = values[i];
 				
