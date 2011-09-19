@@ -21,6 +21,7 @@
 
 package org.apache.wicket.extensions.protocol.opaque;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,12 +48,16 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.cycle.RequestCycleContext;
 import org.apache.wicket.request.resource.caching.FilenameWithVersionResourceCachingStrategy;
 import org.apache.wicket.request.resource.caching.IResourceCachingStrategy;
+import org.apache.wicket.request.resource.caching.IStaticCacheableResource;
+import org.apache.wicket.request.resource.caching.ResourceUrl;
 import org.apache.wicket.request.resource.caching.version.CachingResourceVersion;
 import org.apache.wicket.request.resource.caching.version.IResourceVersion;
 import org.apache.wicket.request.resource.caching.version.MessageDigestResourceVersion;
 import org.apache.wicket.request.resource.caching.version.RequestCycleCachedResourceVersion;
 import org.apache.wicket.settings.IRequestCycleSettings.RenderStrategy;
 import org.apache.wicket.util.lang.Args;
+import org.apache.wicket.util.resource.IResourceStream;
+import org.apache.wicket.util.string.Strings;
 
 import com.googlecode.ounit.opaque.OpaqueException;
 import com.googlecode.ounit.opaque.ProcessReturn;
@@ -253,13 +258,9 @@ public class PageRunner {
 				// discard the output HTML. 
 			}
 			
-			rv.setXHTML(r.getCharacterContent());
-			rv.setHead(r.getHeaderContributions());
-			
-			String css = r.getCSS();		
-			if(css.length() > 0) {
-				rv.setCSS(css);
-			}
+			CharSequence body = r.getCharacterContent();
+			CharSequence head = r.getCSS();
+			CharSequence css = r.getCSS();
 			
 			// Render referenced resources
 			// TODO: allow resources to reference more resources
@@ -270,19 +271,46 @@ public class PageRunner {
 				if(session.getCachedResources().contains(name))
 					continue;
 				
+				String sessionId = request.getSessionId();
+				
 				OpaqueRequest resourceRequest = new OpaqueRequest(
-						request.getSessionId(), rm.get(name));
+						sessionId, rm.get(name));
 				
 				cycle = processRequest(resourceRequest);
 				if(cycle == null)
 					// FIXME: Should we throw here?
 					continue;
 				r = (OpaqueResponse)cycle.getResponse();
-				newResources.add(new Resource(name, r.getContentType(),
-						r.getBinaryContent()));
+				
+				byte [] data = r.getBinaryContent();
+				
+				/* Handle dynamically generated resources */
+				if(name.startsWith(sessionId)) {
+					String fname = r.getFileName();
+
+					if(fname == null)
+						fname = "resource-data";
+					
+					fname = decorateFileName(fname, data);
+
+					body = Strings.replaceAll(body, name, fname);
+					head = Strings.replaceAll(head, name, fname);
+					css = Strings.replaceAll(css, name, fname);
+
+					name = fname;
+				}
+
+				newResources.add(new Resource(name, r.getContentType(), data));
 
 				session.addCachedResource(name);
 				session.dirty();
+			}
+
+			rv.setXHTML(body.toString());
+			rv.setHead(head.toString());
+			
+			if(css.length() > 0) {
+				rv.setCSS(css.toString());
 			}
 			
 			if(newResources.size() > 0) {
@@ -294,5 +322,31 @@ public class PageRunner {
 		{
 			ThreadContext.restore(previousThreadContext);
 		}
+	}
+
+	private String decorateFileName(final String fileName, final byte[] data) {
+		Args.notNull(fileName, "fileName");
+		
+		ResourceUrl url = new ResourceUrl(fileName, null);
+		IResourceCachingStrategy rc =
+			new FilenameWithVersionResourceCachingStrategy(
+				new MessageDigestResourceVersion());
+		
+		rc.decorateUrl(url, new IStaticCacheableResource() {
+			private static final long serialVersionUID = 1L;
+			@Override
+			public void respond(Attributes attributes) {
+			}
+			@Override
+			public IResourceStream getCacheableResourceStream() {
+				return new ByteArrayResourceStream(data);
+			}
+			@Override
+			public Serializable getCacheKey() {
+				return null;
+			}
+		});
+		
+		return url.getFileName();
 	}
 }

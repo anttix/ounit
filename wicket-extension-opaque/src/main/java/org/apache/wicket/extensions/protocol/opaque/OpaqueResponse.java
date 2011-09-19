@@ -45,6 +45,7 @@ public class OpaqueResponse extends WebResponse {
 	private StringBuilder css = new StringBuilder();
 	private StringBuilder head = new StringBuilder();
 	private String pageURL;
+	private String fileName;
 		
 	OpaqueResponse() {
 		stringWriter = new StringWriter();
@@ -104,6 +105,10 @@ public class OpaqueResponse extends WebResponse {
 	public String getHeaderContributions() {
 		return head.toString();
 	}
+	
+	public String getFileName() {
+		return fileName;
+	}
 
 	public void addHeaderContribution(String header) {
 		// TODO: Consider other tags to filter (eg: <meta http-equiv="Content-Type: ...)
@@ -127,6 +132,18 @@ public class OpaqueResponse extends WebResponse {
 	public void clearCookie(Cookie cookie) {
 	}
 
+	@Override
+	public void setAttachmentHeader(String filename) {
+		this.fileName = filename;
+	}
+	
+	@Override
+	public void setInlineHeader(String filename) {
+		this.fileName = filename;
+	}
+	
+	// TODO: Exctact filename from Content-Disposition header
+	
 	@Override
 	public void setHeader(String name, String value) {
 	}

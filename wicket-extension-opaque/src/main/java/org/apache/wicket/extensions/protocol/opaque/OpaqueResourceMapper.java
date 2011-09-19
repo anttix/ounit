@@ -21,13 +21,24 @@
 
 package org.apache.wicket.extensions.protocol.opaque;
 
+import java.util.List;
+
+import org.apache.wicket.IRequestListener;
+import org.apache.wicket.IResourceListener;
+import org.apache.wicket.RequestListenerInterface;
+import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.handler.ListenerInterfaceRequestHandler;
+import org.apache.wicket.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.request.handler.resource.ResourceReferenceRequestHandler;
+import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.caching.IStaticCacheableResource;
 import org.apache.wicket.response.filter.IResponseFilter;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.AppendingStringBuffer;
@@ -41,6 +52,8 @@ import org.apache.wicket.util.string.AppendingStringBuffer;
 public class OpaqueResourceMapper implements IRequestMapper {
 	static final String PLACEHOLDER_HACK = "opaque-resources";
 	static final String OPAQUE_PLACEHOLDER = "%%RESOURCES%%";
+	
+	private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * The original request mapper that will actually resolve the page
@@ -59,6 +72,11 @@ public class OpaqueResourceMapper implements IRequestMapper {
 
 	public Url mapHandler(IRequestHandler requestHandler) { 
 		Url url = delegate.mapHandler(requestHandler);
+		
+		/* No point in trying to extract a resource that we can't map */
+		if(url == null)
+			return url;
+		
 		RequestCycle requestCycle = RequestCycle.get();
 		
 		if(!(requestCycle.getOriginalResponse() instanceof OpaqueResponse))
@@ -76,15 +94,68 @@ public class OpaqueResourceMapper implements IRequestMapper {
 		 * 
 		 * FIXME: Maybe there IS a way to combat this nonsense!
 		 */
-		if(requestHandler instanceof ResourceReferenceRequestHandler) {
-			if(!url.toString().startsWith(PLACEHOLDER_HACK)) {
-				String name = url.toString().replace("wicket/resource/", "").replace('/', '.');
-				response.addReferencedResource(name, new Url(url));
-				url.getSegments().clear();
-				url.getSegments().add(PLACEHOLDER_HACK);
-				url.getSegments().add(name);
+		if (url.toString().startsWith(PLACEHOLDER_HACK)) // Already rewritten
+			return url;
+
+		String name;
+
+		if (requestHandler instanceof RenderPageRequestHandler) {
+			// Do not crawl to other pages
+			return url;
+		} else if (requestHandler instanceof ListenerInterfaceRequestHandler) {
+			RequestListenerInterface listenerInterface = 
+				((ListenerInterfaceRequestHandler) requestHandler)
+				.getListenerInterface();
+			
+			Class<? extends IRequestListener> interfaceClass = listenerInterface
+					.getListenerInterfaceClass();
+			
+			if(interfaceClass.equals(IResourceListener.class)) {
+				name = dynamicName(url);
+			} else {
+				// Do not touch other listener requests
+				return url;
 			}
+			
+		} else if (requestHandler instanceof ResourceReferenceRequestHandler) {
+
+			ResourceReference resourceReference =
+				((ResourceReferenceRequestHandler) requestHandler)
+					.getResourceReference();
+			
+			IResource resource = resourceReference.getResource();
+			
+			if (resource instanceof IVersionedResource) {
+				/*
+				 * Special "versioned" resources have their checksum (aka
+				 * version) embedded into the "versioned" filename.
+				 */
+				name = ((IVersionedResource) resource).getVersionedName();
+			} else if (resource instanceof IStaticCacheableResource) {
+				/*
+				 * Cacheable resources have their checksum (aka version) already
+				 * embedded into the URL. Therefore it is safe to use it as is.
+				 */
+				List<String> segments = url.getSegments();
+				name = segments.get(segments.size() - 1);
+			} else {
+				name = dynamicName(url);
+			}
+
+		} else { 
+			log.debug("Unable to extract data from handler {}",
+					requestHandler.getClass().getName());
+			
+			return url;
 		}
+		
+		/* Queue a request for the referenced resource and replace the URL */		
+		response.addReferencedResource(name, new Url(url));
+		url.getSegments().clear();
+		url.getQueryParameters().clear();
+		url.getSegments().add(PLACEHOLDER_HACK);
+		url.getSegments().add(name);
+		
 		return url;
 	}
 
@@ -109,5 +180,28 @@ public class OpaqueResourceMapper implements IRequestMapper {
 			}
 			
 		};
+	}
+	
+	/**
+	 * Generate names for dynamic resources. The names are prefixed and suffixed
+	 * with the current session ID to make them unique and safe to
+	 * search/replace. PageRunner will later filter the HTML output and replace
+	 * these names with filenames returned by respective resource streams.
+	 * 
+	 * @return a name that is safe to use as a place holder
+	 */
+	private String dynamicName(final Url url) {
+		String id = Session.get().getId();		
+
+		Url newUrl = new Url(url);
+		
+		List <String> segments = newUrl.getSegments();
+
+		if(segments.size() > 1 && segments.get(1).equals("resource"))
+			segments.remove(1);
+		if(segments.size() > 0 && segments.get(0).equals("wicket"))
+			segments.remove(0);
+		
+		return id + newUrl.toString().replace('/', '.').replace('?', '.') + id;
 	}
 }
