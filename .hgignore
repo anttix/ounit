@@ -6,5 +6,4 @@ target
 .project
 .git*
 tmp
-itk
 ounit-work
