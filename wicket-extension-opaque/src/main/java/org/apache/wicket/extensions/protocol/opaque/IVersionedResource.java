@@ -24,12 +24,19 @@ package org.apache.wicket.extensions.protocol.opaque;
 import org.apache.wicket.request.resource.IResource;
 
 /**
- * An OPAQUE specific Resource interface that can be used to bypass default
- * file versioning scheme. Useful for dynamically generated resources that may change
- * somewhat but the changes should not invalidate the cache. An example of such
- * a resource would be a downloadable ZIP archive. If it is regenerated, the
- * order of files in the index can change but it can still contain exactly the
- * same files.
+ * An OPAQUE specific Resource interface that can be used to bypass the default
+ * file versioning scheme. Useful for dynamically generated resources that may
+ * change somewhat but the changes should not invalidate the cache. An example
+ * of such a resource would be a ZIP archive. If it is regenerated the archive
+ * header may change but it will still contain exactly the same files.
+ * Calculating an MD5 digest will result in a different checksum and another
+ * resource will be sent to the LMS despite the fact that files inside the
+ * archive have not changed at all. By using this interface you can use the
+ * contents of the archive to calculate the checksum and thus avoid polluting
+ * the LMS cache with multiple copies of essentially the same file. Please note
+ * that the uniqueness of each resource is determined by the versioned file name
+ * returned by this interface so make sure you generate names that do not
+ * collide. Use with caution!
  * 
  * @author anttix
  * 
