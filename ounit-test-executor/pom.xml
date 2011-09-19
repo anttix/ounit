@@ -41,8 +41,8 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <mavenVersion>3.0.3</mavenVersion>
     <plexusCompilerVersion>1.8.2</plexusCompilerVersion>
-    <wagonVersion>1.0-beta-7</wagonVersion>
-    <aetherVersion>1.12</aetherVersion>
+    <wagonVersion>1.0</wagonVersion>
+    <aetherVersion>1.13</aetherVersion>
   </properties>
 
   <prerequisites>
