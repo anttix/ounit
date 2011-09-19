@@ -254,7 +254,7 @@ public class PageRunner {
 			}
 			
 			rv.setXHTML(r.getCharacterContent());
-			rv.setHead(r.getHeader());
+			rv.setHead(r.getHeaderContributions());
 			
 			String css = r.getCSS();		
 			if(css.length() > 0) {

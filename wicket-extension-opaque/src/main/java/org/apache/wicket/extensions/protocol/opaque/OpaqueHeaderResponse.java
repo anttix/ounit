@@ -161,7 +161,7 @@ public class OpaqueHeaderResponse extends HeaderResponse {
 				.getResponseFilters()) {
 			f.filter(a);
 		}
-		opaqueResponse.setHeader(a.toString());
+		opaqueResponse.addHeaderContribution(a.toString());
 		buf.reset();
 	}
 

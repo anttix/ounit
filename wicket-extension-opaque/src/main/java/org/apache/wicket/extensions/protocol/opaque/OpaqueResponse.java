@@ -101,11 +101,11 @@ public class OpaqueResponse extends WebResponse {
 		return css.toString();
 	}
 	
-	public String getHeader() {
+	public String getHeaderContributions() {
 		return head.toString();
 	}
 
-	public void setHeader(String header) {
+	public void addHeaderContribution(String header) {
 		// TODO: Consider other tags to filter (eg: <meta http-equiv="Content-Type: ...)
 		header = header.replaceAll("<title[^>]*>[^<]*</title>", "");
 		head.append(header);
