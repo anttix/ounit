@@ -50,7 +50,15 @@ public class ProcessReturn extends ReturnBase {
 
 	/**
 	 * @return True if the question has now ended and the test navigator should
-	 * proceed to show a new question.
+	 *   proceed to show a new question.
+	 *   
+	 *   The exact behavior of this flag is counter intuitive. When the flag is
+	 *   set OPAQUE question type implementation in Moodle will stop replaying
+	 *   the question, discard the session (no stop will ever be called) and
+	 *   display the buffered output from the last return. This a historic hack
+	 *   which was required to remove useless "go to the next question" pages
+	 *   from OpenMark questions. Modern engines should not use this flag
+	 *   unless they want the HTML output in response to be discarded.
 	 */
 	public boolean isQuestionEnd() { return questionEnd; }
 	
@@ -58,6 +66,10 @@ public class ProcessReturn extends ReturnBase {
 	 * @return Results from this question if provided this time; null if
 	 *   not provided. (Results are sometimes provided before the end of the
 	 *   question, if the last page shows answers etc.)
+	 *   
+	 *   The exact behavior is counter-intuitive. As soon as results are set,
+	 *   the OPAQUE implementation in Moodle will close the question and user
+	 *   can no longer interact with it.
 	 */
 	public Results getResults() { return results; }
 
