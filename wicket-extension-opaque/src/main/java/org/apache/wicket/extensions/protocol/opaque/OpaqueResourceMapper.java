@@ -33,6 +33,7 @@ import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.handler.BookmarkableListenerInterfaceRequestHandler;
 import org.apache.wicket.request.handler.ListenerInterfaceRequestHandler;
 import org.apache.wicket.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.request.handler.resource.ResourceReferenceRequestHandler;
@@ -102,11 +103,20 @@ public class OpaqueResourceMapper implements IRequestMapper {
 		if (requestHandler instanceof RenderPageRequestHandler) {
 			// Do not crawl to other pages
 			return url;
+		}
+		
+		RequestListenerInterface listenerInterface = null;
+		if (requestHandler instanceof BookmarkableListenerInterfaceRequestHandler) {
+			listenerInterface = 
+				((BookmarkableListenerInterfaceRequestHandler) requestHandler)
+				.getListenerInterface();
 		} else if (requestHandler instanceof ListenerInterfaceRequestHandler) {
-			RequestListenerInterface listenerInterface = 
+			listenerInterface = 
 				((ListenerInterfaceRequestHandler) requestHandler)
 				.getListenerInterface();
-			
+		}
+		
+		if (listenerInterface != null) {
 			Class<? extends IRequestListener> interfaceClass = listenerInterface
 					.getListenerInterfaceClass();
 			
