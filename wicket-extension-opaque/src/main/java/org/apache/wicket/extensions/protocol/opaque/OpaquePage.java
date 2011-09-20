@@ -81,6 +81,11 @@ public abstract class OpaquePage extends WebPage {
     	setVersioned(false);
     	mainForm.setVersioned(false);
     	setStatelessHint(true);
+    	
+    	/* Close session if the LMS asks us to finish */
+		if (parameters.getNamedKeys().contains(
+				OpaqueRequest.MOODLE_FINISH_PARAMETER_NAME))
+			getOpaqueSession().setClosed(true);
     }
     
     private OpaqueResponse getOpaqueResponse() {

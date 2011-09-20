@@ -40,6 +40,7 @@ public class OpaqueRequest extends WebRequest {
 	public final static String PAGE_PARAMETER_NAME = "wicketpage";
 	public final static String MOODLE_EVENT_PARAMETER_NAME = "event";
 	public final static String MOODLE_FINISH_PARAMETER_NAME = "-finish";
+	public final static String MOODLE_SPECIAL_PARAMETER_PREFIX = "-";
 
 	public enum CallType {
 		START, PROCESS, OTHER
@@ -91,10 +92,11 @@ public class OpaqueRequest extends WebRequest {
 				// TODO: Do something with it (eg. detect replay)
 				continue;
 			}
-			
-			if(names[i].equals(MOODLE_FINISH_PARAMETER_NAME)) {
-				setUrl("");
-				postParameters.add("finish", "true");
+			if(names[i].startsWith(MOODLE_SPECIAL_PARAMETER_PREFIX)) {
+				if(getUrl() == null)
+					setUrl(""); // Let HomePage handle the request
+				
+				getUrl().addQueryParameter(names[i], values[i]);
 				continue;
 			}
 			

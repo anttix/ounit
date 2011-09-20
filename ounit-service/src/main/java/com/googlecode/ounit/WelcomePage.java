@@ -45,5 +45,8 @@ public class WelcomePage extends BasePage {
 		        setResponsePage(MainPage.class); 
 			}
 		});
-	}	
+		
+		if(getOunitSession().isClosed())
+			setResponsePage(MainPage.class);
+	}
 }
