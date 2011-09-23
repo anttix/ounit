@@ -76,7 +76,7 @@ public class Tag extends LinkedList<Object> {
     	return rv;
     }
     
-	private String escape(Object o) {
+	protected String escape(Object o) {
 		return o.toString()
 				.replace("&", "&amp;")
 				.replace("<", "&lt;")

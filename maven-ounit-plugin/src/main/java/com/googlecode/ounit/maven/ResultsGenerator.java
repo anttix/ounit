@@ -127,11 +127,9 @@ public class ResultsGenerator {
 				for(FailureDetail f: failureDetails) {
 					Tag failure = new Li();
 					failures.add(failure);
-					for(String line: generateFailureString(f).split("\n")) {
-						if(failure.size() > 0)
-							failure.add(new Br());
-						failure.add(line);
-					}
+					Tag pre = new Pre();
+					pre.add(generateFailureString(f));
+					failure.add(pre);
 				}
 			}
 		}
