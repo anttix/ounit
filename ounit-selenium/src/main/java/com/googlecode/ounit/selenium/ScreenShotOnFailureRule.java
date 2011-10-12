@@ -25,8 +25,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -51,7 +51,7 @@ import org.openqa.selenium.WebDriver;
  * </p>
  * </pre>
  */
-public class ScreenShotOnFailureRule implements MethodRule {
+public class ScreenShotOnFailureRule implements TestRule {
 	private WebDriver driver;
 	
 	public ScreenShotOnFailureRule(WebDriver driver) {
@@ -67,16 +67,15 @@ public class ScreenShotOnFailureRule implements MethodRule {
 	}
 
 	@Override
-	public Statement apply(final Statement base, final FrameworkMethod method,
-			final Object target) {
+	public Statement apply(final Statement base, final Description description) {
 		return new Statement() {
 			@Override
 			public void evaluate() throws Throwable {
 				try {
 					base.evaluate();
 				} catch (Throwable t) {
-					Class<?> c = method.getMethod().getDeclaringClass();
-					takeScreenshot(c.getName() + "." + method.getName());
+					takeScreenshot(description.getClassName() + "."
+							+ description.getMethodName());
 					throw t;
 				}
 			}
@@ -103,7 +102,8 @@ public class ScreenShotOnFailureRule implements MethodRule {
 
 	protected void takeScreenshot(String baseName) {	
 		try {
-			byte[] data = ((TakesScreenshot)getDriver()).getScreenshotAs(OutputType.BYTES);
+			byte[] data = ((TakesScreenshot) getDriver())
+					.getScreenshotAs(OutputType.BYTES);
 			saveFile(baseName + ".png", data);
 		} catch(Throwable t) {
 			// Ignore

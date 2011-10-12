@@ -21,8 +21,8 @@
 
 package com.googlecode.ounit.selenium;
 
-import org.junit.rules.MethodRule;
-import org.junit.runners.model.FrameworkMethod;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.WebDriverException;
 
@@ -41,10 +41,9 @@ import org.openqa.selenium.WebDriverException;
  * </p>
  * </pre>
  */
-public class SanitizeSeleniumExceptionsRule implements MethodRule {
+public class SanitizeSeleniumExceptionsRule implements TestRule {
 	@Override
-	public Statement apply(final Statement base, final FrameworkMethod method,
-			final Object target) {
+	public Statement apply(final Statement base, final Description description) {
 		return new Statement() {
 			@Override
 			public void evaluate() throws Throwable {
