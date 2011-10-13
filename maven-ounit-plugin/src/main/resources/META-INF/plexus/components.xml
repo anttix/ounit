@@ -52,6 +52,9 @@
           <process-test-classes>
             com.googlecode.ounit:maven-ounit-plugin:generate-project
           </process-test-classes>
+          <test>
+            com.googlecode.ounit:maven-ounit-plugin:verify
+          </test>
 <!--
           <process-resources>
             org.apache.maven.plugins:maven-resources-plugin:resources

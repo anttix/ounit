@@ -163,7 +163,105 @@
         </executions>
       </phase>
     </phases>
-  </lifecycle>  
+  </lifecycle>
+
+  <lifecycle>
+    <id>verify-question</id>
+    <phases>
+      <phase>
+        <id>initialize</id>     
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <resources>          
+                <resource> 
+                  <directory>student</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-invoker-plugin:run
+              </goal>
+            </goals>
+            <configuration>
+              <pom>${project.build.directory}/pom.xml</pom>
+              <suppressSummaries>true</suppressSummaries>
+              <noLog>true</noLog> <!-- Show output instead of logging it to a file -->
+              <goals></goals> <!-- Execute default goal -->
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                com.googlecode.ounit:maven-ounit-plugin:check-marks
+              </goal>
+            </goals>
+            <configuration>
+              <marks>0</marks>
+              <outputDirectory>${project.build.directory}/target</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <resources>          
+                <resource> 
+                  <directory>teacher</directory>
+                  <filtering>true</filtering>
+                  <excludes>
+                    <exclude>test/**</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-invoker-plugin:run
+              </goal>
+            </goals>
+            <configuration>
+              <pom>${project.build.directory}/pom.xml</pom>
+              <suppressSummaries>true</suppressSummaries>
+              <noLog>true</noLog> <!-- Show output instead of logging it to a file -->
+              <goals></goals> <!-- Execute default goal -->
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                com.googlecode.ounit:maven-ounit-plugin:check-marks
+              </goal>
+            </goals>
+            <configuration>
+              <marks>100</marks>
+              <outputDirectory>${project.build.directory}/target</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </phase>
+    </phases>
+  </lifecycle>
 </lifecycles>
 
 <!--
