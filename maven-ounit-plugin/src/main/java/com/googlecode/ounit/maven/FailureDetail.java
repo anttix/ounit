@@ -32,7 +32,8 @@ public class FailureDetail {
 		this.name = name;
 		this.fullClassName = fullClassName;
 		this.type = type;
-		this.message = message.replace("%n", "\n");		
+		if(message != null)
+			this.message = message.replace("%n", "\n");		
 	}
 	
 	public String getName() {
