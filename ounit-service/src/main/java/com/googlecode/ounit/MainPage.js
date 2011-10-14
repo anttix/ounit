@@ -41,10 +41,19 @@ function createCodeEditor(area) {
 	  "text/stex"               : "\.(tex|ltx)$",
 	  "application/xml"         : "\.(xml|xsl)$"
 	};
-	
+
+	var indentUnits = {
+	  "text/html"               : 2,
+      "text/javascript"         : 2,
+      "application/json"        : 2,
+      "application/xml"         : 2
+    };
+
 	var options = {
 	  lineNumbers: true,
 	  matchBrackets: true,
+	  indentUnit: 4,
+	  tabMode: 'shift',
 	  onCursorActivity: function(editor) {
 	    if('hlLine' in editor) {
 	      editor.setLineClass(editor.hlLine, null);
@@ -58,6 +67,8 @@ function createCodeEditor(area) {
 		  var re = new RegExp(modes[mode], "i");
 		  if(re.exec(area.title)) {
 		    options["mode"] = mode;
+		    if(mode in indentUnits)
+		      options["indentUnit"] = indentUnits[mode];
 		    break;
 		  }
 	  }
