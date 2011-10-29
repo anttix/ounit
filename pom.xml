@@ -280,6 +280,15 @@
     <module>ounit-server</module>
     <module>ounit-server-standalone</module>
     <module>ounit-selenium</module>
+
+    <!--
+        Do not build questions in reactor. It fails without access to
+        maven-ounit-plugin.
+
+        FIXME: We should be able to build it with invoker
+
     <module>questions</module>
+    -->
+
   </modules>
 </project>
