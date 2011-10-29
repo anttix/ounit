@@ -80,34 +80,6 @@
             <target>1.6</target>
           </configuration>
         </plugin>
-
-        <!-- Instruct Eclipse m2e to ignore ounit plugin goals -->
-        <plugin>
-       	  <groupId>org.eclipse.m2e</groupId>
-       	  <artifactId>lifecycle-mapping</artifactId>
-       	  <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>com.googlecode.ounit</groupId>
-                    <artifactId>maven-ounit-plugin</artifactId>
-                    <versionRange>[1.0-SNAPSHOT,)</versionRange>
-                    <goals>
-                      <goal>setup-paths</goal>
-                      <goal>generate-files</goal>
-                      <goal>generate-project</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -140,4 +112,49 @@
     <module>archetypes/java-simple</module>
     <module>archetypes/java-packaged</module>
   </modules>
+
+
+  <!-- Instruct Eclipse m2e to ignore ounit plugin goals -->
+  <profiles>
+    <profile>
+      <id>m2e</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>com.googlecode.ounit</groupId>
+                        <artifactId>maven-ounit-plugin</artifactId>
+                        <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                        <goals>
+                          <goal>setup-paths</goal>
+                          <goal>generate-files</goal>
+                          <goal>generate-project</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore/>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
 </project>
