@@ -54,14 +54,18 @@ public class TestBase {
 
 	@AfterClass
 	public static void stopServer() {
-		if(ep != null)
+		if(ep != null) {
 			ep.stop();
+			ep = null;
+		}
 	}
 
 	@AfterClass
 	public static void closeBrowser() {
-		if(driver != null)
-			driver.close();
+		if(driver != null) {
+			driver.quit();
+			driver = null;
+		}
 	}
 
 	public static void main(String [] args) {

@@ -245,7 +245,7 @@
       </properties>
     </profile>
     <profile>
-      <id>moodle</id>
+      <id>moodle19</id>
       <activation>
         <property>
           <name>moodle19.url</name>
@@ -261,6 +261,30 @@
                   <moodle19.url>${moodle19.url}</moodle19.url>
                   <moodle19.user>${moodle19.user}</moodle19.user>
                   <moodle19.pass>${moodle19.pass}</moodle19.pass>
+                </systemPropertyVariables>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>moodle21</id>
+      <activation>
+        <property>
+          <name>moodle21.url</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-surefire-plugin</artifactId>
+              <configuration>
+                <systemPropertyVariables>
+                  <moodle21.url>${moodle21.url}</moodle21.url>
+                  <moodle21.user>${moodle21.user}</moodle21.user>
+                  <moodle21.pass>${moodle21.pass}</moodle21.pass>
                 </systemPropertyVariables>
               </configuration>
             </plugin>
