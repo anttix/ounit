@@ -33,7 +33,7 @@ public class EnginePage {
     
     @FindBy(xpath = "//p[contains(text(), '" + engineName + "')]//a[contains(@href, 'editengine.php')]")
     private WebElement engineEditLink;
-    @FindBy(xpath = "//a[@href = 'editengine.php']")
+    @FindBy(xpath = "//a[contains(@href, 'editengine.php')]")
     private WebElement newEngineLink;
     
     @FindBy(xpath = "//p[contains(text(), '" + engineName + "')]//a[contains(@href, 'testengine.php')]")

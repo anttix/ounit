@@ -36,10 +36,6 @@ public class LoginPage {
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
-
-        if (!driver.getTitle().contains("Login")) {
-            throw new IllegalStateException("This is not the login page");
-        }
     }
 
     public HomePage loginAs(String username, String password) {
