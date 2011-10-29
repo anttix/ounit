@@ -26,9 +26,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-import static com.googlecode.ounit.test.moodle19.MoodleParams.*;
+import com.googlecode.ounit.test.moodle.IEditEnginePage;
+import com.googlecode.ounit.test.moodle.IEnginePage;
 
-public class EnginePage {
+import static com.googlecode.ounit.test.moodle.MoodleParams.*;
+
+public class EnginePage implements IEnginePage {
     private WebDriver driver;
     
     @FindBy(xpath = "//p[contains(text(), '" + engineName + "')]//a[contains(@href, 'editengine.php')]")
@@ -43,16 +46,18 @@ public class EnginePage {
         this.driver = driver;
     }
 	
+	@Override
 	public void setupEngineUrl(String url) {
 		try {
 			engineEditLink.click();
 		} catch(NoSuchElementException e) {
 			newEngineLink.click();
 		}
-		EngineEditPage page = PageFactory.initElements(driver, EngineEditPage.class);
+		IEditEnginePage page = PageFactory.initElements(driver, EngineEditPage.class);
 		page.saveEngine(engineName, url);
 	}
-	
+
+	@Override
 	public void testConnection() {
 		testEngineLink.click();
 	}

@@ -26,10 +26,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import static com.googlecode.ounit.test.moodle19.MoodleParams.*;
 
+import com.googlecode.ounit.test.moodle.ICoursePage;
+import com.googlecode.ounit.test.moodle.IQuizEditPage;
+import com.googlecode.ounit.test.moodle.IQuizPage;
 
-public class CoursePage {
+import static com.googlecode.ounit.test.moodle.MoodleParams.*;
+
+public class CoursePage implements ICoursePage {
     private final WebDriver driver;
     
     @FindBy(linkText=quizName)
@@ -45,11 +49,13 @@ public class CoursePage {
 		this.driver = driver;
 	}
 	
+	@Override
 	public void toggleEditing() {
 		toggleEditButton.click();
 	}
 
-	public QuizPage gotoTestQuiz() {
+	@Override
+	public IQuizPage gotoTestQuiz() {
     	try {
     		testQuizLink.click();
         	return PageFactory.initElements(driver, QuizPage.class);
@@ -58,11 +64,11 @@ public class CoursePage {
     	}
 	}
 
-	private QuizPage createTestQuiz() {
+	private IQuizPage createTestQuiz() {
 		toggleEditing();
 		newQuiz.click();
 		
-    	QuizEditPage page = PageFactory.initElements(driver, QuizEditPage.class);
+    	IQuizEditPage page = PageFactory.initElements(driver, QuizEditPage.class);
     	return page.newQuiz(quizName);
 	}
 }

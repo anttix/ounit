@@ -25,10 +25,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import static com.googlecode.ounit.test.moodle19.MoodleParams.*;
+
+import com.googlecode.ounit.test.moodle.IQuestionEditPage;
+import com.googlecode.ounit.test.moodle.IQuizPage;
+
+import static com.googlecode.ounit.test.moodle.MoodleParams.*;
 
 
-public class QuestionEditPage {
+public class QuestionEditPage implements IQuestionEditPage {
 	private WebDriver driver;
 
 	private WebElement name;
@@ -42,8 +46,9 @@ public class QuestionEditPage {
 	public QuestionEditPage(WebDriver driver) {
 		this.driver = driver;
 	}
-	
-	public QuizPage createQuestion(String name, String remoteid, String version) {
+
+	@Override
+	public IQuizPage createQuestion(String name, String remoteid, String version) {
 		this.name.sendKeys(name);
 		this.remoteid.sendKeys(remoteid);
 		remoteversion.sendKeys(version);

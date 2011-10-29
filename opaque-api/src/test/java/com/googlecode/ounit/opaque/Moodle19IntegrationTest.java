@@ -22,14 +22,10 @@
 package com.googlecode.ounit.opaque;
 
 import org.junit.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-import static org.hamcrest.text.StringContains.containsString;
-import static org.hamcrest.CoreMatchers.*;
-
 import org.openqa.selenium.support.PageFactory;
 
-import com.googlecode.ounit.test.moodle19.*;
+import com.googlecode.ounit.test.moodle.*;
+import com.googlecode.ounit.test.moodle19.HomePage;
 
 /**
  * Test {@link MockOpaqueService} with Moodle 1.9.
@@ -65,138 +61,28 @@ import com.googlecode.ounit.test.moodle19.*;
  * @author anttix
  *
  */
-public class Moodle19IntegrationTest extends TestBase {
-	public final static String propPrefix = "moodle19.";
+public class Moodle19IntegrationTest extends MoodleIntegrationTests {
+	protected static SetupHelper helper;
+	protected static HomePage homePage;
 	
-	protected static String moodleUrl  = System.getProperty(propPrefix + "url");
-	protected static String moodleUser = System.getProperty(propPrefix + "user"); 
-	protected static String moodlePass = System.getProperty(propPrefix + "pass"); 
-	
-	static {
-		// Fill defaults
-		if(moodleUser == null) moodleUser = "admin";
-		MoodleParams.baseUrl = moodleUrl;
-	}
+	@BeforeClass
+	public static void setupTestEnvironment() {
+		helper = new SetupHelper("moodle19.");
 
-	private MockQuestionPage mockPage = PageFactory.initElements(driver, MockQuestionPage.class);
-	private static HomePage homePage;
-	
-	public static HomePage loginToMoodle() {
-		assumeNotNull(moodleUrl, moodleUser, moodlePass);
-		
-		HomePage homePage = PageFactory.initElements(driver, HomePage.class);
-		LoginPage loginPage = homePage.gotoLoginPage();
-    	loginPage.loginAs(moodleUser, moodlePass);
- 
-    	return homePage;
+		startServer();
+		openBrowser();
+
+		homePage = PageFactory.initElements(driver, HomePage.class); 
+		helper.setupMoodle(homePage, serviceAddress);
 	}
 	
-	public static void setupMoodle() {
-    	//driver.manage().timeouts().implicitlyWait(1, TimeUnit.SECONDS);
-		homePage = loginToMoodle();
-		EnginePage enginePage = homePage.gotoEnginePage();
-		enginePage.setupEngineUrl(serviceAddress);
-    }
-	
-	public static QuizPage setupQuiz() {
-		assumeNotNull(homePage);
-		
-    	CoursePage coursePage = homePage.gotoTestCourse();
-    	QuizPage quizPage = coursePage.gotoTestQuiz();
-    	quizPage.doPreview();
-    	
-    	return quizPage;
-	}
-    
-    @BeforeClass
-    public static void setupTestEnvironment() {
-		if(moodleUrl == null)
-			System.out.println(propPrefix + "url property not set, skipping tests");
-		assumeNotNull(moodleUrl);
-		if(moodlePass == null)
-			System.out.println(propPrefix + "pass property not set, skipping tests");
-		assumeNotNull(moodlePass);
-
-    	startServer();
-    	openBrowser();
-    	setupMoodle();
-    }
-	
-	@Test
-	public void shouldPassConnectionTest() {
-		// Given I am on engine test page,
-		EnginePage page = homePage.gotoEnginePage();
-
-		// when I click on connection test button
-		page.testConnection();
-
-		// then I should see the question engine information block
-		String html = driver.getPageSource();
-		assertThat(html, containsString("<dt>name</dt>"));
-		assertThat(html, containsString("<dt>usedmemory</dt>"));
-		assertThat(html, containsString("<dt>activesessions</dt>"));
+	@Override
+	public IQuizPage setupQuiz() {
+		return helper.setupQuiz();
 	}
 	
-	@Test
-	public void shouldDisplayEngineQuestionsProperly() {
-		// Given I am on a quiz that uses OPAQE questions
-		QuizPage quizPage = setupQuiz();
-
-		// then I should see a correctly rendered mock question on all three pages
-		mockPage.validate();
-		quizPage.navigate(2);
-		mockPage.validate();
-		quizPage.navigate(3);
-		mockPage.validate();
+	@Override
+	public IHomePage getHomePage() {
+		return homePage;
 	}
-	
-	@Test
-	public void shouldGradeProperly() {
-		// Given I am on a quiz that uses OPAQUE questions
-		QuizPage quizPage = setupQuiz();
-		
-		// when I enter an answer that the engine refuses to grade
-		mockPage.answer(6);
-		
-		// then my last answer should be displayed
-		assertThat(mockPage.getLastAnswer(), is("6"));
-		
-		// when I navigate away from the page and come back later
-		quizPage.navigate(2);
-		quizPage.navigate(1);
-		
-		// then last answer should equal to what was typed into the answer box (empty string)
-		assertThat(mockPage.getLastAnswer(), is(""));
-
-		// when I enter a sequence of answers that results in a grade
-		mockPage.answer(5);
-		mockPage.answer(1);
-		
-		// then moodle should record that grade
-		assertThat(quizPage.getGrade(), is(1));
-		
-		// when I navigate to second page and answer a question
-		quizPage.navigate(2);
-		mockPage.answer(7);
-		mockPage.answer(2);
-		
-		// then moodle should record that grade
-		assertThat(quizPage.getGrade(), is(2));
-		
-		// when I navigate to third page and answer a question
-		quizPage.navigate(3);
-		mockPage.answer(3);
-		
-		// then moodle should record that grade
-		assertThat(quizPage.getGrade(), is(3));
-		
-		// when I navigate back to first page
-		quizPage.navigate(1);
-		
-		// then the grade should still be there
-		assertThat(quizPage.getGrade(), is(1));
-	}
-	
-	//@Test
-	// TODO: shouldDisplayAnswerSummaryInReport (this requires another "student" user)
 }

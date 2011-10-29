@@ -25,7 +25,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
-public class EngineEditPage {
+import com.googlecode.ounit.test.moodle.IEditEnginePage;
+import com.googlecode.ounit.test.moodle.IEnginePage;
+
+public class EngineEditPage implements IEditEnginePage {
 	private WebDriver driver;
 	private WebElement enginename;
 	private WebElement questionengineurls;
@@ -35,7 +38,8 @@ public class EngineEditPage {
         this.driver = driver;
     }
 
-	public EnginePage saveEngine(String name, String url) {
+	@Override
+	public IEnginePage saveEngine(String name, String url) {
 		enginename.clear();
 		enginename.sendKeys(name);
 		questionengineurls.clear();

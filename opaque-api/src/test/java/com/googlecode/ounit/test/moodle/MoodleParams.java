@@ -19,14 +19,19 @@
  * along with OUnit.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.googlecode.ounit.test.moodle19;
+package com.googlecode.ounit.test.moodle;
 
 public class MoodleParams {
-	public static String baseUrl = null;
-	
 	public final static String engineName       = "Opaque Testing Engine";
 	public final static String courseName       = "Opaque Testing Course";
 	public final static String quizName         = "Opaque Testing Quiz";
 	public final static String questionIdPrefix = "opaque.selftest.";
 	public final static String questionVersion  = "1.0";
+	
+	public static void log(String s) {
+		System.err.println("*********************************");
+		System.err.println("    " + s);
+		System.err.println("*********************************");
+	}
+
 }

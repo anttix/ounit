@@ -28,9 +28,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import static com.googlecode.ounit.test.moodle19.MoodleParams.*;
 
-public class QuizPage {
+import com.googlecode.ounit.test.moodle.IQuestionEditPage;
+import com.googlecode.ounit.test.moodle.IQuizPage;
+
+import static com.googlecode.ounit.test.moodle.MoodleParams.*;
+
+public class QuizPage implements IQuizPage {
 	private WebDriver driver;
 	
 	@FindBy(xpath="//option[contains(@value, 'qtype=opaque')]")
@@ -53,9 +57,10 @@ public class QuizPage {
 	public QuizPage(WebDriver driver) {
 		this.driver = driver;
 	}
-	
+
+	@Override
 	public void createQuestions() {
-		QuestionEditPage editPage;
+		IQuestionEditPage editPage;
 		
 		editPage = newOpaqueQuestion();
 		editPage.createQuestion(questionIdPrefix + "v1", questionIdPrefix + "v1", questionVersion);
@@ -72,24 +77,31 @@ public class QuizPage {
 		previewLink.click();
 	}
 	
-	public QuestionEditPage newOpaqueQuestion() {
+	@Override
+	public IQuestionEditPage newOpaqueQuestion() {
 		opaqueQuestion.click();
 		return PageFactory.initElements(driver, QuestionEditPage.class);
 	}
 
+	@Override
 	public void doPreview() {
 		try {
+			log("Opening Quiz preview");
 			previewLink.click();
 		} catch(NoSuchElementException e) {
 			createQuestions();
 		}
+		log("Forcing a new preview");
 		forcenew.submit();
 	}
 
+	@Override
 	public void navigate(int i) {
+		log("Navigating to question " + i);
 		pagingBar.findElement(By.linkText(i + "")).click();
 	}
 
+	@Override
 	public int getGrade() {
 		return Integer.parseInt(gradeDiv.getText().split(": ")[1].split("/")[0]);
 	}

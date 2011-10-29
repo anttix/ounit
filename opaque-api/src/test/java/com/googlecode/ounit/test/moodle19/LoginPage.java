@@ -26,7 +26,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class LoginPage {
+import com.googlecode.ounit.test.moodle.IHomePage;
+import com.googlecode.ounit.test.moodle.ILoginPage;
+
+public class LoginPage implements ILoginPage {
     private final WebDriver driver;
     
     private WebElement username;
@@ -38,7 +41,8 @@ public class LoginPage {
         this.driver = driver;
     }
 
-    public HomePage loginAs(String username, String password) {
+    @Override
+	public IHomePage loginAs(String username, String password) {
     	String oldUrl = driver.getCurrentUrl();
     	
     	this.username.sendKeys(username);

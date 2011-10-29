@@ -26,7 +26,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class CourseEditPage {
+import com.googlecode.ounit.test.moodle.ICourseEditPage;
+import com.googlecode.ounit.test.moodle.ICoursePage;
+
+public class CourseEditPage implements ICourseEditPage {
     private final WebDriver driver;
     
     private WebElement shortname;
@@ -40,7 +43,8 @@ public class CourseEditPage {
 		this.driver = driver;
 	}
 	
-	public CoursePage newCourse(String shortname, String fullname) {
+	@Override
+	public ICoursePage newCourse(String shortname, String fullname) {
     	this.shortname.clear();
 		this.shortname.sendKeys(shortname);
 		this.fullname.clear();

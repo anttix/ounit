@@ -26,8 +26,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
+import com.googlecode.ounit.test.moodle.IQuizEditPage;
+import com.googlecode.ounit.test.moodle.IQuizPage;
 
-public class QuizEditPage {
+
+public class QuizEditPage implements IQuizEditPage {
 	private WebDriver driver;
 	
 	@FindBy(id="id_name")
@@ -41,7 +44,8 @@ public class QuizEditPage {
 		this.driver = driver;
 	}
 
-	public QuizPage newQuiz(String name) {
+	@Override
+	public IQuizPage newQuiz(String name) {
 		this.name.clear();
 		this.name.sendKeys(name);
 		oneQuestionPerPage.click();
