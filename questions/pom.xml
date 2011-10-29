@@ -58,6 +58,16 @@
     -->
     <sourceDirectory>${basedir}/teacher/main/java</sourceDirectory>
     <testSourceDirectory>${basedir}/teacher/test/java</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>teacher/main/resources</directory>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>teacher/test/resources</directory>
+      </testResource>
+    </testResources>
 
     <pluginManagement>
       <plugins>

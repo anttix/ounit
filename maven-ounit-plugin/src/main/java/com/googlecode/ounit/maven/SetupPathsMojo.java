@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Build;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -78,20 +79,30 @@ public class SetupPathsMojo
     	
 		List <String> srcDirs = project.getCompileSourceRoots();
 		List <String> testSrcDirs = project.getTestCompileSourceRoots();
+		List <Resource> resources = project.getResources();
+		List <Resource> testResources = project.getTestResources();
 		
 		srcDirs.clear();
 		testSrcDirs.clear();
+		resources.clear();
+		testResources.clear();
 		
 		for(String topDir: srcTopDirs) {
 			String subDir = topDir + FS + "main" + FS + "java";
 			String newDir = new File(baseDirectory, subDir).getAbsolutePath();
 			srcDirs.add(newDir);
+			Resource newResource = new Resource();
+			newResource.setDirectory(topDir + FS + "main" + FS + "resources");
+			resources.add(newResource);
 		}
 		
 		for(String topDir: testSrcTopDirs) {
 			String subDir = topDir + FS + "test" + FS + "java";
 			String newDir = new File(baseDirectory, subDir).getAbsolutePath();
 			testSrcDirs.add(newDir);
+			Resource newResource = new Resource();
+			newResource.setDirectory(topDir + FS + "test" + FS + "resources");
+			testResources.add(newResource);
 		}
 		
 		Build build = project.getBuild();
