@@ -44,6 +44,7 @@
             <configuration>
               <encoding>UTF-8</encoding>
               <outputDirectory>${project.build.directory}</outputDirectory>
+              <escapeString>\</escapeString>
               <resources>          
                 <resource>
                   <directory>root</directory>
@@ -61,6 +62,7 @@
             <configuration>
               <encoding>UTF-8</encoding>
               <outputDirectory>${project.build.directory}/description</outputDirectory>
+              <escapeString>\</escapeString>
               <resources>          
                 <resource>
                   <directory>description</directory>
@@ -78,6 +80,7 @@
             <configuration>
               <encoding>UTF-8</encoding>
               <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <escapeString>\</escapeString>
               <resources>          
                 <resource>
                   <directory>shared</directory>
@@ -95,6 +98,7 @@
             <configuration>
               <encoding>UTF-8</encoding>
               <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <escapeString>\</escapeString>
               <resources>          
                 <resource>
                   <directory>student</directory>
@@ -180,6 +184,7 @@
             <configuration>
               <encoding>UTF-8</encoding>
               <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <escapeString>\</escapeString>
               <resources>          
                 <resource> 
                   <directory>student</directory>
@@ -222,6 +227,7 @@
             <configuration>
               <encoding>UTF-8</encoding>
               <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <escapeString>\</escapeString>
               <resources>          
                 <resource> 
                   <directory>teacher</directory>
