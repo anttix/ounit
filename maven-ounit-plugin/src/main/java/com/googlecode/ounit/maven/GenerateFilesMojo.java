@@ -23,7 +23,6 @@ package com.googlecode.ounit.maven;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -145,6 +144,7 @@ public class GenerateFilesMojo
         		n.setVersion(p.getVersion());
         		n.setExtensions(true);
         		PluginExecution e = new PluginExecution();
+        		e.addGoal("setup-student");
         		e.addGoal("teacher-tests");
         		e.addGoal("generate-results");
         		n.addExecution(e);
@@ -177,31 +177,9 @@ public class GenerateFilesMojo
         File ssDir = new File(baseDirectory, "student");
 		model.getProperties().put("ounit.editfiles", listFiles(ssDir, ssDir));
 
+		// Write down student POM
     	try {
 			modelWriter.write(new File(outputDirectory, "pom.xml"), null, model);
-
-			/* Create policy file */
-			/* TODO: Load student policies from a resource file */
-			FileWriter out = new FileWriter(new File(outputDirectory, "tests.policy"), true);
-			
-			//out.write("grant codeBase \"" +
-			//		  new File(outputDirectory, "bin").toURI() +
-			//		  "-\" { permission java.security.AllPermission; };\n");
-			
-			// FIXME: We should be using properties from the current build, but
-			//        unfortunately they can not be properly passed to java command line
-			//        so the only viable solution would be to create a new mojo
-			//        that generates this file and attach it to a pre-test phase.
-			
-			out.write("grant codeBase \"" +
-					  session.getLocalRepository().getUrl() +
-					  "-\" { permission java.security.AllPermission; };\n");
-			out.write("grant codeBase \"file:${user.home}/.m2/repository/-\"" +
-			  " { permission java.security.AllPermission; };\n");
-			out.write("grant codeBase \"file:${user.dir}/bin/-\"" +
-					  " { permission java.security.AllPermission; };\n");
-			
-			out.close();		
 		} catch (IOException e) {
 			throw new MojoExecutionException("Failed to generate student pom.xml", e);
 		}
@@ -223,7 +201,6 @@ public class GenerateFilesMojo
 						"Error copying assembly descriptor", e);
 			}
 		}
-
     }
     
 	private String listFiles(File dir, File baseDir) {
