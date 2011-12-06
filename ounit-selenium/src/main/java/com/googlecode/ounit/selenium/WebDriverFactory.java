@@ -23,11 +23,16 @@ package com.googlecode.ounit.selenium;
 
 import java.util.HashMap;
 
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import com.gargoylesoftware.htmlunit.IncorrectnessListener;
+import com.gargoylesoftware.htmlunit.WebClient;
 
 /**
  * A factory class that instantiates a WebDriver driven browser.
@@ -59,9 +64,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
  *
  * The specific browser to be instantiated is controlled via a system property:
  * <i>selenium.browser</i>.
- * If no browser is specified, the factory will try to load
- * each of the supported browsers and will pick the first one 
- * that was successfully initialized.
+ * If no browser is specified, the factory will default to HTMLUnit.
  * <p>
  * The list of supported browsers:
  * </p>
@@ -110,39 +113,30 @@ public class WebDriverFactory {
 	 * @see WebDriverFactory
 	 */
 	public static WebDriver newInstance() {
+		HashMap<String, Browser> knownBrowsers = new HashMap<String, Browser>();
+		knownBrowsers.put("firefox", Browser.FIREFOX);
+		knownBrowsers.put("chrome", Browser.CHROME);
+		knownBrowsers.put("ie", Browser.IE);
+		knownBrowsers.put("htmlunit", Browser.HTMLUNIT);
+
 		WebDriver rv;
 		Exception err = null;
-		Browser[] browsers;
+		String preferredBrowser = System.getProperty("selenium.browser",
+				"htmlunit");
+		Browser b = knownBrowsers.get(preferredBrowser.toLowerCase());
 
-		String preferredBrowser = System.getProperty("selenium.browser");
+		if (b == null)
+			throw new RuntimeException("Invalid selenium.browser property: "
+					+ preferredBrowser);
 
-		if (preferredBrowser == null) { // Try to pick any browser that works
-			browsers = Browser.values();
-		} else {
-			HashMap<String, Browser> knownBrowsers = new HashMap<String, Browser>();
-			knownBrowsers.put("firefox",  Browser.FIREFOX);
-			knownBrowsers.put("chrome",   Browser.CHROME);
-			knownBrowsers.put("ie",       Browser.IE);
-			knownBrowsers.put("htmlunit", Browser.HTMLUNIT);
-			
-			browsers = new Browser[1];
-			browsers[0] = knownBrowsers.get(preferredBrowser.toLowerCase());
-			if (browsers[0] == null)
-				throw new RuntimeException(
-						"Invalid selenium.browser property: "
-								+ preferredBrowser);
+		try {
+			rv = newInstance(b);
+			assert rv != null;
+			return rv;
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to create WebDriver instance",
+					err);
 		}
-
-		for (Browser b : browsers) {
-			try {
-				rv = newInstance(b);
-				assert rv != null;
-				return rv;
-			} catch (Exception e) {
-				err = e;
-			}
-		}
-		throw new RuntimeException("Unable to create WebDriver instance", err);
 	}
 
 	public static WebDriver newInstance(Browser b) {
@@ -154,14 +148,34 @@ public class WebDriverFactory {
 		case IE:
 			return new InternetExplorerDriver();
 		case HTMLUNIT:
-			HtmlUnitDriver rv = new HtmlUnitDriver();
-			rv.setJavascriptEnabled(true);
+			/* 
+			 * Make sure we have a fully capable HtmlUnitDriver and
+			 * silence the stupid warnings about text/javascript  
+			 */
+			HtmlUnitDriver rv = new HtmlUnitDriver(new DesiredCapabilities(
+					"htmlunit", "firefox", Platform.ANY)) {
+				@Override
+				protected WebClient modifyWebClient(WebClient client) {
+					final IncorrectnessListener delegate = client
+							.getIncorrectnessListener();
+					client.setIncorrectnessListener(new IncorrectnessListener() {
+						@Override
+						public void notify(String message, Object origin) {
+							if (message.contains("Obsolete")
+									&& message.contains("text/javascript"))
+								return;
+
+							delegate.notify(message, origin);
+						}
+					});
+					return super.modifyWebClient(client);
+				}
+			};
 			return rv;
 		default:
 			throw new IllegalArgumentException("Invalid browser specified");
 		}
 	}
-
 	/**
 	 * Get the base URL specified in system property <i>selenium.baseurl</i>.
 	 * 
