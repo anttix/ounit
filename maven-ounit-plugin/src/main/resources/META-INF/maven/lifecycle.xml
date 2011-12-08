@@ -154,6 +154,11 @@
               <reportsDirectory>
                ${project.build.directory}/teacher-reports
              </reportsDirectory>
+              <systemPropertyVariables>
+                <reportsDirectory>
+                  ${project.build.directory}/teacher-reports
+                </reportsDirectory>
+              </systemPropertyVariables>
              <forkMode>once</forkMode>
              <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
              <redirectTestOutputToFile>true</redirectTestOutputToFile>
