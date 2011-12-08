@@ -21,6 +21,12 @@
 package com.googlecode.ounit.maven;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.net.URLConnection;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,18 +50,26 @@ public class ResultsGenerator {
 	private List<TestSuite> testResults;
 	private Log log = null;
 	private Map<String, Double> marks = new HashMap<String, Double>();
+	private File outputDirectory;
+	private boolean showTestOutput;
 	
 	// TODO: i18n these
 	private final String labelTestResults = "Test Results";
 	private final String labelFailedTests = "Failed Tests";
+	private final String labelOutput      = "Additional Test Output";
+	private final String labelOutputFiles = "Additional test output saved to";
 	private final String labelStudent = "Student";
 	private final String labelTeacher = "Teacher";
 	private final String summaryLine =
 		"Tests run: %d, Failures: %d, Errors: %d, Skipped: %d, Time elapsed: %.2fs";
 	private final String failureLine = "%s(%s)\n  %s: %s";
+	private final String noShowLine = "Binary data of type %s is not shown";
+
 
 	public ResultsGenerator(MojoData mavenInternals) throws Exception {
 		log = mavenInternals.getLog();
+		outputDirectory = mavenInternals.getOutputDirectory();
+		showTestOutput = mavenInternals.isShowTestOutput();
 		testResults = new ArrayList<TestSuite>(2);
 
 		TestSuite suite;
@@ -132,6 +146,42 @@ public class ResultsGenerator {
 					failure.add(pre);
 				}
 			}
+
+			/* Test output files */
+			List<File> outputFiles = suite.getOutputFiles();
+			if (showTestOutput && outputFiles.size() > 0) {
+				Tag outputCaption = new H4();
+				outputCaption.setClasses("ou-test-output-caption");
+				outputCaption.add(labelOutput);
+				details.add(outputCaption);
+				Tag outputs = new Ol();
+				outputs.setClasses("ou-test-output-list");
+				details.add(outputs);
+				for (File f : outputFiles) {
+					String fName = f.getName();
+					String mimeType = URLConnection
+							.guessContentTypeFromName(fName);
+					Tag output = new Li();
+					outputs.add(output);
+					Tag name = new Div();
+					output.add(name);
+					name.setClasses("ou-test-output-name");
+					name.add(fName.replaceAll("-output\\.[^.]+$", ""));
+					if(mimeType.startsWith("text/")) {
+						Tag pre = new Pre();
+						output.add(pre);
+						pre.setClasses("ou-test-output");
+						pre.add(getFileContents(f));
+					//} else if(mimeType.startsWith("image/")) {
+						// TODO
+					} else {
+						Tag div = new Tag("p");
+						output.add(div);
+						div.setClasses("ou-test-output");
+						div.add(String.format(noShowLine, mimeType));
+					}
+				}
+			}
 		}
 		
 		return panel.toString();
@@ -162,6 +212,17 @@ public class ResultsGenerator {
 				sb.append(generateFailureString(f));
 				sb.append("\n");
 			}
+			List<File> outputFiles = suite.getOutputFiles();
+			if (showTestOutput && outputFiles.size() > 0) {
+				sb.append("\n");
+				sb.append(labelOutputFiles);
+				sb.append("\n");
+				for(File f: outputFiles) {
+					sb.append("\t");
+					sb.append(getRelativePath(outputDirectory, f));
+					sb.append("\n");
+				}
+			}
 			sb.append(dashes);
 			sb.append("\n");
 		}
@@ -191,5 +252,22 @@ public class ResultsGenerator {
 	private String generateFailureString(FailureDetail f) {
 		return String.format(failureLine, f.getName(), f.getFullClassName(),
 				f.getType(), f.getMessage());
+	}
+	
+	private static String getFileContents(File f) {
+		try {
+			FileInputStream fin = new FileInputStream(f);
+			FileChannel fch = fin.getChannel();
+			ByteBuffer bb = fch.map(FileChannel.MapMode.READ_ONLY, 0,
+					fch.size());
+			CharBuffer chBuff = Charset.forName("UTF-8").decode(bb);
+			return chBuff.toString();
+		} catch (Exception e) {
+			throw new RuntimeException("Error reading test output file", e);
+		}
+	}
+
+	private static String getRelativePath(File base, File f) {
+		return base.toURI().relativize(f.toURI()).getPath();
 	}
 }

@@ -71,6 +71,17 @@ abstract public class MojoData extends AbstractMojo {
 	 */
 	protected File[] teacherTestsReportsDirectories;
 	
+	/**
+	 * Include test output files in reports
+	 * 
+	 * @parameter expression="${ounit.showTestOutput}" default-value="true"
+	 */
+	protected boolean showTestOutput;
+	
+	public File getOutputDirectory() {
+		return outputDirectory;
+	}
+
 	public MavenProject getProject() {
 		return project;
 	}
@@ -81,6 +92,10 @@ abstract public class MojoData extends AbstractMojo {
 	
 	public BuildPluginManager getPluginManager() {
 		return pluginManager;
+	}
+	
+	public boolean isShowTestOutput() {
+		return showTestOutput;
 	}
 
 	/**

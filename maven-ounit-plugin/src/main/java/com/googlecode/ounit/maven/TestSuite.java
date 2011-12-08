@@ -22,6 +22,8 @@
 package com.googlecode.ounit.maven;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,5 +64,26 @@ public class TestSuite {
 	}
 	public void setResults(TestResults results) {
 		this.results = results;
+	}
+
+	public List<File> getOutputFiles() {
+		List<File> rv = new ArrayList<File>();
+		for(File dir: getDirs()) {
+			File [] of = dir.listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String fName) {
+					return fName.matches("^.*?-output\\.[^.]+$");
+				}
+			});
+
+			/* Skip empty files */
+			for(File f: of) {
+				if(f.length() > 1) {
+					rv.add(f);
+				}
+			}
+		}
+
+		return rv;
 	}
 }
