@@ -104,6 +104,11 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>ounit-junit</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
   </dependencies>
 
   <modules>
