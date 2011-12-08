@@ -303,6 +303,7 @@
     <module>ounit-service</module>
     <module>ounit-server</module>
     <module>ounit-server-standalone</module>
+    <module>ounit-junit</module>
     <module>ounit-selenium</module>
 
     <!--
