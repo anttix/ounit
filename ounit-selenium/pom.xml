@@ -43,6 +43,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>ounit-junit</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>compile</scope>

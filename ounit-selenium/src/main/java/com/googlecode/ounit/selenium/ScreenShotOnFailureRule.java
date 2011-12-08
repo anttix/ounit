@@ -21,16 +21,12 @@
 
 package com.googlecode.ounit.selenium;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import org.junit.rules.TestRule;
 import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+
+import com.googlecode.ounit.junit.ActOnFailureRule;
 
 /**
  * A JUnit 4.x rule that can be used with selenium to take
@@ -51,9 +47,11 @@ import org.openqa.selenium.WebDriver;
  * </p>
  * </pre>
  */
-public class ScreenShotOnFailureRule implements TestRule {
+public class ScreenShotOnFailureRule extends ActOnFailureRule {
 	private WebDriver driver;
-	
+	private boolean sourceDumpEnabled = false; 
+	private boolean screenShotsEnabled = true;
+
 	public ScreenShotOnFailureRule(WebDriver driver) {
 		this.driver = driver;
 	}
@@ -66,47 +64,49 @@ public class ScreenShotOnFailureRule implements TestRule {
 		this.driver = driver;
 	}
 
-	@Override
-	public Statement apply(final Statement base, final Description description) {
-		return new Statement() {
-			@Override
-			public void evaluate() throws Throwable {
-				try {
-					base.evaluate();
-				} catch (Throwable t) {
-					takeScreenshot(description.getClassName() + "."
-							+ description.getMethodName());
-					throw t;
-				}
-			}
-		};
+	public boolean isScreenShotsEnabled() {
+		return screenShotsEnabled;
+	}
+
+	public void setScreenShotsEnabled(boolean screenShotsEnabled) {
+		this.screenShotsEnabled = screenShotsEnabled;
+	}
+
+	/**
+	 * Check if source dumps are performed in case driver does
+	 * not support screen shots.
+	 * 
+	 * @return
+	 */
+	public boolean isSourceDumpEnabled() {
+		return sourceDumpEnabled;
+	}
+
+	/**
+	 * Control if page source dumps are performed in case driver does
+	 * not support screen shots.
+	 * 
+	 * @param sourceDumpEnabled
+	 */
+	public void setSourceDumpEnabled(boolean sourceDumpEnabled) {
+		this.sourceDumpEnabled = sourceDumpEnabled;
 	}
 	
-	protected void saveFile(String name, byte [] data) throws IOException {
-		/* Find directory to save screenshots to */
-		String basedir = System.getProperty("basedir");
-		if(basedir != null) {
-			basedir += "/target/";
-		} else {
-			basedir = "target/";
-		}
-		basedir += "surefire-reports";
+	@Override
+	protected void onFailure(Description desc) throws Throwable {
+		if(!screenShotsEnabled)
+			return;
 
-		File dir = new File(basedir);
-		dir.mkdirs();
-		File f = new File(dir, name);
-		FileOutputStream fs = new FileOutputStream(f);
-		fs.write(data);
-		fs.close();
-	}
-
-	protected void takeScreenshot(String baseName) {	
-		try {
+		WebDriver driver = getDriver();
+		if (driver instanceof TakesScreenshot) {
 			byte[] data = ((TakesScreenshot) getDriver())
 					.getScreenshotAs(OutputType.BYTES);
-			saveFile(baseName + ".png", data);
-		} catch(Throwable t) {
-			// Ignore
+			saveFailureData(desc, "png", data);
+		} else {
+			// Can't take screen shots. Save page source instead.
+			if (sourceDumpEnabled)
+				saveFailureData(desc, "html", getDriver()
+						.getPageSource());
 		}
 	}
 }
