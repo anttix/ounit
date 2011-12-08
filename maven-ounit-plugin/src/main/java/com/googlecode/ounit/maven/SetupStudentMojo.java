@@ -29,22 +29,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
  * Generate required settings at the start of a student project build
  * 
- * Currently it generates a policy used to sandbox unit tests.
- * Additional file generation tasks that require taking the current
- * Maven or project settings into account may be implemented in the future.
+ * Currently it generates a policy used to sandbox unit tests and cleans up
+ * report directories. Additional file generation tasks that require taking the
+ * current Maven or project settings into account may be implemented in the
+ * future.
  * 
  * @goal setup-student
  * @phase generate-sources
  */
 
-public class SetupStudentMojo extends AbstractMojo {
+public class SetupStudentMojo extends MojoData {
 	/**
 	 * Location where files are
 	 * 
@@ -52,16 +51,21 @@ public class SetupStudentMojo extends AbstractMojo {
 	 */
 	protected File baseDirectory;
 
-	/**
-	 * The Maven Session Object
-	 * 
-	 * @parameter expression="${session}"
-	 * @required
-	 * @readonly
-	 */
-	protected MavenSession session;
-
 	public void execute() throws MojoExecutionException {
+		cleanReportDirectories();
+		generateTestPolicy();
+	}
+	
+	public void cleanReportDirectories() {
+		List <File> testDirs = getTeacherTestDirectories();
+		testDirs.add(new File(getOunitDirectory()));
+		testDirs.addAll(getStudentTestDirectories());
+		for(File dir: testDirs) {
+			deleteDirectory(dir);
+		}
+	}
+	
+	public void generateTestPolicy() throws MojoExecutionException {
 		try {
 			/*
 			 * Create a policy file
@@ -106,4 +110,24 @@ public class SetupStudentMojo extends AbstractMojo {
 			throw new MojoExecutionException("Failed to generate test policy", e);
 		}
 	}
+
+    /**
+     * Helper function to recursively delete a directory.
+     * 
+     * @param path
+     * @return
+     */
+    public static boolean deleteDirectory(File path) {
+            if (path.exists()) {
+                    File[] files = path.listFiles();
+                    for (int i = 0; i < files.length; i++) {
+                            if (files[i].isDirectory()) {
+                                    deleteDirectory(files[i]);
+                            } else {
+                                    files[i].delete();
+                            }
+                    }
+            }
+            return (path.delete());
+    }
 }
