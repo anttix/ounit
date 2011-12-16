@@ -43,18 +43,33 @@
   </properties>
 
   <prerequisites>
-    <maven>2.2</maven>
+    <maven>3.0</maven>
   </prerequisites>
 
-  <!-- Skip test phase to save time: we have no student written tests -->
   <build>
     <pluginManagement>
       <plugins>
+        <!-- Skip test phase to save time: we have no student written tests -->
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             <skip>true</skip>
           </configuration>
+        </plugin>
+
+        <!-- 
+             Skip jar building to save time: we have no deliverables
+             This is a hack that works by re-binding default-jar to a
+             non-existing lifecycle phase.
+        -->
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>default-jar</id>
+              <phase>never</phase>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
