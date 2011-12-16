@@ -32,19 +32,18 @@ import org.apache.maven.plugin.logging.Log;
 /**
  * Parse output from testing subsystems and generate test results to be passed
  * back to the LMS.
- * We attach to the post-integration-test lifecycle phase for a good reason:
- * We can not parse results any earlier, because teacher tests normally run during
- * integration-test in order to have access to services started
- * in pre-integration-test phase. The last phase before install (the verify) should be
- * left untouched to allow question authors to add other plugins which may alter the results
- * or override marks. So the only standard phase between integration-test and
- * verify is post-integration-test.
+ * We attach to the verify lifecycle phase for a good reason:
+ * We can not parse results any earlier, because teacher tests normally run
+ * during integration-test in order to have access to services started
+ * in pre-integration-test phase. We may not use post-integration-test either
+ * because this is reserved for cleanup operations and should be allowed to
+ * complete before we potentially fail the build.
  *  
  * @author <a href="mailto:anttix@users.sourceforge.net">Antti Andreimann</a>
  * @version $Id$
  * 
  * @goal generate-results
- * @phase post-integration-test
+ * @phase verify
  */
 
 public class GenerateResultsMojo extends MojoData {
