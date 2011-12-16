@@ -24,6 +24,7 @@ package com.googlecode.ounit.selenium;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 
 /**
@@ -54,6 +55,12 @@ public class SanitizeSeleniumExceptionsRule implements TestRule {
 					int idx = msg.indexOf("For documentation on this error");
 					if(idx > 0)
 						msg = msg.substring(0, idx);
+
+					if(e instanceof NoSuchElementException) {
+						msg += "Usually this happens if a required element " +
+								"is missing, page structure is wrong or HTML " +
+								"has errors in it.";
+					}
 					
 					throw new AssertionError(msg);
 				}

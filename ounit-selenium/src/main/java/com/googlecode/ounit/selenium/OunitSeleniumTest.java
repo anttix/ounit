@@ -22,12 +22,14 @@
 package com.googlecode.ounit.selenium;
 
 import java.io.File;
+import java.util.NoSuchElementException;
 
 import org.junit.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public abstract class OunitSeleniumTest {
-	static WebDriver driver;
+	protected static WebDriver driver;
 
 	@Rule
 	public SanitizeSeleniumExceptionsRule san = new SanitizeSeleniumExceptionsRule();
@@ -58,10 +60,11 @@ public abstract class OunitSeleniumTest {
 	 * @return base URL
 	 */
 	protected final String getBaseUrl() {
-		try {
-			// Try to find baseURL from properties
-			return WebDriverFactory.getBaseUrl();
-		} catch (AssertionError e) {
+		// Try to find baseURL from properties
+		String baseUrl = WebDriverFactory.getBaseUrl();
+		if(baseUrl != null) {
+			return baseUrl;
+		} else {
 			// Not found, return default
 			char p = File.separatorChar;
 			String baseDir = System.getProperty("basedir");
@@ -102,4 +105,20 @@ public abstract class OunitSeleniumTest {
 	protected void gotoPage(String page) {
 		driver.get(getBaseUrl() + "/" + page);
 	}
+
+
+	/**
+	 * Compatibility function to accommodate Selenium IDE exported tests
+	 * 
+	 * @param by
+	 * @return
+	 */
+    public boolean isElementPresent(By by) {
+        try {
+                driver.findElement(by);
+                return true;
+        } catch (NoSuchElementException e) {
+                return false;
+        }
+    }
 }

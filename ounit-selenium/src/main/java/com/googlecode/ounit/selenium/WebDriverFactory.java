@@ -183,8 +183,7 @@ public class WebDriverFactory {
 	 * @see WebDriverFactory
 	 */
 	public static String getBaseUrl() {
-		String baseUrl = System.getProperty("selenium.baseurl");
-		assert baseUrl != null : "Missing selenium.baseurl property";		
+		String baseUrl = System.getProperty("selenium.baseurl");		
 		return baseUrl;
 	}
 }
