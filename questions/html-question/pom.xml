@@ -44,7 +44,7 @@
   </properties>
 
   <prerequisites>
-    <maven>2.2</maven>
+    <maven>3.0</maven>
   </prerequisites>
 
   <dependencies>
@@ -52,6 +52,7 @@
       <groupId>com.googlecode.ounit</groupId>
       <artifactId>ounit-selenium</artifactId>
       <version>1.0-SNAPSHOT</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
