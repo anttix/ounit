@@ -99,7 +99,7 @@
     <selenium.version>2.15.0</selenium.version>
     <slf4j.version>1.6.2</slf4j.version>
     <wicket.version>1.5.0</wicket.version>
-    <jetty.version>7.5.4.v20111024</jetty.version>
+    <jetty.version>8.0.4.v20111024</jetty.version>
   </properties>
 
   <prerequisites>
