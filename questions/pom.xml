@@ -122,7 +122,7 @@
   <!-- Instruct Eclipse m2e to ignore ounit plugin goals -->
   <profiles>
     <profile>
-      <id>m2e</id>
+      <id>m2e-ignore-ounit-goals</id>
       <activation>
         <property>
           <name>m2e.version</name>
@@ -147,6 +147,7 @@
                           <goal>setup-paths</goal>
                           <goal>generate-files</goal>
                           <goal>generate-project</goal>
+                          <goal>setup-student</goal>
                         </goals>
                       </pluginExecutionFilter>
                       <action>
