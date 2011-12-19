@@ -35,6 +35,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
+import org.apache.maven.model.Profile;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.io.ModelWriter;
 import org.apache.maven.plugin.AbstractMojo;
@@ -170,7 +171,18 @@ public class GenerateFilesMojo
         	if(r.getId().startsWith("ounit-dependency-")) continue;
         	model.addPluginRepository(r);
         }
-        
+
+        /* Sanitize and add build profiles */
+        {
+            MavenProject tmp = project;
+            while(tmp != null) {
+            	for(Profile p: tmp.getModel().getProfiles() )
+            		if(!p.getId().startsWith("ounit-"))
+            			model.addProfile(p);
+        		tmp = tmp.getParent();
+        	}
+        }
+
         //File baseDir = project.getBasedir();
         
         /* Generate student edible file list */
