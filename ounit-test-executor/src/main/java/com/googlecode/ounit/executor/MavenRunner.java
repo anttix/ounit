@@ -162,7 +162,7 @@ public class MavenRunner {
 
         /* Apply base profiles */
         for(Profile p: baseProfiles)
-        	request.addProfile( p );
+        	request.addProfile( p.clone() );
 
 		// TODO: Implement system specific settings.xml file
 
