@@ -143,7 +143,7 @@
           <execution>
             <goals>
               <goal>
-                org.apache.maven.plugins:maven-surefire-plugin:test
+                org.apache.maven.plugins:maven-failsafe-plugin:integration-test
               </goal>
             </goals>
             <configuration>
@@ -167,6 +167,14 @@
              <argLine>
                -Djava.security.manager -Djava.security.policy=tests.policy
              </argLine>
+             <includes>
+               <include>**/Test*.java</include>
+               <include>**/*Test.java</include>
+               <include>**/*TestCase.java</include>
+               <include>**/IT*.java</include>
+               <include>**/*IT.java</include>
+               <include>**/*ITCase.java</include>
+            </includes>
             </configuration>
           </execution>
         </executions>
