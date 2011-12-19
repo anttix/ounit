@@ -80,6 +80,38 @@
             <target>1.6</target>
           </configuration>
         </plugin>
+        <!-- 
+             Apply default surefire settings.
+             Basic configuration should be kept in sync with these two files:
+             maven-ounit-plugin/src/main/resources/META-INF/maven/lifecycle.xml
+             ounit-test-executor/src/main/resources/maven/baseProfile.xml
+        -->
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire.version}</version>
+          <configuration>
+            <forkMode>once</forkMode>
+            <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <printSummary>false</printSummary>
+            <argLine>
+              -Djava.security.manager -Djava.security.policy=tests.policy
+            </argLine>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${surefire.version}</version>
+          <configuration>
+            <forkMode>once</forkMode>
+            <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <printSummary>false</printSummary>
+            <argLine>
+              -Djava.security.manager -Djava.security.policy=tests.policy
+            </argLine>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
 
