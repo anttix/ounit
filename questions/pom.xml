@@ -77,11 +77,21 @@
 
     <pluginManagement>
       <plugins>
-        <!-- Use Java 1.6 -->
+        <!-- Use Java 1.6 and eclipse compiler (javac leaks memory
+             and is slower in general than ECJ) -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-compiler-eclipse</artifactId>
+              <version>${ecj.version}</version>
+            </dependency>
+          </dependencies>
           <configuration>
+            <fork>true</fork>
+            <compilerId>eclipse</compilerId>
             <source>1.6</source>
             <target>1.6</target>
           </configuration>

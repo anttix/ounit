@@ -40,7 +40,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <mavenVersion>3.0.3</mavenVersion>
-    <plexusCompilerVersion>1.8.2</plexusCompilerVersion>
     <wagonVersion>1.0</wagonVersion>
     <aetherVersion>1.13</aetherVersion>
   </properties>
@@ -113,14 +112,13 @@
       <artifactId>wagon-http</artifactId>
       <version>${wagonVersion}</version>
     </dependency>
+
     <!-- This is here to explicitly pull in eclipse compiler 
-         It's not directly used here but via 
-         src/main/resources/maven/baseProfiles.xml
+         It's not directly used here but most questions use it
     -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-compiler-eclipse</artifactId>
-      <version>${plexusCompilerVersion}</version>
     </dependency>
 
     <dependency>

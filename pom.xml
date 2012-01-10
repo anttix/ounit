@@ -100,6 +100,7 @@
     <slf4j.version>1.6.2</slf4j.version>
     <wicket.version>1.5.0</wicket.version>
     <jetty.version>8.0.4.v20111024</jetty.version>
+    <ecj.version>1.8.3</ecj.version>
   </properties>
 
   <prerequisites>
@@ -233,6 +234,12 @@
         <scope>test</scope>
       </dependency>
 
+      <!-- Eclipse compiler -->
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-compiler-eclipse</artifactId>
+        <version>${ecj.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -250,6 +257,7 @@
         <skipTests>true</skipTests>
       </properties>
     </profile>
+
     <profile>
       <id>moodle19</id>
       <activation>
