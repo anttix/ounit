@@ -35,23 +35,13 @@
           <plugins>
 
             <!-- 
-                 Choose eclipse compiler because javac leaks memory.
-                 Also ecj is a lot faster. Turn on fork mode to
-                 further reduce the risk of a leaking compiler.
+                 Force fork mode to reduce the risk of a leaking compiler.
             -->
             <plugin>
               <artifactId>maven-compiler-plugin</artifactId>
               <configuration>
                 <fork>true</fork>
-                <compilerId>eclipse</compilerId>
               </configuration>
-              <dependencies>
-                <dependency>
-                  <groupId>org.codehaus.plexus</groupId>
-                  <artifactId>plexus-compiler-eclipse</artifactId>
-                  <version>${plexusCompilerVersion}</version>
-                </dependency>
-              </dependencies>
             </plugin>
 
             <!--
