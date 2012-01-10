@@ -62,10 +62,16 @@
       <resource>
         <directory>teacher/main/resources</directory>
       </resource>
+      <resource>
+        <directory>shared/main/resources</directory>
+      </resource>
     </resources>
     <testResources>
       <testResource>
         <directory>teacher/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>shared/test/resources</directory>
       </testResource>
     </testResources>
 
