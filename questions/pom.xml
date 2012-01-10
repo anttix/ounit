@@ -158,7 +158,8 @@
   </modules>
 
 
-  <!-- Instruct Eclipse m2e to ignore ounit plugin goals -->
+  <!-- Instruct Eclipse m2e to ignore ounit plugin goals
+       and play nice with eclipse compilerId -->
   <profiles>
     <profile>
       <id>m2e-ignore-ounit-goals</id>
@@ -191,6 +192,30 @@
                       </pluginExecutionFilter>
                       <action>
                         <ignore/>
+                      </action>
+                    </pluginExecution>
+
+                    <!-- Lifted from 
+                         http://dev.eclipse.org/mhonarc/lists/m2e-users/msg00616.html
+                         http://dev.eclipse.org/mhonarc/lists/m2e-dev/msg00499.html
+                    -->
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <versionRange>[2.0,)</versionRange>
+                        <goals>
+                          <goal>compile</goal>
+                          <goal>testCompile</goal>
+                        </goals>
+                        <parameters>
+                          <compilerId>eclipse</compilerId>
+                        </parameters>
+                      </pluginExecutionFilter>
+                      <action>
+                        <configurator>
+                          <id>org.eclipse.m2e.jdt.javaConfigurator</id>
+                        </configurator>
                       </action>
                     </pluginExecution>
                   </pluginExecutions>
