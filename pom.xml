@@ -258,8 +258,9 @@
       </properties>
     </profile>
 
+    <!-- Profile with ID in format ounit-* will not be passed to student POM -->
     <profile>
-      <id>moodle19</id>
+      <id>ounit-moodle19</id>
       <activation>
         <property>
           <name>moodle19.url</name>
@@ -283,7 +284,7 @@
       </build>
     </profile>
     <profile>
-      <id>moodle21</id>
+      <id>ounit-moodle21</id>
       <activation>
         <property>
           <name>moodle21.url</name>
