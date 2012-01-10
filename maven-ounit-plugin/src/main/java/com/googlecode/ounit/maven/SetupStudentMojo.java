@@ -96,9 +96,13 @@ public class SetupStudentMojo extends MojoData {
 
 			// Allow code in Maven repository and target/bin to do anything
 			policyLines.add(marker);
-			policyLines.add("grant codeBase \"" +
-					  session.getLocalRepository().getUrl() +
-					  "-\" { permission java.security.AllPermission; };");
+			
+			// Create ugly "policy file friendly" URL-s.
+			// We can't simply use @ArtifactRepository#getUrl() because Java
+			// policy manager is too dumb to unescape %20-s
+			policyLines.add("grant codeBase \"file:" +
+					session.getLocalRepository().getBasedir() +
+					  "/-\" { permission java.security.AllPermission; };");
 			policyLines.add("grant codeBase \"file:${user.dir}/bin/-\"" +
 					  " { permission java.security.AllPermission; };");
 
