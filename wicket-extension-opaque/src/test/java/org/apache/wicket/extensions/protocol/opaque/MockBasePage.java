@@ -21,10 +21,21 @@
 
 package org.apache.wicket.extensions.protocol.opaque;
 
+import java.io.File;
+import java.util.Locale;
+
 import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.html.link.DownloadLink;
+import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ByteArrayResource;
+import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.resource.FileResourceStream;
+import org.apache.wicket.util.resource.IResourceStream;
 
 public class MockBasePage extends OpaquePage {
 	private static final long serialVersionUID = 1L;
@@ -34,6 +45,52 @@ public class MockBasePage extends OpaquePage {
 		super(parameters);
 		setDefaultModel(new CompoundPropertyModel<MockModelObject>(new MockModelObject()));
 		m = (MockModelObject)getDefaultModelObject();
+
+		/*
+		mainForm.add(new Link<File>("download") {
+			private static final long serialVersionUID = -7993454665712732715L;
+
+			@Override
+			public void onClick() {
+			}
+		});
+		*/
+		
+
+		/* mainForm.add(new DownloadLink("download", new File("/tmp/sitt.zip"),
+				"download.zip")); */
+
+		/*
+		mainForm.add(new ResourceLink<Void>("download",
+				new ByteArrayResource("application/octet-stream",
+						new byte[] { (byte) 0xff }, "download.zip")));
+		*/
+		/*
+		mainForm.add(new ResourceLink<Void>("download",
+				new ByteArrayResource("application/octet-stream",
+						new byte[] { (byte) 0xff })));
+		*/
+		/*
+		mainForm.add(new ResourceLink<Void>("download", new ResourceReference(this.getClass(), "download.zip") {
+			private static final long serialVersionUID = 1L;
+			final IResource resource = new ByteArrayResource("application/octet-stream",
+					new byte[] { (byte) 0xff }, "download.zip");
+
+			@Override
+			public IResource getResource()
+			{
+				return resource;
+			}
+		}));
+		*/
+
+		/*
+		
+				IResourceStream resourceStream = new FileResourceStream(
+			new org.apache.wicket.util.file.File(file));
+			IResourceVersion
+			ResourceSettings
+		*/
 	}
 	
 	@Override
@@ -41,9 +98,9 @@ public class MockBasePage extends OpaquePage {
 		super.renderHead(response);
 		
 		response.renderCSSReference(new PackageResourceReference(
-				MockHomePage.class, "mockstyle.css"));
+				MockBasePage.class, "mockstyle.css"));
 		response.renderJavaScriptReference(new PackageResourceReference(
-				MockHomePage.class, "mockscript.js"));
+				MockBasePage.class, "mockscript.js"));
 	}
 	
 	@Override
