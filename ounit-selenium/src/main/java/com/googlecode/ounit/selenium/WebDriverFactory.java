@@ -162,7 +162,7 @@ public class WebDriverFactory {
 						@Override
 						public void notify(String message, Object origin) {
 							if (message.contains("Obsolete")
-									&& message.contains("text/javascript"))
+									&& message.contains("/javascript"))
 								return;
 
 							delegate.notify(message, origin);
