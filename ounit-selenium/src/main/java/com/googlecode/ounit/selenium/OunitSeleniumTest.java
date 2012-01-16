@@ -22,10 +22,10 @@
 package com.googlecode.ounit.selenium;
 
 import java.io.File;
-import java.util.NoSuchElementException;
 
 import org.junit.*;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 
 public abstract class OunitSeleniumTest {
