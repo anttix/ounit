@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+   OUnit - an OPAQUE compliant framework for Computer Aided Testing
+
+   Copyright (C) 2010, 2011  Antti Andreimann
+
+   This file is part of OUnit.
+
+   OUnit is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   OUnit is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with OUnit.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.googlecode.ounit</groupId>
+    <artifactId>ounit-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>ounit-test-executor</artifactId>
+  <name>OUnit Test Executor</name>
+
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <mavenVersion>3.0.3</mavenVersion>
+    <wagonVersion>1.0</wagonVersion>
+    <aetherVersion>1.13</aetherVersion>
+  </properties>
+
+  <prerequisites>
+    <maven>2.2</maven>
+  </prerequisites>
+
+  <build>
+    <defaultGoal>verify</defaultGoal>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <failIfNoTests>true</failIfNoTests>
+            <excludes>
+              <exclude>**/*$*</exclude>
+              <exclude>**/test-project*/**</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-resources-plugin</artifactId>
+          <configuration>
+            <escapeString>\</escapeString>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+  </build>
+
+  <dependencies>
+
+<!--
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>ounit-common</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+-->
+
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-embedder</artifactId>
+      <version>${mavenVersion}</version>
+    </dependency>
+    <!--  For some reason these are not automatically pulled in -->
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-connector-wagon</artifactId>
+      <version>${aetherVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-http</artifactId>
+      <version>${wagonVersion}</version>
+    </dependency>
+
+    <!-- This is here to explicitly pull in eclipse compiler 
+         It's not directly used here but most questions use it
+    -->
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-compiler-eclipse</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  </dependencies>
+</project>

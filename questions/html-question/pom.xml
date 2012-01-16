@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+   OUnit - an OPAQUE compliant framework for Computer Aided Testing
+
+   Copyright (C) 2010, 2011  Antti Andreimann
+
+   This file is part of OUnit.
+
+   OUnit is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   OUnit is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with OUnit.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.googlecode.ounit</groupId>
+    <artifactId>question-base</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>html-question</artifactId>
+  <packaging>pom</packaging>
+  <name>OUnit Simple (D)HTML question</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <ounit.packaging>pom</ounit.packaging>
+  </properties>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.googlecode.ounit</groupId>
+      <artifactId>ounit-selenium</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- Skip test phase to save time: we have no student written tests -->
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

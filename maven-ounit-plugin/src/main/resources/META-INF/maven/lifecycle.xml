@@ -1,0 +1,284 @@
+<!--
+
+ Define custom lifecycles for Ounit questions.
+
+ Based on Rich Sellers answer to a question in stack overflow:
+ http://stackoverflow.com/questions/1427740/how-do-i-execute-a-set-of-goals-before-my-maven-plugin-runs
+ http://www.sonatype.com/books/maven-book/reference/writing-plugins-sect-custom-lifecycle.html
+
+/*
+ * ounit - an OPAQUE compliant framework for Computer Aided Testing
+ *
+ * Copyright (C) 2010  Antti Andreimann
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+-->
+
+<lifecycles>
+  <lifecycle>
+    <id>generate-project</id>
+    <phases>
+      <phase>
+        <id>generate-sources</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <escapeString>\</escapeString>
+              <resources>          
+                <resource>
+                  <directory>root</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/description</outputDirectory>
+              <escapeString>\</escapeString>
+              <resources>          
+                <resource>
+                  <directory>description</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>
+          </execution>          
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <escapeString>\</escapeString>
+              <resources>          
+                <resource>
+                  <directory>shared</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <escapeString>\</escapeString>
+              <resources>          
+                <resource>
+                  <directory>student</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>              
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-assembly-plugin:single
+              </goal>
+            </goals>
+            <configuration>
+              <finalName>download</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <ignoreMissingDescriptor>true</ignoreMissingDescriptor>
+              <descriptors>
+                <descriptor>${project.build.directory}/assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-dependency-plugin:go-offline
+              </goal>
+            </goals>
+          </execution>
+        </executions>
+      </phase>
+    </phases>
+  </lifecycle>
+  
+  <lifecycle>
+    <id>teacher-tests</id>
+    <phases>
+      <phase>
+        <id>initialize</id>
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-failsafe-plugin:integration-test
+              </goal>
+            </goals>
+            <configuration>
+              <testFailureIgnore>true</testFailureIgnore>
+              <testClassesDirectory>
+                ${basedir}/bin/teacher-test-classes
+              </testClassesDirectory>
+              <reportsDirectory>
+               ${project.build.directory}/teacher-reports
+             </reportsDirectory>
+              <systemPropertyVariables>
+                <reportsDirectory>
+                  ${project.build.directory}/teacher-reports
+                </reportsDirectory>
+              </systemPropertyVariables>
+             <forkMode>once</forkMode>
+             <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+             <redirectTestOutputToFile>true</redirectTestOutputToFile>
+             <printSummary>false</printSummary>
+             <skip>false</skip>
+             <argLine>
+               -Djava.security.manager -Djava.security.policy=tests.policy
+             </argLine>
+             <includes>
+               <include>**/Test*.java</include>
+               <include>**/*Test.java</include>
+               <include>**/*TestCase.java</include>
+               <include>**/IT*.java</include>
+               <include>**/*IT.java</include>
+               <include>**/*ITCase.java</include>
+            </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </phase>
+    </phases>
+  </lifecycle>
+
+  <lifecycle>
+    <id>verify-question</id>
+    <phases>
+      <phase>
+        <id>initialize</id>     
+        <executions>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <escapeString>\</escapeString>
+              <resources>          
+                <resource> 
+                  <directory>student</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-invoker-plugin:run
+              </goal>
+            </goals>
+            <configuration>
+              <pom>${project.build.directory}/pom.xml</pom>
+              <suppressSummaries>true</suppressSummaries>
+              <noLog>true</noLog> <!-- Show output instead of logging it to a file -->
+              <goals></goals> <!-- Execute default goal -->
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                com.googlecode.ounit:maven-ounit-plugin:check-marks
+              </goal>
+            </goals>
+            <configuration>
+              <marks>0</marks>
+              <outputDirectory>${project.build.directory}/target</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-resources-plugin:copy-resources
+              </goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <escapeString>\</escapeString>
+              <resources>          
+                <resource> 
+                  <directory>teacher</directory>
+                  <filtering>true</filtering>
+                  <excludes>
+                    <exclude>test/**</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+              <overwrite>true</overwrite>
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                org.apache.maven.plugins:maven-invoker-plugin:run
+              </goal>
+            </goals>
+            <configuration>
+              <pom>${project.build.directory}/pom.xml</pom>
+              <suppressSummaries>true</suppressSummaries>
+              <noLog>true</noLog> <!-- Show output instead of logging it to a file -->
+              <goals></goals> <!-- Execute default goal -->
+            </configuration>
+          </execution>
+          <execution>
+            <goals>
+              <goal>
+                com.googlecode.ounit:maven-ounit-plugin:check-marks
+              </goal>
+            </goals>
+            <configuration>
+              <marks>100</marks>
+              <outputDirectory>${project.build.directory}/target</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </phase>
+    </phases>
+  </lifecycle>
+</lifecycles>

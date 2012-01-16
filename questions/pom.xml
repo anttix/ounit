@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+   OUnit - an OPAQUE compliant framework for Computer Aided Testing
+
+   Copyright (C) 2010, 2011  Antti Andreimann
+
+   This file is part of OUnit.
+
+   OUnit is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   OUnit is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with OUnit.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.googlecode.ounit</groupId>
+    <artifactId>ounit-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>question-base</artifactId>
+  <!-- <version>1.0</version> -->
+  <packaging>pom</packaging>
+  <name>OUnit question base settings</name>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+  <build>
+    <!-- Goal executed by testing system to prepare student sources -->
+    <defaultGoal>process-test-classes</defaultGoal>
+
+    <!-- 
+         Override source directories for the compiler. This is used by
+         Eclipse m2e to discover source directories. During a real build,
+         ounit plugin will override the directories automatically.
+    -->
+    <sourceDirectory>${basedir}/teacher/main/java</sourceDirectory>
+    <testSourceDirectory>${basedir}/teacher/test/java</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>teacher/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>shared/main/resources</directory>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>teacher/test/resources</directory>
+      </testResource>
+      <testResource>
+        <directory>shared/test/resources</directory>
+      </testResource>
+    </testResources>
+
+    <pluginManagement>
+      <plugins>
+        <!-- Use Java 1.6 and eclipse compiler (javac leaks memory
+             and is slower in general than ECJ) -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-compiler-eclipse</artifactId>
+              <version>${ecj.version}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <fork>true</fork>
+            <compilerId>eclipse</compilerId>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+        </plugin>
+        <!-- 
+             Apply default surefire settings.
+             Basic configuration should be kept in sync with these two files:
+             maven-ounit-plugin/src/main/resources/META-INF/maven/lifecycle.xml
+             ounit-test-executor/src/main/resources/maven/baseProfile.xml
+        -->
+        <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${surefire.version}</version>
+          <configuration>
+            <forkMode>once</forkMode>
+            <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <printSummary>false</printSummary>
+            <argLine>
+              -Djava.security.manager -Djava.security.policy=tests.policy
+            </argLine>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${surefire.version}</version>
+          <configuration>
+            <forkMode>once</forkMode>
+            <forkedProcessTimeoutInSeconds>300</forkedProcessTimeoutInSeconds>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <printSummary>false</printSummary>
+            <argLine>
+              -Djava.security.manager -Djava.security.policy=tests.policy
+            </argLine>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <!-- Pull in ounit plugin -->
+      <plugin>
+        <groupId>com.googlecode.ounit</groupId>
+        <artifactId>maven-ounit-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- Pull in testing dependencies -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>ounit-junit</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <modules>
+    <module>java-question</module>
+    <module>html-question</module>
+    <module>webapp-question</module>
+    <module>archetypes/java-simple</module>
+    <module>archetypes/java-packaged</module>
+  </modules>
+
+
+  <!-- Instruct Eclipse m2e to ignore ounit plugin goals
+       and play nice with eclipse compilerId -->
+  <profiles>
+    <profile>
+      <id>m2e-ignore-ounit-goals</id>
+      <activation>
+        <property>
+          <name>m2e.version</name>
+        </property>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.eclipse.m2e</groupId>
+              <artifactId>lifecycle-mapping</artifactId>
+              <version>1.0.0</version>
+              <configuration>
+                <lifecycleMappingMetadata>
+                  <pluginExecutions>
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>com.googlecode.ounit</groupId>
+                        <artifactId>maven-ounit-plugin</artifactId>
+                        <versionRange>[1.0-SNAPSHOT,)</versionRange>
+                        <goals>
+                          <goal>setup-paths</goal>
+                          <goal>generate-files</goal>
+                          <goal>generate-project</goal>
+                          <goal>setup-student</goal>
+                        </goals>
+                      </pluginExecutionFilter>
+                      <action>
+                        <ignore/>
+                      </action>
+                    </pluginExecution>
+
+                    <!-- Lifted from 
+                         http://dev.eclipse.org/mhonarc/lists/m2e-users/msg00616.html
+                         http://dev.eclipse.org/mhonarc/lists/m2e-dev/msg00499.html
+                    -->
+                    <pluginExecution>
+                      <pluginExecutionFilter>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <versionRange>[2.0,)</versionRange>
+                        <goals>
+                          <goal>compile</goal>
+                          <goal>testCompile</goal>
+                        </goals>
+                        <parameters>
+                          <compilerId>eclipse</compilerId>
+                        </parameters>
+                      </pluginExecutionFilter>
+                      <action>
+                        <configurator>
+                          <id>org.eclipse.m2e.jdt.javaConfigurator</id>
+                        </configurator>
+                      </action>
+                    </pluginExecution>
+                  </pluginExecutions>
+                </lifecycleMappingMetadata>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+</project>

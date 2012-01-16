@@ -1,0 +1,9 @@
+syntax: glob
+
+target
+.classpath
+.settings
+.project
+.git*
+tmp
+ounit-work

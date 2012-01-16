@@ -1,0 +1,96 @@
+<!--
+
+ Define custom packaging type for Ounit questions.
+
+ Based on Rich Sellers answer to a question in stack overflow:
+ http://stackoverflow.com/questions/1427722/how-do-i-create-a-new-packaging-type-for-maven
+
+/*
+ * ounit - an OPAQUE compliant framework for Computer Aided Testing
+ *
+ * Copyright (C) 2010  Antti Andreimann
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
+-->
+
+<component-set>
+  <components>
+    <component>
+      <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+      <role-hint>ounit-question</role-hint>
+      <implementation>
+        org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+      </implementation>
+      <configuration>
+        <phases>
+          <initialize>
+            com.googlecode.ounit:maven-ounit-plugin:setup-paths
+          </initialize>     
+          <generate-resources> 
+            com.googlecode.ounit:maven-ounit-plugin:generate-files
+          </generate-resources>
+          <process-resources>
+            org.apache.maven.plugins:maven-resources-plugin:resources
+          </process-resources>
+          <compile>
+            org.apache.maven.plugins:maven-compiler-plugin:compile
+          </compile>
+          <process-test-resources>
+            org.apache.maven.plugins:maven-resources-plugin:testResources
+          </process-test-resources>
+          <test-compile>
+            org.apache.maven.plugins:maven-compiler-plugin:testCompile
+          </test-compile>
+          <process-test-classes>
+            com.googlecode.ounit:maven-ounit-plugin:generate-project
+          </process-test-classes>
+          <test>
+            com.googlecode.ounit:maven-ounit-plugin:verify
+          </test>
+<!--
+          <package>
+            org.apache.maven.plugins:maven-jar-plugin:jar
+          </package>
+          <install>
+            org.apache.maven.plugins:maven-install-plugin:install
+          </install>
+          <deploy>
+            org.apache.maven.plugins:maven-deploy-plugin:deploy
+          </deploy>
+-->
+        </phases>
+      </configuration>
+    </component>
+    <component>
+      <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+      <role-hint>ounit-question</role-hint>
+      <implementation>
+        org.apache.maven.artifact.handler.DefaultArtifactHandler
+      </implementation>
+      <configuration>
+        <!--the extension used by Maven in the repository-->
+        <!-- <extension>foobar</extension> -->
+        <!--the type used when specifying dependencies etc.-->
+        <!-- <type>ounit-question</type> -->
+        <!--the packaging used when declaring an implementation of 
+          the packaging-->
+        <packaging>ounit-question</packaging>
+      </configuration>
+    </component>
+
+  </components>
+</component-set>

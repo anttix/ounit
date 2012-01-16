@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+   OUnit - an OPAQUE compliant framework for Computer Aided Testing
+
+   Copyright (C) 2010, 2011  Antti Andreimann
+
+   This file is part of OUnit.
+
+   OUnit is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   OUnit is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with OUnit.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en"
+      xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.5-strict.dtd">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>OT1: Ounit Test Template Preview</title>
+
+  <!-- START Moodle stylesheets and Javascript. IE specific code has been removed -->
+  <link rel="stylesheet" type="text/css" href="moodle/quiz-1.9.12.css" />
+  <script type="text/javascript" src="moodle/quiz-1.9.12.js"></script><script type="text/javascript" defer="defer">setTimeout('fix_column_widths()', 20);</script>
+  <!-- END Moodle stylesheets and Javascript -->
+      
+  <link rel="stylesheet" type="text/css" href="ounit.css" />
+  
+</head>
+
+<body>
+
+<!-- START Moodle HTML -->
+<div id="page"> <div id="header" class=" clearfix"> <h1 class="headermain">Ounit Test Course </h1> <div class="headermenu"><div class="logininfo">You are logged in as <a href="#">John Doe</a> (<a href="#">Logout</a>)</div></div> </div> <div class="navbar clearfix"> <div class="breadcrumb"><h2 class="accesshide " >You are here</h2> <ul> <li class="first"><a onclick="this.target='_top'" href="#">moodle19</a></li><li> <span class="accesshide " >/&nbsp;</span><span class="arrow sep">&#x25BA;</span> <a onclick="this.target='_top'" href="#">OT1</a></li><li> <span class="accesshide " >/&nbsp;</span><span class="arrow sep">&#x25BA;</span> <a onclick="this.target='_top'" href="#">Quizzes</a></li><li> <span class="accesshide " >/&nbsp;</span><span class="arrow sep">&#x25BA;</span> <a onclick="this.target='_top'" href="#">Ounit Test Template Preview</a></li><li> <span class="accesshide " >/&nbsp;</span><span class="arrow sep">&#x25BA;</span> Attempt 1</li></ul></div> <div class="navbutton">&nbsp;</div> </div> <div id="content" class=" clearfix"><div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div><h2 class="main">Ounit Test Template Preview - Attempt 1</h2><form id="responseform" method="post" action="http://localhost/moodle/1.9.12/mod/quiz/attempt.php?q=1&amp;page=0" enctype="multipart/form-data" onkeypress="return check_enter(event);" accept-charset="utf-8"> <script type="text/javascript"> document.getElementById("responseform").setAttribute("autocomplete", "off") </script> <div><div class="paging pagingbar"><span class="title">Page:</span>&nbsp;&nbsp;<span class="thispage">1</span>&nbsp;&nbsp;<a href="#">2</a>&nbsp;&nbsp;<a href="#">3</a>&nbsp;&nbsp;<a class="next" href="#" title="Next">(Next)</a>&nbsp;</div><div id="q4" class="que opaque clearfix"> <div class="info"> <span class="no"><span class="accesshide">Question </span>1</span> <div class="grade"> Marks: 3 </div> </div> <div class="content"> <div class="khtml">
+<!-- END Moodle HTML -->
+
+ <div class="opage">
+  <wicket:extend>
+    <div class="ou-confirm">
+      <div>Testing your code produced the following results</div>
+      
+      <div wicket:id="resultsFile" class="ou-results" />
+      
+      <div>
+        You could get
+        <span wicket:id="marks">N</span> / <span wicket:id="maxMarks">M</span>
+        marks for this submission.
+      </div>
+    </div>
+        
+    <div class="ou-buttons">
+      <input wicket:id="grade"  type="submit" name="grade" value="Grade Now" />
+      <input wicket:id="return" type="submit" name="return" value="Return and Retry" />
+    </div>
+  </wicket:extend>
+ </div>
+ <div style="clear: both;" />
+  
+
+<!-- START Moodle HTML -->
+</div><input type="hidden" name="opaquesequencecheck" value="1528144359" /> <div class="grading"> <div class="correctness correct">Correct</div><div class="gradingdetails">Marks for this submission: 3/3.</div> </div> </div> </div> <div class="submitbtns mdl-align"> <input type="submit" name="saveattempt" value="Save without submitting" /> <input type="submit" name="finishattempt" value="Submit all and finish" onclick="return confirm('You are about to close this attempt. Once you close the attempt you will no longer be able to change your answers.')" /> </div><div class="paging pagingbar"><span class="title">Page:</span>&nbsp;&nbsp;<span class="thispage">1</span>&nbsp;&nbsp;<a href="#">2</a>&nbsp;&nbsp;<a href="#">3</a>&nbsp;&nbsp;<a class="next" href="#" title="Next">(Next)</a>&nbsp;</div></div> </form> </div><div id="footer"><hr /><p class="helplink"></p><div class="logininfo">You are logged in as <a href="#">John Doe</a> (<a href="#">Logout</a>)</div><div class="homelink"><a href="#">OT1</a></div></div> </div>
+<!-- END Moodle HTML -->
+
+  </body>
+</html> 

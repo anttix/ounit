@@ -1,0 +1,67 @@
+/*
+ * OUnit - an OPAQUE compliant framework for Computer Aided Testing
+ *
+ * Copyright (C) 2010, 2011  Antti Andreimann
+ *
+ * This file is part of OUnit.
+ *
+ * OUnit is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OUnit is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OUnit.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@CHARSET "UTF-8";
+
+.opage .CodeMirror {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    height: 99.5%;
+}
+
+.opage .activeline { background: #f0fcff !important; }
+.opage .codeeditor { width: 100%; height: 100%; }
+.opage .filetree   { width: 5em; }
+.opage .ou-tabpanel { font-size: small; }
+.opage .ou-tabpanel .ui-tabs-nav li a { padding: 0.2em 1em; }
+.opage .ou-tabpanel .ui-tabs-nav li a.close { padding: 0.2em 2px 0.2em 1em; }
+.opage .ou-tabpanel li .ui-icon-close { float: left; margin: 0; padding: 0; cursor: pointer; }
+.opage .ou-tabpanel .ui-tabs-panel { height: 26em; overflow: auto; }
+/* .opage .ou-question, .opage .ou-closed-question { float: left; width: 100%; } */
+div.opage { float: left; width: 100% } /* Required for Moodle 2.1+ */
+.opage ul.ou-explorer-tree { padding-left: 2em; }
+.opage .ou-explorer-tree ul { margin-top: 0px; margin-bottom: 0px; }
+.opage .ou-explorer-tree a { color: blue; } 
+/* .ou-buttons input { font-size: large; } */
+.opage div.ou-buttons { margin-top: 3px; }
+.opage div.ou-left-button-panel { width: 10em; float: left; }
+.opage div.ou-right-button-panel { width: 10em; float: right; }
+.opage .ou-attempts { margin-top: 5px; text-align: center; }
+.opage div.explorer-buttons { float: right; margin: 1em; }
+.opage div.explorer-buttons a { padding: 0.5em; border: double; }
+
+/* Closed questions go grey */
+div.opage .ou-closed-question .ou-tabpanel,
+div.opage .ou-closed-question .ui-tabs-panel,
+div.opage .ou-closed-question .CodeMirror-gutter { background-color: #EEEEEE; }
+
+.opage .ou-confirm .ou-results {
+	margin: 2em;
+	min-height: 5em;
+	max-height: 26em;
+	overflow: auto;
+	border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.opage .ou-confirm {
+	margin-bottom: 1em;
+}
