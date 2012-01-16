@@ -164,6 +164,7 @@
     <module>java-question</module>
     <module>html-question</module>
     <module>webapp-question</module>
+    <module>php-question</module>
     <module>archetypes/java-simple</module>
     <module>archetypes/java-packaged</module>
   </modules>
