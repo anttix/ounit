@@ -73,9 +73,6 @@ public class Moodle21IntegrationTest extends MoodleIntegrationTests {
 		startServer();
 		openBrowser();
 		
-		//System.setProperty("moodle21.url", "http://localhost/moodle/2.1+");
-		//System.setProperty("moodle21.pass", "Ajutine1%");
-
 		homePage = PageFactory.initElements(driver, HomePage.class); 
 		helper.setupMoodle(homePage, serviceAddress);
 	}

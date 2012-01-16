@@ -12,12 +12,12 @@ public class MockModelObject implements Serializable {
 	}
 	
 	public int getNr() {
-		//log.debug("getNr()");
+		log.debug("getNr()");
 		return nr;
 	}
 
 	public void setNr(int nr) {
-		//log.debug("setNr({})", nr);
+		log.debug("setNr({})", nr);
 		this.nr = nr;
 	}
 }

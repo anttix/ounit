@@ -80,27 +80,6 @@
           </plugins>
         </pluginManagement>
       </build>
-
-      <repositories>
-        <repository>
-          <id>anttix.org</id>
-          <name>anttix.org snapshots</name>
-          <url>
-            http://anttix.org/repo
-          </url>
-        </repository>
-      </repositories>
-
-      <pluginRepositories>
-        <pluginRepository>
-          <id>anttix.org</id>
-          <name>anttix.org snapshots</name>
-          <url>
-            http://anttix.org/repo
-          </url>
-        </pluginRepository>
-      </pluginRepositories>
-
     </profile>
   </profiles>
 </project>

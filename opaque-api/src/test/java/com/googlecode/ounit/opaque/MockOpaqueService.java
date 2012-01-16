@@ -152,13 +152,13 @@ public class MockOpaqueService implements OpaqueService {
 		
 		ProcessReturn rv = new ProcessReturn();
 		
-		/* This is not shown by Moodle 1.9, however it is parsed to find
+		/* This is not shown by Moodle, however it is parsed to find
 		 * the number of retries. Words one and last count as 1 and any digit
 		 * is interpreted as the number of retries.
 		 *  
 		 * Bleh! How UGLY is THAT!
 		 * 
-		 * Moodle 2.1 does display that information right next to the question.
+		 * And in the end, it doesn't seem to work at all.
 		 */
 		rv.setProgressInfo("You have 3 attempts left");
 		
@@ -260,7 +260,6 @@ public class MockOpaqueService implements OpaqueService {
 	
 	private void populateReturn(ReturnBase rv, String nr, String questionSession) {
 		rv.setXHTML("\n\n<!-- MockOpaqueService Question START -->\n"
-				+ "<div>\n"
 				+ "<div class=\"quizdiv\">Enter a number of points <br />\n"
 				+ "(0-3 score points, others let you retry) \n"
 				+ "<input type=\"text\" name=\"%%IDPREFIX%%nr\"/>\n"
@@ -271,10 +270,9 @@ public class MockOpaqueService implements OpaqueService {
 				+ "<img id=\"%%IDPREFIX%%pic\" src=\"%%RESOURCES%%/mockpic.gif\" "
 				+ "     width=\"50\" height=\"50\" /></div>\n"
 				+ "<div class=\"headdiv\">"
-				+ "If you can read this, header injection did not work (only Moodle 1.9 supports it)</div>\n"
+				+ "If you can read this, header injection did not work (only Moodle supports it)</div>\n"
 				+ "<div class=\"cssdiv\">If You can read this, CSS was not loaded</div>\n"
-				+ "<div id=\"%%IDPREFIX%%cssfilterdiv\" class=\"cssfilterdiv\">"
-				+ "If You can read this, CSS was not filtered (only Moodle 2.1+ supports it)</div>"
+				+ "<div id=\"%%IDPREFIX%%jsdiv\" class=\"jsdiv\">If You can read this, JS was not loaded</div>\n"
 				+ "<script type=\"text/javascript\" src=\"%%RESOURCES%%/mockscript.js\"></script>\n"
 				+ "<script type=\"text/javascript\">mockHideDiv('%%IDPREFIX%%jsdiv');</script>\n"
 				+ "<script type=\"text/javascript\">"
@@ -286,18 +284,7 @@ public class MockOpaqueService implements OpaqueService {
 				+ "      img.parentNode.style.display = 'none';\n"
 				+ "      return true; } else { return false; }"
 				+ "}\n if(!hideImgDiv()) setTimeout(hideImgDiv, 1000);\n"
-				+ "var filterDivs = ['cssfilterdiv'];\n"
-				+ "for(var i in filterDivs) {\n"
-				+ "  var e = document.getElementById('%%IDPREFIX%%' + filterDivs[i]);\n"
-				+ "  var s = '';\n"
-				+ "  if(window.getComputedStyle)\n"
-				+ "    s = window.getComputedStyle(e, '').getPropertyValue('background-image');\n"
-				+ "  else if(e.currentStyle)\n"
-				+ "    s = e.currentStyle['backgroundImage'];\n"
-				+ "  if(s.indexOf('%%RESOURCES%%') != -1)\n"
-				+ "    e.style.display = 'none';\n}\n"
 				+ "</script>\n"
-				+ "</div>\n"
 				+ "<!-- MockOpaqueService Question END -->\n\n");
 
 		/* Resources, CSS and headers are NOT filtered for %%..%% constructs so we MUST use
@@ -308,17 +295,11 @@ public class MockOpaqueService implements OpaqueService {
 		 * Moodle saves this to resources with a filename that
 		 * contains $questionsessionid.
 		 */
-		rv.setCSS(".cssdiv { display: none; } " 
-				+ ".cssfilterdiv { background-image: url(%%RESOURCES%%/mockpic.gif); }");
-		rv.setHead("<style type=\"text/css\">"
-				+ ".headdiv { display: none; } "
-				+ ".headfilterdiv { background-image: url(%%RESOURCES%%/mockpic.gif); }"
-				+ "</style>");
+		rv.setCSS(".cssdiv { display: none; }");
+		rv.setHead("<style type=\"text/css\">.headdiv { display: none; }</style>");
 		rv.setResources(generateNewResources(engineResources,
 				sessions.get(questionSession).cachedResources));
-
-		if(rv.getResources().length > 0)
-			debug("Sending " + rv.getResources().length + " new resources to client");
+		debug("Sending " + rv.getResources().length + " new resources to client");
 	}
 	
 	/**

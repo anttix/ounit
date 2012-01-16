@@ -35,15 +35,11 @@ import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.session.ISessionStore;
-//import org.apache.wicket.util.collections.MostRecentlyUsedMap;
 import org.apache.wicket.util.lang.Args;
 
 public class OpaqueSessionStore implements ISessionStore {
 	//private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 	private final Set<UnboundListener> unboundListeners = new CopyOnWriteArraySet<UnboundListener>();
-
-	//this.cache = Collections.synchronizedMap(
-	//		new MostRecentlyUsedMap<Serializable, String>(maxEntries));
 
 	final Map<String, Map<String, Serializable>> attributes = Collections
 			.synchronizedMap(new HashMap<String, Map<String, Serializable>>());
