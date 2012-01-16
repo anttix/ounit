@@ -118,6 +118,13 @@
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>${project.parent.groupId}</groupId>
+      <artifactId>ounit-selenium</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   
   <build>
