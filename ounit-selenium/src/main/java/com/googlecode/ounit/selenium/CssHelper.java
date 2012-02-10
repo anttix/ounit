@@ -37,9 +37,29 @@ public class CssHelper {
 		return rv;
 	}
 
+	public static boolean hasStyleAttribute(WebElement e) {
+		String st = e.getAttribute("style");
+		if (st == null || "".equals(st))
+			return false;
+		else
+			return true;
+	}
+
 	// getCssValue is very browser specific
 	public static String getBackgroundColor(WebElement e) {
 		String[] props = { "backgroundColor", "background-color" };
+
+		return getFirstCssProperty(e, props);
+	}
+
+	public static String getTextColor(WebElement e) {
+		String[] props = { "color" };
+
+		return getFirstCssProperty(e, props);
+	}
+
+	public static String getBorderStyle(WebElement e) {
+		String[] props = { "borderStyle", "border-left-style" };
 
 		return getFirstCssProperty(e, props);
 	}
