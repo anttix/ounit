@@ -21,6 +21,9 @@
 
 package com.googlecode.ounit.selenium;
 
+//import org.hamcrest.Matcher;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 public class CssHelper {
@@ -62,5 +65,66 @@ public class CssHelper {
 		String[] props = { "borderStyle", "border-left-style" };
 
 		return getFirstCssProperty(e, props);
+	}
+	
+	public static String getTextAlign(WebElement e) {
+		String[] props = { "textAlign", "text-align" };
+
+		return getFirstCssProperty(e, props);
+	}
+	
+	public static String getListStyle(WebElement e) {
+		String[] props = { "listStyle", "listStyleType", "list-style-type",
+				"list-style" };
+
+		return getFirstCssProperty(e, props);
+	}
+
+	public static String getMargin(WebElement e) {
+		String[] props = { "margin", "margin-left" };
+
+		return getFirstCssProperty(e, props);
+	}
+
+	public static String getMarginLeft(WebElement e) {
+		String[] props = { "marginLeft", "margin-left" };
+
+		return getFirstCssProperty(e, props);
+	}
+	
+	public static String getMarginRight(WebElement e) {
+		String[] props = { "marginRight", "margin-right" };
+
+		return getFirstCssProperty(e, props);	
+	}
+
+	public static String getPadding(WebElement e) {
+		String[] props = { "padding", "padding-left" };
+
+		return getFirstCssProperty(e, props);
+	}
+
+	/*
+	Matcher<String> isCssColor(int r, int g, int b) {
+	}
+	*/
+
+	public static WebElement createElementWithCSS(WebDriver driver, String style) {
+		String jsCode = 
+				"var e = document.createElement('div');" +
+				"e.innerHTML = '<div style=\"" + style + "\">&nbsp;</div>';" +
+				"document.body.appendChild(e);" +
+				"return e;";
+		
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		return (WebElement) js.executeScript(jsCode);
+	}
+
+	public static void setBodyFont(WebDriver driver, int size) {
+		String jsCode = "document.body.style.fontSize = '" + size + "px';";
+
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript(jsCode);
+
 	}
 }
