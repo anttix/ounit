@@ -167,6 +167,7 @@
     <module>php-question</module>
     <module>archetypes/java-simple</module>
     <module>archetypes/java-packaged</module>
+    <module>archetypes/html-simple</module>
   </modules>
 
 
