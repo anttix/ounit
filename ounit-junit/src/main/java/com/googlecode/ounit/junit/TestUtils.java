@@ -21,10 +21,16 @@
 
 package com.googlecode.ounit.junit;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
@@ -47,6 +53,32 @@ public class TestUtils {
 		CharBuffer chBuff = Charset.forName("UTF-8").decode(bb);
 		return chBuff.toString();
 	}
+	
+	/**
+	 * Load contents of a resource file into a string
+	 * 
+	 * @param clazz class to use as a base for resolving the resource in classpath
+	 * @param name resource name
+	 * @return String the contents of a resource file
+	 * @throws IOException
+	 */
+    public static String getResourceContents(Class<?> clazz, String name) throws IOException {
+    	StringBuilder sb = new StringBuilder();
+        InputStream is = clazz.getResourceAsStream(name);
+        assertThat("Resource file not found", is, notNullValue());
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            while ((line = br.readLine()) != null) {
+            	sb.append(line);
+            	sb.append("\n");
+            }
+        }
+        finally {
+            is.close();
+        }
+        return sb.toString();
+    }
 
 	/**
 	 * Try to find current reports directory from properties
