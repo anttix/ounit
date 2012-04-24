@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+	<New id="hsqldb" class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg>java:comp/env/jdbc/ounitDS</Arg>
+		<Arg>
+			<New class="org.hsqldb.jdbc.JDBCDataSource">
+				<Set name="url">jdbc:hsqldb:mem:testdb;shutdown=true</Set>
+				<Set name="user">dba</Set>
+				<Set name="password">dba</Set>
+			</New>
+		</Arg>
+	</New>
+</Configure>
