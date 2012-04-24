@@ -98,7 +98,7 @@ public class StatementDecorator implements Statement {
 	@Override
 	public int executeUpdate(String sql) throws SQLException {
 		if(sql.startsWith("SET NAMES") || sql.startsWith("SET CHARACTER"))
-			return 0;
+			return statement.executeUpdate("SET DATABASE SQL SYNTAX MYS TRUE");
 		else
 			return statement.executeUpdate(sql);
 	}
