@@ -52,5 +52,13 @@
          since resin contains a lot of similar classes (it's a container
          after all), adding it to deps will mess up appserver class loading.
     -->
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-plus</artifactId>
+      <version>${jetty.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
 </project>

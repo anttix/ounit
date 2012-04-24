@@ -69,7 +69,7 @@
     <dependency>
       <groupId>com.caucho</groupId>
       <artifactId>resin</artifactId>
-      <version>4.0.22</version>
+      <version>4.0.23</version>
     </dependency>
     <dependency>
       <groupId>${project.parent.groupId}</groupId>
@@ -102,6 +102,16 @@
               <overrideDescriptor>
                 com/googlecode/ounit/quercus/web.xml
               </overrideDescriptor>
+              <bean implementation="com.googlecode.ounit.quercus.JndiBean">
+                <name>java:comp/env/jdbc/ounitDS</name>
+                <object implementation="com.googlecode.ounit.quercus.DataSourceDecorator">
+                  <dataSource implementation="org.hsqldb.jdbc.JDBCDataSource">
+                    <url>jdbc:hsqldb:mem:ouphpdb-${timestamp};shutdown=true</url>
+                    <user>dba</user>
+                    <password>dba</password>
+                  </dataSource>
+                </object>
+              </bean>
             </webAppConfig>
           </configuration>
           <dependencies>
@@ -110,10 +120,36 @@
               <artifactId>ounit-quercus</artifactId>
               <version>${project.parent.version}</version>
             </dependency>
+            <dependency>
+              <groupId>org.hsqldb</groupId>
+              <artifactId>hsqldb</artifactId>
+              <version>2.2.4</version>
+            </dependency>
           </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>get-timestamp</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>timestamp-property</goal>
+            </goals>
+            <configuration>
+              <name>timestamp</name>
+              <pattern>yyyyMMddHHmmssSSS</pattern>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <modules>
