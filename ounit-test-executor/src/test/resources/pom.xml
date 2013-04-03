@@ -57,6 +57,24 @@
             <failIfNoTests>true</failIfNoTests>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven.compiler.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-compiler-eclipse</artifactId>
+              <version>${ecj.version}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <fork>true</fork>
+            <compilerId>eclipse</compilerId>
+            <source>1.6</source>
+            <target>1.6</target>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
